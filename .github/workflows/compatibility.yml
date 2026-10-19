@@ -1,0 +1,136 @@
+# Compatibility robot: every Monday, tests every stack with the latest versions of its packages
+# (tools/robot/robot.py), raises the validated versions that work, and publishes the online catalog
+# (release "catalog": catalog.json + stacks.zip) that DC Scaffold downloads when it opens.
+# A stack that breaks: a GitHub issue is opened, and DC Scaffold stays on the version that works.
+#
+# Also run by hand (Actions > Compatibility > Run workflow), and after every change of stacks/
+# on master: a fixed stack reaches everyone without a new version of DC Scaffold.
+name: Compatibility
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['stacks/**']
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: compatibility
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      stacks: ${{ steps.plan.outputs.stacks }}
+      infra: ${{ steps.plan.outputs.infra }}
+      php: ${{ steps.plan.outputs.php }}
+      change: ${{ steps.plan.outputs.change }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: plan
+        run: |
+          echo "stacks=$(python3 tools/robot/robot.py plan)" >> "$GITHUB_OUTPUT"
+          infra=$(python3 tools/robot/robot.py infra-plan)
+          echo "infra=$infra" >> "$GITHUB_OUTPUT"
+          echo "php=$(echo "$infra" | python3 -c "import json,sys; i=json.load(sys.stdin)['php']; print(i['candidate'] or i['current'])")" >> "$GITHUB_OUTPUT"
+          echo "change=$(echo "$infra" | python3 -c "import json,sys; print(str(json.load(sys.stdin)['change']).lower())")" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        stack: ${{ fromJSON(needs.plan.outputs.stacks) }}
+    name: ${{ matrix.stack.kind }}/${{ matrix.stack.id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      # The same PHP as the Docker image of the projects (stacks/infra/versions.json)
+      - id: php
+        run: echo "version=$(python3 -c "import json; print(json.load(open('stacks/infra/versions.json'))['php'])")" >> "$GITHUB_OUTPUT"
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ steps.php.outputs.version }}
+          tools: composer
+      - name: Test
+        env:
+          ROBOT_PLAN: ${{ needs.plan.outputs.stacks }}
+          COMPOSER_NO_INTERACTION: '1'
+        run: python3 tools/robot/robot.py test ${{ matrix.stack.kind }} ${{ matrix.stack.id }} "results/${{ matrix.stack.kind }}-${{ matrix.stack.id }}.json"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: result-${{ matrix.stack.kind }}-${{ matrix.stack.id }}
+          path: results/
+
+  # New stable PHP or MySQL for the Docker images: real images, a query on MySQL, every PHP back end
+  infra:
+    needs: plan
+    if: needs.plan.outputs.change == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ needs.plan.outputs.php }}
+          tools: composer
+      - name: Test the Docker images
+        env:
+          ROBOT_INFRA: ${{ needs.plan.outputs.infra }}
+          COMPOSER_NO_INTERACTION: '1'
+        run: python3 tools/robot/robot.py infra-test results/infra.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: result-infra
+          path: results/
+
+  publish:
+    needs: [test, infra]
+    if: always() && needs.test.result != 'cancelled' && needs.infra.result != 'cancelled'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          path: results
+      - name: Last catalog
+        run: gh release download catalog --pattern catalog.json --output previous-catalog.json || true
+      - name: Versions and catalog
+        run: python3 tools/robot/robot.py publish results dist previous-catalog.json
+      - name: Save the new versions
+        run: |
+          git config user.name 'DC Scaffold robot'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add stacks
+          if ! git diff --cached --quiet; then
+            { echo "🤖 chore: stacks $(cat stacks/version.txt)"; echo; cat dist/summary.md; } > dist/message.txt
+            git commit -F dist/message.txt && git push
+          fi
+      - name: Publish the catalog
+        run: |
+          gh release view catalog >/dev/null 2>&1 || gh release create catalog --title 'Catalog' --notes 'Stacks and offers downloaded by DC Scaffold. Updated by the compatibility robot.' --latest=false
+          gh release upload catalog dist/catalog.json dist/stacks.zip --clobber
+      - name: Issue for broken stacks
+        if: hashFiles('dist/issue.md') != ''
+        run: |
+          # One open issue at a time: the next weeks add a comment to it
+          number=$(gh issue list --state open --search 'in:title "Compatibility robot"' --json number --jq '.[0].number')
+          if [ -n "$number" ]; then gh issue comment "$number" --body-file dist/issue.md
+          else gh issue create --title 'Compatibility robot: stacks to fix' --body-file dist/issue.md; fi

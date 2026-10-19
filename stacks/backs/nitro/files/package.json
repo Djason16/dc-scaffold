@@ -1,0 +1,17 @@
+{
+  "name": "{{SLUG}}-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nitro dev --port {{API_PORT}}",
+    "build": "nitro build",
+    "start": "node --disable-warning=ExperimentalWarning --env-file=.env.production .output/server/index.mjs"
+  },
+  "dependencies": {
+    "mysql2": "^3.24.0"
+  },
+  "devDependencies": {
+    "nitropack": "^{{V_NITRO}}",
+    "@types/node": "^{{V_TYPES_NODE}}"
+  }
+}

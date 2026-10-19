@@ -1,0 +1,12 @@
+---
+// Each component of "sections" in its own <section>, in order
+const { sections } = Astro.props
+---
+
+{sections.map((Section) => (
+    <section class="section">
+        <div class="container">
+            <Section />
+        </div>
+    </section>
+))}

@@ -1,0 +1,20 @@
+---
+import PageHero from '../../ui/PageHero/PageHero.astro'
+import { lang } from '../../../plugins/lang.js'
+
+const t = lang.getTranslation
+---
+
+<!-- Content of the page shown for an address that does not exist: the same PageHero as the other pages -->
+<section class="section">
+    <div class="container">
+        <!-- @two-languages -->
+        <PageHero eyebrow="notFoundEyebrow" title="notFoundTitle" text="notFoundText">
+        <!-- @end-two-languages -->
+        <!-- @one-language -->
+        <PageHero eyebrow={t('notFoundEyebrow')} title={t('notFoundTitle')} text={t('notFoundText')}>
+        <!-- @end-one-language -->
+            <a href="/" class="btn btn-primary" data-i18n="backHome">{t('backHome')}</a>
+        </PageHero>
+    </div>
+</section>

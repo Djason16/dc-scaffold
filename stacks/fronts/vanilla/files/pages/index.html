@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="{{DEFAULT_LANG}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title, description, Open Graph...: written by js/plugins/app.js from js/utils/seo.js -->
+    <title>{{PROJECT_NAME}}</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <!-- Design of the site (dc-scaffold.config.js): the theme of DC Scaffold is added before the page is shown -->
+    <script src="/dc-scaffold.config.js"></script>
+    <script src="/js/design.js"></script>
+    <!-- Header, footer, buttons, cookie banner and texts: added by this script (js/components/layout/AppShell) -->
+    <script type="module" src="/js/main.js"></script>
+</head>
+<!-- Home page (/). data-page = key of SEO_PAGES in js/utils/seo.js. New page: copy this file (pages/about.html = /about) -->
+<body data-page="index">
+    <!-- Loader, removed when the page is ready (delete these lines to have none) -->
+    <div class="loader" role="status" data-i18n-attr="aria-label:loading" data-loader>
+        <span class="loader-spinner"></span>
+    </div>
+
+    <!-- Sections of the home page, in order. While design is true in dc-scaffold.config.js, js/dc-scaffold/ shows the welcome page of DC Scaffold instead -->
+    <main data-home>
+        <!-- First section: replace it with your content -->
+        <section class="section">
+            <div class="container">
+                <!-- PageHero (assets/css/components/page-hero.css): the top of every page, page-hero-large on the home page -->
+                <div class="page-hero page-hero-large">
+                    <h1 data-i18n="introTitle">{{PROJECT_NAME}}</h1>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

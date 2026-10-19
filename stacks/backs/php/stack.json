@@ -1,0 +1,84 @@
+{
+    "label": "PHP",
+    "order": 40,
+    "description": {
+        "fr": "PHP sans outil en plus : fonctionne chez tous les hébergeurs",
+        "en": "PHP with no extra tool: works with every web host"
+    },
+    "vscode": ["bmewburn.vscode-intelephense-client"],
+    "requires": [
+        "docker"
+    ],
+    "runtime": "php",
+    "database": true,
+    "steps": [
+        {
+            "copy": "@shared/php-common"
+        },
+        {
+            "copy": "@shared/php-core",
+            "to": "src/Core"
+        },
+        {
+            "copy": "@shared/php-db/{{DB_DRIVER}}"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "env": {
+                "file": ".env",
+                "values": {
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": ""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.production",
+                "values": {
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": ""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.example",
+                "values": {
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": ""
+                }
+            },
+            "when": "noDb"
+        }
+    ],
+    "drivers": [
+        "mysqli",
+        "pdo"
+    ],
+    "controllers": "src/Controllers",
+    "controllerExt": "php",
+    "guide": {
+        "helpers": "src/Helper",
+        "middleware": "bootstrap.php",
+        "entry": "public/index.php",
+        "envDev": ".env",
+        "envProd": ".env.production",
+        "custom": "#[Route('POST', '/{id}/mark-shipped')]",
+        "success": "ResponseHelper::success(['products' => $products])",
+        "body": "$this->body()",
+        "missing": "RequestHelper::missing($data, ['name', 'price'])",
+        "db": "$this->fetchAll('SELECT * FROM products WHERE active = ?', [1])",
+        "deploy": "php"
+    }
+}

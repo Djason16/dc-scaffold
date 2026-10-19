@@ -1,0 +1,9 @@
+# Pages live in pages/: / serves pages/index.html, /about serves pages/about.html
+DirectoryIndex pages/index.html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{DOCUMENT_ROOT}/pages/$1.html -f
+RewriteRule ^(.+?)/?$ pages/$1.html [L]
+
+# Unknown pages
+ErrorDocument 404 /pages/404.html

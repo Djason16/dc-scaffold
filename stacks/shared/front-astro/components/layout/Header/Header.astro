@@ -1,0 +1,20 @@
+---
+import { useSite } from '../../../composables/useSite.js'
+import { lang } from '../../../plugins/lang.js'
+
+const t = lang.getTranslation
+const site = useSite()
+---
+
+<!-- Top of every page: site name (link to the home page) and menu -->
+<header class="header">
+    <div class="container">
+        <a href="/" class="header-logo">{site.name}</a>
+        <nav aria-label={t('home')} data-i18n-attr="aria-label:home">
+            <ul class="header-nav">
+                <li><a href="/" data-i18n="home">{t('home')}</a></li>
+                <!-- Add a page: <li><a href="/about/" data-i18n="about">{t('about')}</a></li> -->
+            </ul>
+        </nav>
+    </div>
+</header>

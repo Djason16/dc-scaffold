@@ -1,0 +1,67 @@
+/*
+ * Root variables: every color, font and size of the site, used as var(--name) in the other files.
+ * Simple style: white background, font of the system, one accent color. Change them to make your own design.
+ * While design is true in dc-scaffold.config.js, the DC Scaffold design (dc-scaffold/theme.css) replaces them.
+ */
+:root {
+    /* Color variables, from the lightest to the darkest */
+    --zero-color: #ffffff;
+    --first-color: #f4f5f7;
+    --second-color: #e1e4e8;
+    --third-color: #5b6470;
+    --fourth-color: #1e2022;
+    --fifth-color: #0d0d0d;
+
+    /* Text color variables */
+    --text-color-light: #ffffff;
+    --text-color-grey: #6b7280;
+    --text-color-dark: #1a1d1f;
+
+    /* Additional accent colors */
+    --accent-yellow: #f4d03f;
+    --accent-green: #58d68d;
+    --accent-red: #e74c3c;
+    --accent-blue: #2f6fed;
+    --accent-purple: #8b5cf6;
+
+    /* Font of the site: the one of the system (another font: utils/fonts.css) */
+    --font-primary: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+
+    /* Font sizes */
+    --font-tiny: 0.5rem;
+    --font-smaller: 0.6rem;
+    --font-small: 0.8rem;
+    --font-normal: 1rem;
+    --font-large: 1.2rem;
+    --font-xlarge: 1.5rem;
+    --font-xxlarge: 2rem;
+    --font-tall: 3rem;
+
+    /* Spacing variables */
+    --space-small: 0.5rem;
+    --space-normal: 1rem;
+    --space-large: 2rem;
+    --space-xlarge: 4rem;
+
+    /* Theme: the colors every component uses. Light: white background, dark text */
+    --background-color: var(--zero-color);
+    --surface-color: var(--first-color);
+    --border-color: var(--second-color);
+    --text-color: var(--text-color-dark);
+    --text-color-muted: var(--third-color);
+
+    /* Accent color: main buttons, links of the banner, focus */
+    --accent-color: var(--accent-blue);
+
+    /* Gradient (bars, numbers): the accent color alone in the simple style */
+    --gradient-start: var(--accent-color);
+    --gradient-middle: var(--accent-color);
+    --gradient-end: var(--accent-color);
+    --gradient: linear-gradient(90deg, var(--gradient-start), var(--gradient-middle) 55%, var(--gradient-end));
+
+    /* Other variables */
+    --max-width: 1120px;
+    --radius: 0.5rem;    /* rounded corners; 0 for sharp ones */
+    --shadow: 0 10px 30px rgb(0 0 0 / 12%);
+    --transition: 0.2s ease;
+}

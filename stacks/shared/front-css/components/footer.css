@@ -1,0 +1,33 @@
+/* Bottom of every page (Footer) */
+.footer {
+    padding-block: var(--space-large);
+    border-top: 1px solid var(--border-color);
+    background-color: var(--background-color);
+}
+
+.footer .container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-normal);
+}
+
+.footer p {
+    color: var(--text-color-grey);
+    font-size: var(--font-small);
+}
+
+/* "Cookie settings": opens the cookie banner again */
+.footer-link {
+    border: none;
+    background: none;
+    color: var(--text-color-muted);
+    font-size: var(--font-small);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.footer-link:hover {
+    color: var(--text-color);
+}

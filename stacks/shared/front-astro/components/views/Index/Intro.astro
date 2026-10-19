@@ -1,0 +1,18 @@
+---
+import PageHero from '../../ui/PageHero/PageHero.astro'
+import { useSite } from '../../../composables/useSite.js'
+// @one-language
+import { lang } from '../../../plugins/lang.js'
+
+const t = lang.getTranslation
+// @end-one-language
+const site = useSite()
+---
+
+<!-- First section of the home page: replace it with your content, add the next ones in src/pages/index.astro -->
+<!-- @two-languages -->
+<PageHero title="introTitle" values={{ name: site.name }} large />
+<!-- @end-two-languages -->
+<!-- @one-language -->
+<PageHero title={t('introTitle', { name: site.name })} large />
+<!-- @end-one-language -->

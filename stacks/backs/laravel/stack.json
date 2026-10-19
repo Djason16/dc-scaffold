@@ -1,0 +1,190 @@
+{
+    "label": "Laravel",
+    "order": 20,
+    "description": {
+        "fr": "PHP complet, tout est prévu (base de données, commandes...). Le plus populaire en PHP",
+        "en": "Full PHP, everything included (database, commands...). The most popular in PHP"
+    },
+    "vscode": ["bmewburn.vscode-intelephense-client", "laravel.vscode-laravel"],
+    "requires": [
+        "composer",
+        "docker"
+    ],
+    "runtime": "php",
+    "database": true,
+    "phpExtensions": [
+        "openssl",
+        "mbstring",
+        "fileinfo",
+        "curl",
+        "zip",
+        "pdo_mysql",
+        "pdo_sqlite"
+    ],
+    "versions": [
+        {
+            "package": "laravel/laravel",
+            "registry": "packagist",
+            "stable": "13",
+            "token": "V_LARAVEL"
+        }
+    ],
+    "steps": [
+        {
+            "run": [
+                "composer",
+                "create-project",
+                "laravel/laravel:^{{V_LARAVEL}}",
+                "{{DIR}}",
+                "--no-install",
+                "--no-interaction",
+                "--prefer-dist"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "artisan"
+        },
+        {
+            "run": [
+                "composer",
+                "config",
+                "platform.php",
+                "{{PHP_PLATFORM}}"
+            ]
+        },
+        {
+            "run": [
+                "composer",
+                "update",
+                "--no-interaction",
+                "--no-progress",
+                "--prefer-dist"
+            ]
+        },
+        {
+            "copy": "@shared/php-common"
+        },
+        {
+            "copy": "@shared/php-core",
+            "to": "app/Core"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "replace": {
+                "file": "config/app.php",
+                "find": "'timezone' => 'UTC',",
+                "with": "'timezone' => env('APP_TIMEZONE', 'Europe/Paris'),"
+            }
+        },
+        {
+            "remove": [
+                "database/database.sqlite"
+            ],
+            "when": "db"
+        },
+        {
+            "env": {
+                "file": ".env",
+                "from": ".env.example",
+                "values": {
+                    "APP_NAME": "\"{{PROJECT_NAME}}\"",
+                    "APP_ENV": "local",
+                    "APP_DEBUG": "true",
+                    "APP_KEY": "{{NEW_LARAVEL_KEY}}",
+                    "APP_TIMEZONE": "Europe/Paris",
+                    "APP_URL": "http://localhost:{{API_PORT}}",
+                    "APP_BASE_URL": "http://localhost:{{APP_PORT}}",
+                    "SESSION_DRIVER": "file",
+                    "CACHE_STORE": "file",
+                    "QUEUE_CONNECTION": "sync"
+                }
+            }
+        },
+        {
+            "env": {
+                "file": ".env",
+                "values": {
+                    "DB_CONNECTION": "mysql",
+                    "DB_HOST": "db",
+                    "DB_PORT": "3306",
+                    "DB_DATABASE": "{{DB_NAME}}",
+                    "DB_USERNAME": "root",
+                    "DB_PASSWORD": "{{DB_PASS}}"
+                }
+            },
+            "when": "db"
+        },
+        {
+            "env": {
+                "file": ".env",
+                "values": {
+                    "DB_CONNECTION": "sqlite"
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.production",
+                "from": ".env.example",
+                "values": {
+                    "APP_NAME": "\"{{PROJECT_NAME}}\"",
+                    "APP_ENV": "production",
+                    "APP_DEBUG": "false",
+                    "APP_KEY": "{{NEW_LARAVEL_KEY}}",
+                    "APP_TIMEZONE": "Europe/Paris",
+                    "APP_URL": "https://api.example.com",
+                    "APP_BASE_URL": "https://example.com",
+                    "SESSION_DRIVER": "file",
+                    "CACHE_STORE": "file",
+                    "QUEUE_CONNECTION": "sync"
+                }
+            }
+        },
+        {
+            "env": {
+                "file": ".env.production",
+                "values": {
+                    "DB_CONNECTION": "mysql",
+                    "DB_HOST": "localhost",
+                    "DB_PORT": "3306",
+                    "DB_DATABASE": "",
+                    "DB_USERNAME": "",
+                    "DB_PASSWORD": ""
+                }
+            },
+            "when": "db"
+        },
+        {
+            "env": {
+                "file": ".env.production",
+                "values": {
+                    "DB_CONNECTION": "sqlite"
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "touch": "database/database.sqlite",
+            "when": "noDb"
+        }
+    ],
+    "controllers": "app/Http/Controllers",
+    "controllerExt": "php",
+    "guide": {
+        "helpers": "app/Helper",
+        "middleware": "bootstrap/app.php",
+        "entry": "routes/api.php",
+        "envDev": ".env",
+        "envProd": ".env.production",
+        "custom": "#[Route('POST', '/{id}/mark-shipped')]",
+        "success": "ResponseHelper::success(['products' => $products])",
+        "body": "$this->body($request)",
+        "missing": "RequestHelper::missing($data, ['name', 'price'])",
+        "db": "$this->fetchAll('SELECT * FROM products WHERE active = ?', [1])",
+        "deploy": "laravel"
+    }
+}

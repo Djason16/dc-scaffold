@@ -1,0 +1,6 @@
+---
+// Floating button: class, aria-label... are passed through
+const { class: className = '', ...attributes } = Astro.props
+---
+
+<button type="button" class:list={['floating-btn', className]} {...attributes}><slot /></button>

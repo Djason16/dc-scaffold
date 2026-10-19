@@ -1,0 +1,10 @@
+{
+    "label": "Aucun / None",
+    "order": 90,
+    "description": {
+        "fr": "Pas de site : seulement le serveur (API)",
+        "en": "No site: only the server (API)"
+    },
+    "requires": [],
+    "steps": []
+}

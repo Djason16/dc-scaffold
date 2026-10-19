@@ -1,0 +1,21 @@
+{
+    "require": {
+        "php": ">=8.2",
+        "slim/slim": "^{{V_SLIM}}",
+        "slim/psr7": "^{{V_PSR7}}",
+        "vlucas/phpdotenv": "^{{V_DOTENV}}"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\Controllers\\": "src/Controllers/",
+            "App\\Core\\": "src/Core/",
+            "App\\Helper\\": "src/Helper/",
+            "App\\Middleware\\": "src/Middleware/"
+        }
+    },
+    "config": {
+        "platform": {
+            "php": "{{PHP_PLATFORM}}"
+        }
+    }
+}

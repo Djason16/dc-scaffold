@@ -1,0 +1,11 @@
+# Same CORS rules as the other back ends: only the front URL, with cookies
+nelmio_cors:
+    defaults:
+        origin_regex: false
+        allow_origin: ['%env(APP_BASE_URL)%']
+        allow_credentials: true
+        allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
+        allow_headers: ['Content-Type', 'Authorization', 'Accept', 'user_id', 'X-Requested-With']
+        max_age: 3600
+    paths:
+        '^/': null

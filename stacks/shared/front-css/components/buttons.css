@@ -1,0 +1,70 @@
+/* Normal button: <button class="btn"> (also on links: <a class="btn">) */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-small);
+    padding: 0.7rem 1.2rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background-color: transparent;
+    color: var(--text-color);
+    font-size: var(--font-normal);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.btn:hover {
+    border-color: var(--text-color-muted);
+    background-color: color-mix(in srgb, var(--text-color) 6%, transparent);
+    text-decoration: none;
+}
+
+/* Main button: <button class="btn btn-primary"> */
+.btn-primary {
+    border-color: var(--accent-color);
+    background-color: var(--accent-color);
+    color: var(--text-color-light);
+}
+
+.btn-primary:hover {
+    border-color: var(--accent-color);
+    background-color: color-mix(in srgb, var(--accent-color) 85%, #000);
+}
+
+/* Square button floating on the side of the page (FloatingButton) */
+.floating-btn {
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    box-shadow: var(--shadow);
+    font-size: var(--font-small);
+    font-weight: 700;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity var(--transition), background var(--transition), color var(--transition);
+}
+
+.floating-btn:hover,
+.floating-btn.active {
+    opacity: 1;
+}
+
+.floating-btn.active {
+    border-color: var(--accent-color);
+    background-color: var(--accent-color);
+    color: var(--text-color-light);
+}
+
+/* @two-languages */
+/* Language buttons, stacked (ChangeLanguageButton) */
+.language-switcher {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-small);
+}
+/* @end-two-languages */

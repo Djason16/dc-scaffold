@@ -1,0 +1,23 @@
+import { Component, inject } from '@angular/core'
+import { useLang } from '@/composables/useLang'
+import { useSite } from '@/composables/useSite'
+import { UserPreferencesStore } from '@/stores/userPreferences'
+
+// Bottom of every page: copyright and cookie settings
+@Component({
+    selector: 'footer[app-footer]',
+    host: { class: 'footer' },
+    template: `
+        <div class="container">
+            <p>© {{ year }} {{ site.name }}. {{ lang.getTranslation('allRightsReserved') }}</p>
+            <!-- Forgets the choice: the cookie banner shows again -->
+            <button type="button" class="footer-link" (click)="userPreferences.deleteCookie()">{{ lang.getTranslation('prefsSettings') }}</button>
+        </div>
+    `,
+})
+export class Footer {
+    protected lang = useLang()
+    protected site = useSite()
+    protected userPreferences = inject(UserPreferencesStore)
+    protected year = new Date().getFullYear()
+}

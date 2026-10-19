@@ -1,0 +1,156 @@
+{
+    "label": "React",
+    "order": 50,
+    "description": {
+        "fr": "Application React sur une seule page, la bibliothèque la plus répandue",
+        "en": "React app on a single page, the most used library"
+    },
+    "requires": [
+        "node"
+    ],
+    "port": 5173,
+    "versions": [
+        {
+            "package": "react",
+            "registry": "npm",
+            "stable": "19",
+            "token": "V_REACT"
+        },
+        {
+            "package": "react-router",
+            "registry": "npm",
+            "stable": "8",
+            "token": "V_REACT_ROUTER"
+        },
+        {
+            "package": "zustand",
+            "registry": "npm",
+            "stable": "5",
+            "token": "V_ZUSTAND"
+        }
+    ],
+    "publicDir": "public",
+    "api": {
+        "file": "src/utils/api.js",
+        "imports": "",
+        "base": "import.meta.env.VITE_API_URL",
+        "source": "VITE_API_URL",
+        "isDev": "import.meta.env.DEV",
+        "usage": "import { api } from '@/utils/api.js'"
+    },
+    "steps": [
+        {
+            "run": [
+                "npm",
+                "create",
+                "vite@latest",
+                "{{DIR}}",
+                "--",
+                "--template",
+                "react",
+                "--no-interactive",
+                "--no-immediate"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "package.json"
+        },
+        {
+            "remove": [
+                "src/App.css",
+                "src/index.css",
+                "src/assets/hero.png",
+                "src/assets/react.svg",
+                "src/assets/vite.svg"
+            ]
+        },
+        {
+            "copy": "@shared/front-core",
+            "to": "src"
+        },
+        {
+            "copy": "@shared/front-spa",
+            "to": "src"
+        },
+        {
+            "copy": "@shared/front-react",
+            "to": "src"
+        },
+        {
+            "copy": "@shared/dc-scaffold",
+            "to": "src/dc-scaffold"
+        },
+        {
+            "copy": "@shared/front-css",
+            "to": "src/assets/css"
+        },
+        {
+            "copy": "@shared/front-scripts"
+        },
+        {
+            "copy": "@shared/front-design"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.predev": "node scripts/design.mjs",
+                    "scripts.prebuild": "node scripts/design.mjs"
+                }
+            }
+        },
+        {
+            "remove": [
+                "public/favicon.svg",
+                "public/icons.svg",
+                "public/vite.svg"
+            ]
+        },
+        {
+            "replace": {
+                "file": "index.html",
+                "find": "<link rel=\"icon\"[^>]*>",
+                "with": "<link rel=\"icon\" href=\"/favicon.ico\" />"
+            }
+        },
+        {
+            "replace": {
+                "file": "index.html",
+                "find": "<html lang=\"[^\"]*\">",
+                "with": "<html lang=\"{{DEFAULT_LANG}}\">"
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "dependencies.react-router": "^{{V_REACT_ROUTER}}",
+                    "dependencies.zustand": "^{{V_ZUSTAND}}",
+                    "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/pages"
+                }
+            }
+        },
+        {
+            "copy": "files-api",
+            "when": "api"
+        }
+    ],
+    "layout": {
+        "src": "src/",
+        "css": "src/assets/css",
+        "pages": "src/pages/",
+        "storeLib": "Zustand",
+        "lang": "plugins/lang.jsx",
+        "storeFile": "stores/userPreferences.js",
+        "layoutFile": "components/layout/AppShell/AppShell.jsx",
+        "env": "`VITE_SITE_NAME` / `VITE_SITE_URL`",
+        "public": "frontend/public",
+        "page": "pages/about.jsx",
+        "pageCopy": "pages/index.jsx",
+        "textUsage": "`{lang.getTranslation('introTitle')}`",
+        "header": "components/layout/Header/Header.jsx",
+        "footer": "components/layout/Footer/Footer.jsx"
+    }
+}

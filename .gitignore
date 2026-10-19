@@ -1,0 +1,14 @@
+# Release archives and local builds
+*.zip
+/dist/
+
+# Editors and systems
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Note: the .env files inside stacks/ are templates and must stay tracked
+
+installer/build/
+__pycache__/

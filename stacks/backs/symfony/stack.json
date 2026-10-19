@@ -1,0 +1,204 @@
+{
+    "label": "Symfony",
+    "order": 30,
+    "description": {
+        "fr": "PHP complet et très structuré, apprécié des grandes entreprises",
+        "en": "Full, very structured PHP, liked by large companies"
+    },
+    "vscode": ["bmewburn.vscode-intelephense-client"],
+    "requires": [
+        "composer",
+        "docker"
+    ],
+    "runtime": "php",
+    "database": true,
+    "phpExtensions": [
+        "openssl",
+        "mbstring",
+        "intl",
+        "curl",
+        "zip",
+        "pdo_mysql",
+        "pdo_sqlite"
+    ],
+    "versions": [
+        {
+            "package": "symfony/skeleton",
+            "registry": "packagist",
+            "stable": "7.4",
+            "token": "V_SYMFONY"
+        }
+    ],
+    "steps": [
+        {
+            "run": [
+                "composer",
+                "create-project",
+                "symfony/skeleton:{{V_SYMFONY}}.*",
+                "{{DIR}}",
+                "--no-install",
+                "--no-interaction",
+                "--prefer-dist"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "composer.json"
+        },
+        {
+            "run": [
+                "composer",
+                "config",
+                "platform.php",
+                "{{PHP_PLATFORM}}"
+            ]
+        },
+        {
+            "run": [
+                "composer",
+                "config",
+                "extra.symfony.docker",
+                "false"
+            ]
+        },
+        {
+            "run": [
+                "composer",
+                "config",
+                "extra.symfony.allow-contrib",
+                "true"
+            ]
+        },
+        {
+            "run": [
+                "composer",
+                "config",
+                "bump-after-update",
+                "false"
+            ]
+        },
+        {
+            "run": [
+                "composer",
+                "update",
+                "--no-interaction",
+                "--no-progress",
+                "--prefer-dist"
+            ]
+        },
+        {
+            "check": "bin/console"
+        },
+        {
+            "run": [
+                "composer",
+                "require",
+                "symfony/orm-pack",
+                "nelmio/cors-bundle",
+                "--no-interaction"
+            ]
+        },
+        {
+            "run": [
+                "composer",
+                "config",
+                "bump-after-update",
+                "true"
+            ]
+        },
+        {
+            "remove": [
+                "compose*.yaml"
+            ]
+        },
+        {
+            "copy": "@shared/php-common"
+        },
+        {
+            "copy": "@shared/php-core",
+            "to": "src/Core"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "env": {
+                "file": ".env",
+                "values": {
+                    "APP_NAME": "\"{{PROJECT_NAME}}\"",
+                    "APP_BASE_URL": "http://localhost:{{APP_PORT}}"
+                }
+            }
+        },
+        {
+            "env": {
+                "file": ".env.local",
+                "values": {
+                    "APP_ENV": "dev"
+                }
+            }
+        },
+        {
+            "env": {
+                "file": ".env.local",
+                "values": {
+                    "DATABASE_URL": "\"mysql://root:{{DB_PASS}}@db:3306/{{DB_NAME}}?serverVersion={{DB_SERVER_VERSION}}&charset=utf8mb4\""
+                }
+            },
+            "when": "db"
+        },
+        {
+            "env": {
+                "file": ".env.local",
+                "values": {
+                    "DATABASE_URL": "\"sqlite:///%kernel.project_dir%/var/data.db\""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.prod.local",
+                "values": {
+                    "APP_ENV": "prod",
+                    "APP_DEBUG": "0",
+                    "APP_SECRET": "{{NEW_SECRET}}",
+                    "APP_BASE_URL": "https://example.com"
+                }
+            }
+        },
+        {
+            "env": {
+                "file": ".env.prod.local",
+                "values": {
+                    "DATABASE_URL": "\"mysql://USER:PASSWORD@localhost:3306/DATABASE?serverVersion={{DB_SERVER_VERSION}}&charset=utf8mb4\""
+                }
+            },
+            "when": "db"
+        },
+        {
+            "env": {
+                "file": ".env.prod.local",
+                "values": {
+                    "DATABASE_URL": "\"sqlite:///%kernel.project_dir%/var/data.db\""
+                }
+            },
+            "when": "noDb"
+        }
+    ],
+    "controllers": "src/Controller",
+    "controllerExt": "php",
+    "guide": {
+        "helpers": "src/Helper",
+        "middleware": "src/EventListener/",
+        "entry": "config/routes/auto_routes.php",
+        "envDev": ".env.local",
+        "envProd": ".env.prod.local",
+        "custom": "#[Route('POST', '/{id}/mark-shipped')]",
+        "success": "ResponseHelper::success(['products' => $products])",
+        "body": "$this->body($request)",
+        "missing": "RequestHelper::missing($data, ['name', 'price'])",
+        "db": "$this->fetchAll('SELECT * FROM products WHERE active = ?', [1])",
+        "deploy": "symfony"
+    }
+}

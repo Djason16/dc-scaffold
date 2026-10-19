@@ -1,0 +1,423 @@
+/*
+ * Design of DC Scaffold: dark theme, Barlow Condensed font, blue-violet-pink gradient, loader,
+ * decorated PageHero, and the welcome page (Hero, "What next?").
+ * Added to the site only while design is true in dc-scaffold.config.js: with false, the site keeps
+ * its simple style (assets/css) and nothing of this folder goes into the build.
+ */
+
+/* Barlow Condensed (SIL Open Font License, fonts/BarlowCondensed/OFL.txt): WOFF2 first, WOFF as fallback */
+@font-face {
+    font-family: 'Barlow Condensed';
+    src: url('./fonts/BarlowCondensed/BarlowCondensed-Regular.woff2') format('woff2'),
+        url('./fonts/BarlowCondensed/BarlowCondensed-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Barlow Condensed';
+    src: url('./fonts/BarlowCondensed/BarlowCondensed-Bold.woff2') format('woff2'),
+        url('./fonts/BarlowCondensed/BarlowCondensed-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Colors and font of DC Scaffold, in place of the ones of utils/variables.css */
+:root {
+    --font-primary: "Barlow Condensed", "Roboto Condensed", roboto, oxygen, "Fira Sans", arial, sans-serif;
+
+    --background-color: var(--fifth-color);
+    --surface-color: #15161b;
+    --border-color: rgb(255 255 255 / 10%);
+    --text-color: var(--text-color-light);
+    --text-color-muted: rgb(255 255 255 / 65%);
+    --text-color-grey: #7a7a7a;
+
+    --accent-color: #8b5cf6;
+    --gradient-start: #4084ff;
+    --gradient-middle: #8b5cf6;
+    --gradient-end: #ec4899;
+
+    --radius: 0;
+    --shadow: 0 18px 50px rgb(0 0 0 / 45%);
+}
+
+html {
+    color-scheme: dark;
+}
+
+/* Titles and labels in spaced capitals */
+h1,
+h2,
+h3 {
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+.btn {
+    padding: 0.8rem 1.4rem;
+    font-size: var(--font-small);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.btn:hover {
+    background-color: rgb(255 255 255 / 5%);
+}
+
+/* Main button: white, the gradient on hover */
+.btn-primary {
+    border-color: var(--text-color);
+    background-color: var(--text-color);
+    color: var(--background-color);
+}
+
+.btn-primary:hover {
+    border-color: transparent;
+    background: var(--gradient);
+    color: var(--text-color-light);
+}
+
+.floating-btn {
+    background-color: var(--surface-color);
+}
+
+.floating-btn.active {
+    border-color: var(--text-color);
+    background-color: var(--text-color);
+    color: var(--background-color);
+}
+
+.header {
+    background-color: color-mix(in srgb, var(--background-color) 85%, transparent);
+}
+
+.header-logo {
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.header-nav a {
+    font-size: var(--font-small);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.footer-link {
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* Cookie banner: on a dark card, with the gradient line on top */
+.preferences-banner {
+    background-color: var(--surface-color);
+}
+
+.preferences-banner::before {
+    content: "";
+    position: absolute;
+    inset: -1px -1px auto;
+    height: 3px;
+    background: var(--gradient);
+}
+
+.preferences-banner h2 {
+    letter-spacing: 0.06em;
+}
+
+/* Loader: sharp square with a gradient border, turning on a soft glow of the three colors */
+.loader {
+    overflow: hidden;
+}
+
+.loader::before {
+    content: "";
+    position: absolute;
+    width: 22rem;
+    height: 22rem;
+    background:
+        radial-gradient(closest-side at 35% 40%, color-mix(in srgb, var(--gradient-start) 45%, transparent), transparent),
+        radial-gradient(closest-side at 60% 35%, color-mix(in srgb, var(--gradient-middle) 40%, transparent), transparent),
+        radial-gradient(closest-side at 55% 65%, color-mix(in srgb, var(--gradient-end) 30%, transparent), transparent);
+    filter: blur(40px);
+    animation: loader-glow 2.4s ease-in-out infinite alternate;
+}
+
+.loader-spinner {
+    position: relative;
+    width: 3rem;
+    height: 3rem;
+    padding: 3px;
+    border: none;
+    border-radius: 0;
+    background: conic-gradient(from 0turn, transparent 0 20%, var(--gradient-start), var(--gradient-middle), var(--gradient-end));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    animation: loader-spin 1s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite;
+}
+
+@keyframes loader-glow {
+    to {
+        opacity: 0.55;
+        transform: scale(1.15);
+    }
+}
+
+/* PageHero: the colored aurora, the fine grid, the gradient bar under the title and the grain of DC Scaffold */
+.section:has(.page-hero) {
+    overflow: hidden;
+    isolation: isolate;
+}
+
+/* Aurora: three blurred colored lights in the top right corner */
+.section:has(.page-hero)::before {
+    content: "";
+    position: absolute;
+    inset: -20% -10% auto 35%;
+    z-index: -1;
+    height: 120%;
+    background:
+        radial-gradient(40% 45% at 70% 20%, color-mix(in srgb, var(--gradient-start) 70%, transparent), transparent 70%),
+        radial-gradient(55% 55% at 45% 25%, color-mix(in srgb, var(--gradient-middle) 55%, transparent), transparent 70%),
+        radial-gradient(35% 40% at 80% 60%, color-mix(in srgb, var(--gradient-end) 35%, transparent), transparent 70%);
+    filter: blur(60px);
+}
+
+/* Fine vertical grid fading towards the bottom, and a thin light beam */
+.section:has(.page-hero)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+        linear-gradient(118deg, transparent 64.9%, rgb(255 255 255 / 30%) 65%, transparent 65.1%) no-repeat 100% 0 / 60% 55%,
+        linear-gradient(to right, rgb(255 255 255 / 6%) 1px, transparent 1px) 0 0 / 8rem 100%;
+    mask-image: linear-gradient(to bottom, #000 30%, transparent);
+}
+
+.page-hero {
+    gap: var(--space-large);
+    min-height: 50vh;
+    align-content: center;
+}
+
+/* Home page: the welcome takes most of the screen */
+.page-hero-large {
+    min-height: 75vh;
+}
+
+/* Small title in the gradient, spaced capitals */
+.page-hero-eyebrow {
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: var(--font-small);
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+/* Large title in uppercase, with the gradient bar under it */
+.page-hero h1 {
+    max-width: 14ch;
+    font-size: clamp(3rem, 9vw, 7rem);
+    line-height: 0.9;
+    letter-spacing: -0.01em;
+    overflow-wrap: anywhere;
+}
+
+.page-hero-large h1 {
+    font-size: clamp(3.5rem, 11vw, 8.5rem);
+}
+
+.page-hero h1::after {
+    content: "";
+    display: block;
+    width: 5rem;
+    height: 4px;
+    margin-top: var(--space-large);
+    background: var(--gradient);
+}
+
+.page-hero-text {
+    max-width: 34rem;
+    font-size: var(--font-xlarge);
+    line-height: 1.4;
+}
+
+/* Grain over the whole section, like film */
+.page-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    pointer-events: none;
+}
+
+/* Entrance: the texts rise one after the other (off when the visitor asks for less motion, base/global.css) */
+.page-hero > * {
+    animation: page-hero-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.page-hero > :nth-child(2) {
+    animation-delay: 0.08s;
+}
+
+.page-hero > :nth-child(3) {
+    animation-delay: 0.16s;
+}
+
+.page-hero > :nth-child(4) {
+    animation-delay: 0.24s;
+}
+
+@keyframes page-hero-rise {
+    from {
+        opacity: 0;
+        transform: translateY(1.5rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .page-hero-large {
+        min-height: 65vh;
+    }
+
+    .page-hero-text {
+        font-size: var(--font-large);
+    }
+}
+
+/* Welcome of the home page (dc-scaffold/Hero, built on PageHero): the "Made with DC Scaffold" badge and the "by Djason CHERY" logo */
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-small);
+    padding: 0.3rem var(--space-normal) 0.3rem 0.3rem;
+    border: 1px solid rgb(255 255 255 / 15%);
+    background-color: rgb(255 255 255 / 5%);
+    backdrop-filter: blur(8px);
+    font-size: var(--font-small);
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.hero-badge img {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.hero-by {
+    display: flex;
+    align-items: center;
+    gap: var(--space-normal);
+    color: var(--text-color-grey);
+    font-size: var(--font-small);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.hero-by img {
+    height: 2rem;
+    width: auto;
+}
+
+/* The logo opens the site of the author in a new tab */
+.hero-by-link {
+    display: inline-flex;
+    transition: opacity var(--transition);
+}
+
+.hero-by-link:hover {
+    opacity: 0.7;
+}
+
+/* "What next?" section of the home page (dc-scaffold/NextSteps) */
+.next-steps {
+    display: grid;
+    gap: var(--space-large);
+}
+
+.next-steps-header {
+    display: grid;
+    gap: var(--space-small);
+}
+
+.next-steps-header h2 {
+    font-size: clamp(var(--font-xxlarge), 5vw, var(--font-tall));
+    text-transform: uppercase;
+}
+
+/* Three cards side by side, one under the other on phones, separated by fine lines */
+.next-steps-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    gap: 1px;
+    border: 1px solid var(--border-color);
+    background-color: var(--border-color);
+    list-style: none;
+}
+
+.next-steps-card {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: var(--space-small);
+    padding: var(--space-large);
+    background-color: var(--background-color);
+    transition: background-color var(--transition);
+}
+
+/* Blue to pink line drawn at the top of the card on hover */
+.next-steps-card::before {
+    content: "";
+    position: absolute;
+    inset: -1px 0 auto;
+    height: 2px;
+    background: var(--gradient);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--transition);
+}
+
+.next-steps-card:hover {
+    background-color: var(--surface-color);
+}
+
+.next-steps-card:hover::before {
+    transform: scaleX(1);
+}
+
+/* Number of the step: 01, 02, 03 */
+.next-steps-card span {
+    margin-bottom: var(--space-normal);
+    background: var(--gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    font-size: var(--font-tall);
+    font-weight: 700;
+    line-height: 1;
+    justify-self: start;
+}
+
+.next-steps-card h3 {
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+/* Long file paths (frontend/src/assets/css/...) go to the next line instead of overflowing on phones */
+.next-steps-card p {
+    overflow-wrap: anywhere;
+}

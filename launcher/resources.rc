@@ -1,0 +1,29 @@
+// Icon, version information and manifest of DCScaffold.exe
+1 ICON "icon.ico"
+1 24 "app.manifest"
+
+1 VERSIONINFO
+FILEVERSION 1,0,0,0
+PRODUCTVERSION 1,0,0,0
+FILEOS 0x40004
+FILETYPE 0x1
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "Djason CHERY"
+            VALUE "FileDescription", "DC Scaffold - Web project creator"
+            VALUE "FileVersion", "1.0.0"
+            VALUE "InternalName", "DCScaffold"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Djason CHERY"
+            VALUE "OriginalFilename", "DCScaffold.exe"
+            VALUE "ProductName", "DC Scaffold"
+            VALUE "ProductVersion", "1.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

@@ -1,0 +1,40 @@
+/* Top of every page: site name and menu (Header) */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    padding-block: var(--space-normal);
+    border-bottom: 1px solid var(--border-color);
+    background-color: color-mix(in srgb, var(--background-color) 90%, transparent);
+    backdrop-filter: blur(12px);
+}
+
+.header .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-normal);
+}
+
+.header-logo {
+    font-size: var(--font-large);
+    font-weight: 700;
+}
+
+/* Links of the menu */
+.header-nav {
+    display: flex;
+    gap: var(--space-large);
+    list-style: none;
+}
+
+.header-nav a {
+    color: var(--text-color-muted);
+    font-weight: 600;
+    transition: color var(--transition);
+}
+
+.header-nav a:hover {
+    color: var(--text-color);
+    text-decoration: none;
+}

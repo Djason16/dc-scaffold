@@ -1,0 +1,94 @@
+{
+    "label": "Express",
+    "order": 60,
+    "description": {
+        "fr": "JavaScript (Node.js), simple et très utilisé : le même langage que le site",
+        "en": "JavaScript (Node.js), simple and widely used: the same language as the site"
+    },
+    "requires": [
+        "node",
+        "docker"
+    ],
+    "runtime": "node",
+    "database": "optional",
+    "noDatabase": {
+        "fr": "Les données dans un simple fichier, rien à installer",
+        "en": "The data in a plain file, nothing to install"
+    },
+    "fallbackDatabase": "SQLite",
+    "nodeEngine": ">=22.13.0",
+    "versions": [
+        {
+            "package": "express",
+            "registry": "npm",
+            "stable": "5",
+            "token": "V_EXPRESS"
+        }
+    ],
+    "steps": [
+        {
+            "copy": "files"
+        },
+        {
+            "copy": "@shared/js-core",
+            "to": "utils"
+        },
+        {
+            "env": {
+                "file": ".env",
+                "values": {
+                    "DB_CONNECTION": "sqlite",
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": "",
+                    "DB_PORT": ""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.production",
+                "values": {
+                    "DB_CONNECTION": "sqlite",
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": "",
+                    "DB_PORT": ""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.example",
+                "values": {
+                    "DB_CONNECTION": "sqlite",
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": "",
+                    "DB_PORT": ""
+                }
+            },
+            "when": "noDb"
+        }
+    ],
+    "controllers": "controllers",
+    "controllerExt": "js",
+    "guide": {
+        "helpers": "utils",
+        "middleware": "middleware/",
+        "entry": "server.js",
+        "envDev": ".env",
+        "envProd": ".env.production",
+        "custom": "static routes = { markShipped: ['POST', '/{id}/mark-shipped'] }",
+        "success": "ResponseHelper.success(res, { products })",
+        "body": "this.body(req)",
+        "missing": "RequestHelper.missing(data, ['name', 'price'])",
+        "db": "await this.fetchAll('SELECT * FROM products WHERE active = ?', [1])",
+        "deploy": "express"
+    }
+}

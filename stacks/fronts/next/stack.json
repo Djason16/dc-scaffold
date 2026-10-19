@@ -1,0 +1,139 @@
+{
+    "label": "Next.js",
+    "order": 20,
+    "description": {
+        "fr": "Basé sur React : une page = un fichier. Très demandé en entreprise",
+        "en": "Based on React: one page = one file. Much used in companies"
+    },
+    "requires": [
+        "node"
+    ],
+    "port": 3000,
+    "versions": [
+        {
+            "package": "next",
+            "registry": "npm",
+            "stable": "16",
+            "token": "V_NEXT"
+        },
+        {
+            "package": "zustand",
+            "registry": "npm",
+            "stable": "5",
+            "token": "V_ZUSTAND"
+        }
+    ],
+    "publicDir": "public",
+    "api": {
+        "file": "utils/api.js",
+        "imports": "",
+        "base": "process.env.NEXT_PUBLIC_API_URL",
+        "source": "NEXT_PUBLIC_API_URL",
+        "isDev": "process.env.NODE_ENV === 'development'",
+        "usage": "import { api } from '@/utils/api.js'"
+    },
+    "steps": [
+        {
+            "run": [
+                "npm",
+                "create",
+                "next-app@latest",
+                "{{DIR}}",
+                "--",
+                "--js",
+                "--no-app",
+                "--eslint",
+                "--no-tailwind",
+                "--no-src-dir",
+                "--no-react-compiler",
+                "--import-alias",
+                "@/*",
+                "--use-npm",
+                "--skip-install",
+                "--disable-git",
+                "--no-agents-md",
+                "--no-agent-feedback",
+                "--yes"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "package.json"
+        },
+        {
+            "remove": [
+                "next.config.*",
+                "pages/_app.js",
+                "pages/_document.js",
+                "pages/index.js",
+                "pages/api",
+                "styles",
+                "public/file.svg",
+                "public/globe.svg",
+                "public/next.svg",
+                "public/vercel.svg",
+                "public/window.svg"
+            ]
+        },
+        {
+            "copy": "@shared/front-core"
+        },
+        {
+            "copy": "@shared/front-react"
+        },
+        {
+            "copy": "@shared/dc-scaffold",
+            "to": "dc-scaffold"
+        },
+        {
+            "copy": "@shared/front-css",
+            "to": "assets/css"
+        },
+        {
+            "copy": "@shared/front-scripts"
+        },
+        {
+            "copy": "@shared/front-design"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.predev": "node scripts/design.mjs",
+                    "scripts.prebuild": "node scripts/design.mjs"
+                }
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "dependencies.zustand": "^{{V_ZUSTAND}}",
+                    "scripts.dev": "next dev -p {{APP_PORT}}",
+                    "scripts.postbuild": "node scripts/sitemap.mjs out"
+                }
+            }
+        },
+        {
+            "copy": "files-api",
+            "when": "api"
+        }
+    ],
+    "layout": {
+        "src": "",
+        "css": "assets/css",
+        "pages": "pages/",
+        "storeLib": "Zustand",
+        "lang": "plugins/lang.jsx",
+        "storeFile": "stores/userPreferences.js",
+        "layoutFile": "components/layout/AppShell/AppShell.jsx",
+        "env": "`NEXT_PUBLIC_SITE_NAME` / `NEXT_PUBLIC_SITE_URL`",
+        "public": "frontend/public",
+        "page": "pages/about.jsx",
+        "pageCopy": "pages/index.jsx",
+        "textUsage": "`{lang.getTranslation('introTitle')}`",
+        "header": "components/layout/Header/Header.jsx",
+        "footer": "components/layout/Footer/Footer.jsx"
+    }
+}

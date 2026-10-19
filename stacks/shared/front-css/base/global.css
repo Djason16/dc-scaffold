@@ -1,0 +1,64 @@
+/* Reset: same starting point in every browser */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    color-scheme: light;
+}
+
+::selection {
+    background-color: var(--accent-color);
+    color: var(--text-color-light);
+}
+
+/* Page background, text color and font of the whole site */
+body {
+    min-height: 100vh;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: var(--font-primary);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Images and videos never wider than their container */
+img,
+svg,
+video {
+    display: block;
+    max-width: 100%;
+}
+
+/* Form elements use the font of the page */
+button,
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+}
+
+/* Centered content with a maximum width (utils/variables.css: --max-width) */
+.container {
+    width: min(100% - 2 * var(--space-normal), var(--max-width));
+    margin-inline: auto;
+}
+
+/* Visitors who ask their system for less motion */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition: none !important;
+        animation: none !important;
+    }
+}

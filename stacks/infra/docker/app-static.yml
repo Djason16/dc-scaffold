@@ -1,0 +1,10 @@
+  frontend:
+    image: nginx:alpine
+    container_name: {{SLUG}}-frontend
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    ports:
+      - '{{APP_PORT}}:80'
+    networks:
+      - {{SLUG}}-network
