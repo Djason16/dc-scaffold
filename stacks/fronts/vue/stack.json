@@ -1,0 +1,127 @@
+{
+    "label": "Vue",
+    "order": 40,
+    "description": {
+        "fr": "Application Vue sur une seule page, facile à prendre en main",
+        "en": "Vue app on a single page, easy to learn"
+    },
+    "vscode": [
+        "Vue.volar"
+    ],
+    "requires": [
+        "node"
+    ],
+    "port": 5173,
+    "versions": [
+        {
+            "package": "vue",
+            "registry": "npm",
+            "stable": "3",
+            "token": "V_VUE"
+        },
+        {
+            "package": "pinia",
+            "registry": "npm",
+            "stable": "4",
+            "token": "V_PINIA"
+        }
+    ],
+    "publicDir": "public",
+    "api": {
+        "file": "src/utils/api.js",
+        "imports": "",
+        "base": "import.meta.env.VITE_API_URL",
+        "source": "VITE_API_URL",
+        "isDev": "import.meta.env.DEV",
+        "usage": "import { api } from '@/utils/api.js'"
+    },
+    "steps": [
+        {
+            "run": [
+                "npm",
+                "create",
+                "vue@latest",
+                "{{DIR}}",
+                "--",
+                "--bare",
+                "--router"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "package.json"
+        },
+        {
+            "copy": "@shared/front-core",
+            "to": "src"
+        },
+        {
+            "copy": "@shared/front-spa",
+            "to": "src"
+        },
+        {
+            "copy": "@shared/front-vue",
+            "to": "src"
+        },
+        {
+            "copy": "@shared/dc-scaffold",
+            "to": "src/dc-scaffold"
+        },
+        {
+            "copy": "@shared/front-css",
+            "to": "src/assets/css"
+        },
+        {
+            "copy": "@shared/front-scripts"
+        },
+        {
+            "copy": "@shared/front-design"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.predev": "node scripts/design.mjs",
+                    "scripts.prebuild": "node scripts/design.mjs"
+                }
+            }
+        },
+        {
+            "replace": {
+                "file": "index.html",
+                "find": "<html lang=\"[^\"]*\">",
+                "with": "<html lang=\"{{DEFAULT_LANG}}\">"
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "dependencies.pinia": "^{{V_PINIA}}",
+                    "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/pages"
+                }
+            }
+        },
+        {
+            "copy": "files-api",
+            "when": "api"
+        }
+    ],
+    "layout": {
+        "src": "src/",
+        "css": "src/assets/css",
+        "pages": "src/pages/",
+        "storeLib": "Pinia",
+        "lang": "plugins/lang.js",
+        "storeFile": "stores/userPreferences.js",
+        "layoutFile": "components/layout/AppShell/AppShell.vue",
+        "env": "`VITE_SITE_NAME` / `VITE_SITE_URL`",
+        "public": "frontend/public",
+        "page": "pages/about.vue",
+        "pageCopy": "pages/index.vue",
+        "textUsage": "`{{ $lang.getTranslation('introTitle') }}`",
+        "header": "components/layout/Header/Header.vue",
+        "footer": "components/layout/Footer/Footer.vue"
+    }
+}

@@ -1,0 +1,10 @@
+/* One block of a page (SectionLayout): space above and below */
+.section {
+    position: relative;
+    padding-block: var(--space-xlarge);
+}
+
+/* A fine line between two sections */
+.section + .section {
+    border-top: 1px solid var(--border-color);
+}

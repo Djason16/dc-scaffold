@@ -1,0 +1,30 @@
+---
+import PageHero from '../components/ui/PageHero/PageHero.astro'
+import { useSite } from '../composables/useSite.js'
+import { lang } from '../plugins/lang.js'
+
+// @two-languages
+// Default language in the HTML; data-i18n lets the browser switch it (plugins/lang.js)
+// @end-two-languages
+const t = lang.getTranslation
+const site = useSite()
+---
+
+<!-- Welcome of DC Scaffold, shown while design is true in dc-scaffold.config.js -->
+<!-- @two-languages -->
+<PageHero title="heroTitle" text="heroText" values={{ name: site.name }} large>
+<!-- @end-two-languages -->
+<!-- @one-language -->
+<PageHero title={t('heroTitle', { name: site.name })} text={t('heroText')} large>
+<!-- @end-one-language -->
+    <span class="hero-badge" slot="eyebrow">
+        <img src="/dc-scaffold/icon.png" alt="" width="28" height="28" />
+        <span data-i18n="heroBadge">{t('heroBadge')}</span>
+    </span>
+    <div class="hero-by">
+        <span data-i18n="heroBy">{t('heroBy')}</span>
+        <a class="hero-by-link" href="https://djason-chery.dev/" target="_blank" rel="noopener">
+            <img src="/dc-scaffold/logo-light.png" alt="Djason CHERY" width="114" height="32" />
+        </a>
+    </div>
+</PageHero>

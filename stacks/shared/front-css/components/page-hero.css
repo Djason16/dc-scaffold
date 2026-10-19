@@ -1,0 +1,46 @@
+/*
+ * Top of a page (PageHero): small title, large title, text, buttons.
+ * Used by the home page and the 404 page: start every new page with it, the whole site keeps the same look.
+ */
+.page-hero {
+    display: grid;
+    gap: var(--space-normal);
+    justify-items: start;
+    padding-block: var(--space-large);
+}
+
+/* Home page: more space */
+.page-hero-large {
+    min-height: 50vh;
+    align-content: center;
+}
+
+/* Small title above: "Error 404", the name of a section... */
+.page-hero-eyebrow {
+    color: var(--accent-color);
+    font-size: var(--font-small);
+    font-weight: 700;
+}
+
+.page-hero h1 {
+    max-width: 20ch;
+    overflow-wrap: anywhere;
+}
+
+.page-hero-text {
+    max-width: 38rem;
+    font-size: var(--font-large);
+}
+
+.page-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-normal);
+    margin-top: var(--space-small);
+}
+
+/* No buttons: no empty space */
+.page-hero-actions:empty {
+    display: none;
+}

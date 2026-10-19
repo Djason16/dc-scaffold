@@ -1,0 +1,55 @@
+# Node.js dependencies
+node_modules/
+
+# Vendor directories
+vendor/
+
+# Framework runtime files
+backend/var/
+backend/storage/*.key
+
+# Build and output directories
+.output/
+.nuxt/
+.nitro/
+.next/
+.svelte-kit/
+.astro/
+.cache/
+.dist/
+dist/
+out/
+build/
+
+# User uploads
+uploads/
+
+# Local data
+.data/
+
+# Logs
+logs/
+*.log
+
+# Systems and IDEs
+.DS_Store
+.idea/
+.fleet/
+
+# Environment variables
+env/
+.env
+.env.*
+!.env.example
+
+# Database files and backups
+/database/
+*.sql
+!example.sql
+!mysql/init/*.sql
+
+# Local SQLite databases
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+{{DESIGN_GITIGNORE}}

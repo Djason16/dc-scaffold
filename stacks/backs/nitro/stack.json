@@ -1,0 +1,100 @@
+{
+    "label": "Nitro",
+    "order": 50,
+    "description": {
+        "fr": "JavaScript (Node.js) : le moteur serveur de Nuxt, utilisable avec n'importe quel site",
+        "en": "JavaScript (Node.js): the server engine of Nuxt, works with any site"
+    },
+    "requires": [
+        "node",
+        "docker"
+    ],
+    "runtime": "node",
+    "database": "optional",
+    "noDatabase": {
+        "fr": "Les données dans un simple fichier, rien à installer",
+        "en": "The data in a plain file, nothing to install"
+    },
+    "fallbackDatabase": "SQLite",
+    "nodeEngine": ">=22.13.0",
+    "versions": [
+        {
+            "package": "nitropack",
+            "registry": "npm",
+            "stable": "2",
+            "token": "V_NITRO"
+        },
+        {
+            "package": "@types/node",
+            "registry": "npm",
+            "stable": "24",
+            "token": "V_TYPES_NODE"
+        }
+    ],
+    "steps": [
+        {
+            "copy": "files"
+        },
+        {
+            "copy": "@shared/js-core",
+            "to": "utils"
+        },
+        {
+            "env": {
+                "file": ".env",
+                "values": {
+                    "DB_CONNECTION": "sqlite",
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": "",
+                    "DB_PORT": ""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.production",
+                "values": {
+                    "DB_CONNECTION": "sqlite",
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": "",
+                    "DB_PORT": ""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.example",
+                "values": {
+                    "DB_CONNECTION": "sqlite",
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": "",
+                    "DB_PORT": ""
+                }
+            },
+            "when": "noDb"
+        }
+    ],
+    "controllers": "controllers",
+    "controllerExt": "ts",
+    "guide": {
+        "helpers": "utils",
+        "middleware": "middleware/",
+        "entry": "routes/[...path].ts",
+        "envDev": ".env",
+        "envProd": ".env.production",
+        "custom": "static routes = { markShipped: ['POST', '/{id}/mark-shipped'] }",
+        "success": "ResponseHelper.success(event, { products })",
+        "body": "await this.body(event)",
+        "missing": "RequestHelper.missing(data, ['name', 'price'])",
+        "db": "await this.fetchAll('SELECT * FROM products WHERE active = ?', [1])",
+        "deploy": "nitro"
+    }
+}

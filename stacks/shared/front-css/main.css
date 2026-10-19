@@ -1,0 +1,21 @@
+/* Fonts of the site: add your own in utils/fonts.css (the simple style uses the font of the system) */
+@import "utils/fonts.css";
+
+/* Colors, fonts and sizes used everywhere: change the look of the whole site in utils/variables.css */
+@import "utils/variables.css";
+
+/* Reset and page layout applied to the whole site */
+@import "base/global.css";
+
+/* Titles, paragraphs and links */
+@import "base/typography.css";
+
+/* One file per component, same name as the component */
+@import "components/app-shell.css";
+@import "components/header.css";
+@import "components/footer.css";
+@import "components/loader.css";
+@import "components/buttons.css";
+@import "components/preferences-banner.css";
+@import "components/section-layout.css";
+@import "components/page-hero.css";

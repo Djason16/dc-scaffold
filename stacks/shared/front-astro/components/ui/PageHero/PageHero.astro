@@ -1,0 +1,52 @@
+---
+/*
+ * Top of a page: small title, large title, text and buttons (assets/css/components/page-hero.css, decorated by the DC Scaffold design while it is on).
+ * @two-languages
+ *   <PageHero eyebrow="aboutEyebrow" title="aboutTitle" text="aboutText">
+ *       <a href="/contact/" class="btn btn-primary" data-i18n="contact">{t('contact')}</a>
+ *   </PageHero>
+ * eyebrow, title, text: keys of the texts (plugins/translations), switched in the browser with data-i18n.
+ * values: values of the texts ({ name: site.name }). slot "eyebrow": shown instead of the eyebrow text. large: taller.
+ * @end-two-languages
+ * @one-language
+ *   <PageHero eyebrow="About" title="Who we are" text="A small team of web makers.">
+ *       <a href="/contact/" class="btn btn-primary">Contact us</a>
+ *   </PageHero>
+ * slot "eyebrow": shown instead of the eyebrow text. large: taller.
+ * @end-one-language
+ */
+// @two-languages
+import { lang } from '../../../plugins/lang.js'
+
+const { eyebrow = '', title, text = '', values = {}, large = false } = Astro.props
+const t = lang.getTranslation
+// @end-two-languages
+// @one-language
+const { eyebrow = '', title, text = '', large = false } = Astro.props
+// @end-one-language
+const hasActions = Astro.slots.has('default')
+---
+
+<div class:list={['page-hero', { 'page-hero-large': large }]}>
+    <slot name="eyebrow">
+        <!-- @two-languages -->
+        {eyebrow && <p class="page-hero-eyebrow" data-i18n={eyebrow}>{t(eyebrow)}</p>}
+        <!-- @end-two-languages -->
+        <!-- @one-language -->
+        {eyebrow && <p class="page-hero-eyebrow">{eyebrow}</p>}
+        <!-- @end-one-language -->
+    </slot>
+    <!-- @two-languages -->
+    <h1 data-i18n={title}>{t(title, values)}</h1>
+    {text && <p class="page-hero-text" data-i18n={text}>{t(text)}</p>}
+    <!-- @end-two-languages -->
+    <!-- @one-language -->
+    <h1>{title}</h1>
+    {text && <p class="page-hero-text">{text}</p>}
+    <!-- @end-one-language -->
+    {hasActions && (
+        <div class="page-hero-actions">
+            <slot />
+        </div>
+    )}
+</div>

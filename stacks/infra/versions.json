@@ -1,0 +1,5 @@
+{
+    "_about": "Versions of the Docker images of the projects. Always stable versions: the latest PHP that has been out for 6 months, the latest MySQL LTS. Updated by the compatibility robot (tools/robot/robot.py) once every PHP back end works with them.",
+    "php": "8.4",
+    "mysql": "9.7"
+}

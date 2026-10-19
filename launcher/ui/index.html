@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Window of DC Scaffold: served by DCScaffold.exe on 127.0.0.1, shown by Edge in application mode -->
+    <title>DC Scaffold</title>
+    <link rel="icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="/app.css">
+    <script type="module" src="/app.js"></script>
+</head>
+<body>
+    <!-- Left: the same look as the installer (aurora, grid, large title) -->
+    <aside class="brand">
+        <div class="brand-tile"><img src="/img/icon.png" alt="" width="64" height="64"></div>
+
+        <div class="brand-bottom">
+            <h1 class="brand-title">DC<br>Scaffold</h1>
+            <span class="brand-bar"></span>
+            <p class="brand-tagline" data-text="tagline"></p>
+            <p class="brand-version" data-version></p>
+            <!-- The same engine in a PowerShell console, every question asked there -->
+            <button type="button" class="brand-console" data-console data-text="console" hidden></button>
+
+            <!-- Shown when a newer version is published on GitHub -->
+            <div class="brand-update" data-update hidden>
+                <p><span data-text="updateTitle"></span> <strong data-update-version></strong></p>
+                <button type="button" class="btn btn-small" data-update-install data-text="updateButton"></button>
+            </div>
+
+            <div class="brand-by">
+                <span data-text="by"></span>
+                <a class="brand-by-link" href="https://djason-chery.dev/" data-author>
+                    <img src="/img/logo-light.png" alt="Djason CHERY" width="114" height="32">
+                </a>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Right: the steps -->
+    <main class="main">
+        <header class="topbar">
+            <ol class="stepper" data-stepper></ol>
+            <div class="lang-switch" role="group" aria-label="Langue / Language">
+                <button type="button" data-lang="fr">FR</button>
+                <button type="button" data-lang="en">EN</button>
+            </div>
+        </header>
+
+        <div class="content" data-content>
+            <div class="loading"><span class="spinner"></span></div>
+        </div>
+
+        <footer class="bottombar" data-bottombar>
+            <button type="button" class="btn btn-ghost" data-back data-text="back"></button>
+            <p class="bottombar-hint" data-hint></p>
+            <button type="button" class="btn btn-primary" data-next data-text="next"></button>
+        </footer>
+    </main>
+</body>
+</html>

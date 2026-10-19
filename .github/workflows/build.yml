@@ -1,0 +1,38 @@
+# Builds DCScaffold-Setup.exe (Go launcher + NSIS installer); on a v* tag, publishes it as a GitHub release.
+# The installed DC Scaffold checks the latest release of this repository to offer updates.
+name: Build
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Install NSIS and mingw
+        run: sudo apt-get update && sudo apt-get install -y nsis mingw-w64
+
+      - name: Build DCScaffold-Setup.exe
+        run: UPDATE_REPO='${{ github.repository }}' ./installer/build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DCScaffold-Setup
+          path: DCScaffold-Setup.exe
+
+      - name: Publish release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: DCScaffold-Setup.exe

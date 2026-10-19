@@ -1,0 +1,13 @@
+# Enable URL rewriting
+RewriteEngine On
+
+# Allow direct access to the uploads directory
+RewriteCond %{REQUEST_URI} ^/uploads/
+RewriteRule ^ - [L]
+
+# Redirect all other requests to the public directory
+RewriteCond %{REQUEST_URI} !^/public/
+RewriteRule ^(.*)$ /public/$1 [L]
+
+# Environment for Slim (switch to "production" on the server)
+SetEnv APP_ENV development

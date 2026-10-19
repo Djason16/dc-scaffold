@@ -1,0 +1,42 @@
+---
+import '../assets/css/main.css'
+// DC Scaffold design, while it is on (dc-scaffold.config.js)
+import '../assets/css/design.css'
+import AppShell from '../components/layout/AppShell/AppShell.astro'
+import Seo from '../components/ui/Seo/Seo.astro'
+import { lang } from '../plugins/lang.js'
+
+// Root of every page: <head>, then the page inside the app shell (components/layout/AppShell)
+const { pageKey = 'index' } = Astro.props
+---
+
+<html lang={lang.current}>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+        <Seo pageKey={pageKey} />
+    </head>
+    <body data-page={pageKey}>
+        <AppShell>
+            <slot />
+        </AppShell>
+
+        <script>
+            import { useSite } from '../composables/useSite.js'
+            import { startApp } from '../plugins/app.js'
+            // @two-languages
+            // Texts of the DC Scaffold design while it is on (dc-scaffold.config.js), for the language buttons
+            import '../design-texts.js'
+            // @end-two-languages
+
+            // @two-languages
+            // In the browser: saved choice, language of a previous visit, texts, buttons, banner, loader
+            // @end-two-languages
+            // @one-language
+            // In the browser: saved choice, buttons, banner, loader
+            // @end-one-language
+            startApp({ site: useSite() })
+        </script>
+    </body>
+</html>

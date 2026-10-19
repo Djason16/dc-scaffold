@@ -1,0 +1,16 @@
+---
+import { useSite } from '../../../composables/useSite.js'
+import { lang } from '../../../plugins/lang.js'
+
+const t = lang.getTranslation
+const site = useSite()
+---
+
+<!-- Bottom of every page: copyright and cookie settings -->
+<footer class="footer">
+    <div class="container">
+        <p>© {new Date().getFullYear()} {site.name}. <span data-i18n="allRightsReserved">{t('allRightsReserved')}</span></p>
+        <!-- Forgets the choice: the cookie banner shows again (plugins/app.js) -->
+        <button type="button" class="footer-link" data-preferences-settings data-i18n="prefsSettings">{t('prefsSettings')}</button>
+    </div>
+</footer>
