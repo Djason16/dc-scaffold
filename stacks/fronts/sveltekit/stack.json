@@ -1,0 +1,168 @@
+{
+    "label": "SvelteKit",
+    "order": 30,
+    "description": {
+        "fr": "Basé sur Svelte, très léger : une page = un fichier",
+        "en": "Based on Svelte, very light: one page = one file"
+    },
+    "vscode": [
+        "svelte.svelte-vscode"
+    ],
+    "requires": [
+        "node"
+    ],
+    "port": 5173,
+    "versions": [
+        {
+            "package": "@sveltejs/kit",
+            "registry": "npm",
+            "stable": "3",
+            "token": "V_SVELTEKIT",
+            "pin": [
+                "devDependencies.@sveltejs/kit"
+            ]
+        }
+    ],
+    "publicDir": "static",
+    "api": {
+        "file": "src/lib/api.js",
+        "imports": "import { PUBLIC_API_URL } from '$app/env/public'\nimport { dev } from '$app/env'",
+        "base": "PUBLIC_API_URL",
+        "source": "PUBLIC_API_URL",
+        "isDev": "dev",
+        "usage": "import { api } from '#lib/api.js'"
+    },
+    "steps": [
+        {
+            "run": [
+                "npx",
+                "--yes",
+                "sv@latest",
+                "create",
+                "{{DIR}}",
+                "--template",
+                "minimal",
+                "--types",
+                "jsdoc",
+                "--no-add-ons",
+                "--no-install"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "package.json"
+        },
+        {
+            "npm": {
+                "delete": [
+                    "devDependencies.@sveltejs/adapter-auto"
+                ],
+                "set": {
+                    "devDependencies.@sveltejs/adapter-static": "^4.0.0"
+                }
+            }
+        },
+        {
+            "replace": {
+                "file": "vite.config.js",
+                "find": "@sveltejs/adapter-auto",
+                "with": "@sveltejs/adapter-static"
+            }
+        },
+        {
+            "replace": {
+                "file": "vite.config.js",
+                "find": "(?m)^\\s*// adapter-auto.*\\r?\\n(\\s*//.*\\r?\\n)*",
+                "with": ""
+            }
+        },
+        {
+            "replace": {
+                "file": "vite.config.js",
+                "find": "adapter: adapter\\(\\)",
+                "with": "adapter: adapter({ fallback: '200.html' })"
+            }
+        },
+        {
+            "insert": {
+                "file": "vite.config.js",
+                "after": "defineConfig\\(\\{",
+                "text": "\tserver: { port: {{APP_PORT}}, strictPort: true },"
+            }
+        },
+        {
+            "copy": "@shared/front-core",
+            "to": "src/lib"
+        },
+        {
+            "copy": "@shared/front-svelte",
+            "to": "src"
+        },
+        {
+            "copy": "@shared/dc-scaffold",
+            "to": "src/lib/dc-scaffold"
+        },
+        {
+            "copy": "@shared/front-css",
+            "to": "src/lib/assets/css"
+        },
+        {
+            "copy": "@shared/front-scripts"
+        },
+        {
+            "copy": "@shared/front-design"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.predev": "node scripts/design.mjs",
+                    "scripts.prebuild": "node scripts/design.mjs"
+                }
+            }
+        },
+        {
+            "remove": [
+                "src/lib/assets/favicon.svg",
+                "static/favicon.png",
+                "static/favicon.svg"
+            ]
+        },
+        {
+            "replace": {
+                "file": "src/app.html",
+                "find": "<html lang=\"[^\"]*\">",
+                "with": "<html lang=\"{{DEFAULT_LANG}}\">"
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.postbuild": "node scripts/sitemap.mjs build"
+                }
+            }
+        },
+        {
+            "copy": "files-api",
+            "when": "api"
+        }
+    ],
+    "layout": {
+        "src": "src/lib/",
+        "css": "src/lib/assets/css",
+        "pages": "src/routes/",
+        "storeLib": "Svelte `$state`",
+        "lang": "plugins/lang.svelte.js",
+        "storeFile": "stores/userPreferences.svelte.js",
+        "layoutFile": "components/layout/AppShell/AppShell.svelte",
+        "env": "`PUBLIC_SITE_NAME` / `PUBLIC_SITE_URL`",
+        "public": "frontend/static",
+        "page": "../routes/about/+page.svelte",
+        "pageCopy": "../routes/+page.svelte",
+        "textUsage": "`{lang.getTranslation('introTitle')}`",
+        "header": "components/layout/Header/Header.svelte",
+        "footer": "components/layout/Footer/Footer.svelte"
+    }
+}

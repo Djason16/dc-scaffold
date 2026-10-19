@@ -1,0 +1,15 @@
+---
+import SectionLayout from '../components/ui/SectionLayout/SectionLayout.astro'
+import Intro from '../components/views/Index/Intro.astro'
+import { welcome } from '../design.js'
+import Default from '../layouts/Default.astro'
+
+// Ordered list of the home page sections (components/views/Index).
+// While design is true in dc-scaffold.config.js, the welcome page of DC Scaffold is shown instead.
+const sections = welcome ?? [Intro]
+---
+
+<!-- pageKey: title, description, Open Graph... of utils/seo.js -->
+<Default pageKey="index">
+    <SectionLayout sections={sections} />
+</Default>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="{{DEFAULT_LANG}}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Title, description, Open Graph...: written by js/plugins/app.js from js/utils/seo.js -->
+    <title>{{PROJECT_NAME}}</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <!-- Design of the site (dc-scaffold.config.js): the theme of DC Scaffold is added before the page is shown -->
+    <script src="/dc-scaffold.config.js"></script>
+    <script src="/js/design.js"></script>
+    <!-- Header, footer, buttons, cookie banner and texts: added by this script (js/components/layout/AppShell) -->
+    <script type="module" src="/js/main.js"></script>
+</head>
+<!-- Page shown for an address that does not exist -->
+<body data-page="notFound">
+    <!-- Loader, removed when the page is ready (delete these lines to have none) -->
+    <div class="loader" role="status" data-i18n-attr="aria-label:loading" data-loader>
+        <span class="loader-spinner"></span>
+    </div>
+
+    <main>
+        <!-- The same PageHero as the other pages (assets/css/components/page-hero.css) -->
+        <section class="section">
+            <div class="container">
+                <div class="page-hero">
+                    <p class="page-hero-eyebrow" data-i18n="notFoundEyebrow"></p>
+                    <h1 data-i18n="notFoundTitle"></h1>
+                    <p class="page-hero-text" data-i18n="notFoundText"></p>
+                    <div class="page-hero-actions">
+                        <a href="/" class="btn btn-primary" data-i18n="backHome"></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

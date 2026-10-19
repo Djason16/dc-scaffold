@@ -1,0 +1,34 @@
+---
+import Footer from '../Footer/Footer.astro'
+import Header from '../Header/Header.astro'
+import BackToTop from '../../ui/Button/BackToTop.astro'
+// @two-languages
+import ChangeLanguageButton from '../../ui/Button/ChangeLanguageButton.astro'
+// @end-two-languages
+import Loader from '../../ui/Loader/Loader.astro'
+import PreferencesBanner from '../../ui/PreferencesBanner/PreferencesBanner.astro'
+import { design } from '../../../design.js'
+
+// Loader with the DC Scaffold design only (dc-scaffold.config.js): true = always, false = never
+const LOADER_ENABLED = design
+---
+
+<!-- Frame of every page (and of the 404 page): loader, header, page, footer, floating buttons, cookie banner -->
+{LOADER_ENABLED && <Loader />}
+<div class="app-shell">
+    <Header />
+    <main>
+        <slot />
+    </main>
+    <Footer />
+
+    <!-- Buttons floating at the bottom right -->
+    <div class="floating-controls">
+        <BackToTop />
+        <!-- @two-languages -->
+        <ChangeLanguageButton />
+        <!-- @end-two-languages -->
+    </div>
+
+    <PreferencesBanner />
+</div>

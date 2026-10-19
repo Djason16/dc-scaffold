@@ -1,0 +1,12 @@
+{
+    "label": "Aucun / None",
+    "order": 90,
+    "description": {
+        "fr": "Pas de serveur : un site simple, sans données à enregistrer",
+        "en": "No server: a simple site, with no data to save"
+    },
+    "requires": [],
+    "runtime": "none",
+    "database": false,
+    "steps": []
+}

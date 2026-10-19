@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Helper;
+
+use Symfony\Component\HttpFoundation\Request;
+
+/**
+ * Reads incoming data the same way in every controller.
+ */
+class RequestHelper
+{
+    /**
+     * Request body as an array, whether the client sent JSON or form fields.
+     */
+    public static function body(Request $request): array
+    {
+        if ($request->request->count() > 0) {
+            return $request->request->all();
+        }
+
+        $decoded = json_decode($request->getContent(), true);
+        return is_array($decoded) ? $decoded : [];
+    }
+
+    /**
+     * Query string value: /products?page=2 -> query($request, 'page') === '2'
+     */
+    public static function query(Request $request, string $key, mixed $default = null): mixed
+    {
+        return $request->query->get($key, $default);
+    }
+
+    /**
+     * Names of the required fields that are missing or empty.
+     */
+    public static function missing(array $data, array $requiredFields): array
+    {
+        return array_values(array_filter(
+            $requiredFields,
+            fn (string $field) => !isset($data[$field]) || $data[$field] === ''
+        ));
+    }
+}

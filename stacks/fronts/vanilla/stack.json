@@ -1,0 +1,76 @@
+{
+    "label": "HTML / CSS / JS",
+    "order": 70,
+    "description": {
+        "fr": "Le plus simple : HTML, CSS et JavaScript, rien d'autre à apprendre. Idéal pour débuter",
+        "en": "The simplest: HTML, CSS and JavaScript, nothing else to learn. Great to start"
+    },
+    "requires": [
+        "docker"
+    ],
+    "port": 8080,
+    "docker": true,
+    "publicDir": "",
+    "api": {
+        "file": "js/api.js",
+        "imports": "import { API_URL, IS_DEV } from './config.js'",
+        "base": "API_URL",
+        "source": "js/config.js",
+        "isDev": "IS_DEV",
+        "usage": "import { api } from './api.js'"
+    },
+    "steps": [
+        {
+            "copy": "@shared/front-core",
+            "to": "js"
+        },
+        {
+            "copy": "@shared/front-spa",
+            "to": "js"
+        },
+        {
+            "copy": "@shared/front-dom",
+            "to": "js"
+        },
+        {
+            "copy": "@shared/dc-scaffold",
+            "to": "js/dc-scaffold"
+        },
+        {
+            "copy": "@shared/front-css",
+            "to": "assets/css"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "copy": "files-api",
+            "when": "api"
+        }
+    ],
+    "layout": {
+        "src": "js/",
+        "css": "assets/css",
+        "pages": "pages/",
+        "storeLib": "`utils/store.js`",
+        "lang": "plugins/lang.js",
+        "storeFile": "stores/userPreferences.js",
+        "layoutFile": "components/layout/AppShell/appShell.js",
+        "public": "frontend",
+        "page": "../pages/about.html",
+        "pageCopy": "../pages/index.html",
+        "textUsage": "`<h1 data-i18n=\"introTitle\"></h1>`",
+        "siteFile": "composables/useSite.js",
+        "omitGuide": [
+            "FRONT_VIEWS",
+            "sitemap.xml",
+            "LOADER_ENABLED",
+            "LOADER_PAGE_TIME"
+        ],
+        "header": "components/layout/Header/header.js",
+        "footer": "components/layout/Footer/footer.js",
+        "pageHero": "../pages/404.html",
+        "designRuntime": true,
+        "homeSections": "../pages/index.html"
+    }
+}

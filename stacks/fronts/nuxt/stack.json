@@ -1,0 +1,166 @@
+{
+    "label": "Nuxt",
+    "order": 10,
+    "description": {
+        "fr": "Basé sur Vue : une page = un fichier. Idéal pour un site complet",
+        "en": "Based on Vue: one page = one file. Great for a full website"
+    },
+    "vscode": [
+        "Vue.volar"
+    ],
+    "requires": [
+        "node"
+    ],
+    "port": 3000,
+    "versions": [
+        {
+            "package": "nuxt",
+            "registry": "npm",
+            "stable": "4",
+            "token": "V_NUXT",
+            "pin": [
+                "dependencies.nuxt"
+            ]
+        },
+        {
+            "package": "pinia",
+            "registry": "npm",
+            "stable": "4",
+            "token": "V_PINIA"
+        },
+        {
+            "package": "@pinia/nuxt",
+            "registry": "npm",
+            "stable": "1",
+            "token": "V_PINIA_NUXT"
+        },
+        {
+            "package": "@nuxtjs/sitemap",
+            "registry": "npm",
+            "stable": "9",
+            "token": "V_NUXT_SITEMAP"
+        },
+        {
+            "package": "@nuxtjs/robots",
+            "registry": "npm",
+            "stable": "7",
+            "token": "V_NUXT_ROBOTS"
+        },
+        {
+            "package": "@nuxt/image",
+            "registry": "npm",
+            "stable": "2",
+            "token": "V_NUXT_IMAGE"
+        },
+        {
+            "package": "@types/node",
+            "registry": "npm",
+            "stable": "24",
+            "token": "V_TYPES_NODE"
+        }
+    ],
+    "publicDir": "public",
+    "api": {
+        "file": "utils/api.js",
+        "imports": "import { useRuntimeConfig } from '#imports'",
+        "base": "useRuntimeConfig().public.backendDomain",
+        "source": "NUXT_PUBLIC_BACKEND_DOMAIN",
+        "isDev": "import.meta.dev",
+        "usage": "Auto-imported by Nuxt: api.get('/products') anywhere."
+    },
+    "steps": [
+        {
+            "run": [
+                "npm",
+                "create",
+                "nuxt@latest",
+                "{{DIR}}",
+                "--",
+                "--template",
+                "minimal",
+                "--packageManager",
+                "npm",
+                "--no-gitInit",
+                "--no-modules",
+                "--no-install"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "nuxt.config.ts"
+        },
+        {
+            "flatten": "app"
+        },
+        {
+            "remove": [
+                "public/robots.txt"
+            ]
+        },
+        {
+            "copy": "@shared/front-core"
+        },
+        {
+            "copy": "@shared/front-vue"
+        },
+        {
+            "copy": "@shared/dc-scaffold",
+            "to": "dc-scaffold"
+        },
+        {
+            "copy": "@shared/front-css",
+            "to": "assets/css"
+        },
+        {
+            "copy": "@shared/front-design"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.predev": "node scripts/design.mjs",
+                    "scripts.prebuild": "node scripts/design.mjs",
+                    "scripts.pregenerate": "node scripts/design.mjs",
+                    "scripts.prebuild:prod": "node scripts/design.mjs",
+                    "scripts.pregenerate:prod": "node scripts/design.mjs"
+                }
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "dependencies.pinia": "^{{V_PINIA}}",
+                    "dependencies.@pinia/nuxt": "^{{V_PINIA_NUXT}}",
+                    "dependencies.@nuxtjs/sitemap": "^{{V_NUXT_SITEMAP}}",
+                    "dependencies.@nuxtjs/robots": "^{{V_NUXT_ROBOTS}}",
+                    "dependencies.@nuxt/image": "^{{V_NUXT_IMAGE}}",
+                    "scripts.generate:prod": "nuxt generate --dotenv .env.production",
+                    "scripts.build:prod": "nuxt build --dotenv .env.production",
+                    "devDependencies.@types/node": "^{{V_TYPES_NODE}}"
+                }
+            }
+        },
+        {
+            "copy": "files-api",
+            "when": "api"
+        }
+    ],
+    "layout": {
+        "src": "",
+        "css": "assets/css",
+        "pages": "pages/",
+        "storeLib": "Pinia",
+        "lang": "plugins/lang.js",
+        "storeFile": "stores/userPreferences.js",
+        "layoutFile": "components/layout/AppShell/AppShell.vue",
+        "env": "`NUXT_PUBLIC_SITE_NAME` / `NUXT_PUBLIC_SITE_URL`",
+        "public": "frontend/public",
+        "page": "pages/about.vue",
+        "pageCopy": "pages/index.vue",
+        "textUsage": "`{{ $lang.getTranslation('introTitle') }}`",
+        "header": "components/layout/Header/Header.vue",
+        "footer": "components/layout/Footer/Footer.vue"
+    }
+}

@@ -1,0 +1,21 @@
+---
+import { useSite } from '../../../composables/useSite.js'
+import { lang } from '../../../plugins/lang.js'
+import { buildSeo } from '../../../utils/seo.js'
+
+// @two-languages
+// <head> of a page from SEO_PAGES (utils/seo.js), written into the HTML at build time (default language)
+// @end-two-languages
+// @one-language
+// <head> of a page from SEO_PAGES (utils/seo.js), written into the HTML at build time
+// @end-one-language
+const { pageKey } = Astro.props
+const seo = buildSeo({ pageKey, t: lang.getTranslation, locale: lang.current, site: useSite() })
+---
+
+<title>{seo.title}</title>
+{seo.meta.map((tag) => tag.property
+    ? <meta property={tag.property} content={tag.content} />
+    : <meta name={tag.name} content={tag.content} />)}
+{seo.link.map((link) => <link rel={link.rel} href={link.href} />)}
+{seo.jsonLd && <script type="application/ld+json" set:html={JSON.stringify(seo.jsonLd)} />}

@@ -1,0 +1,113 @@
+{
+    "label": "Slim 4",
+    "order": 10,
+    "description": {
+        "fr": "PHP léger et simple : idéal pour apprendre à faire une API",
+        "en": "Light and simple PHP: great to learn how to build an API"
+    },
+    "vscode": ["bmewburn.vscode-intelephense-client"],
+    "requires": [
+        "composer",
+        "docker"
+    ],
+    "runtime": "php",
+    "database": true,
+    "phpExtensions": [
+        "openssl",
+        "mbstring",
+        "curl",
+        "zip",
+        "mysqli",
+        "pdo_mysql"
+    ],
+    "versions": [
+        {
+            "package": "slim/slim",
+            "registry": "packagist",
+            "stable": "4.15",
+            "token": "V_SLIM"
+        },
+        {
+            "package": "slim/psr7",
+            "registry": "packagist",
+            "stable": "1.7",
+            "token": "V_PSR7"
+        },
+        {
+            "package": "vlucas/phpdotenv",
+            "registry": "packagist",
+            "stable": "5.6",
+            "token": "V_DOTENV"
+        }
+    ],
+    "steps": [
+        {
+            "copy": "@shared/php-common"
+        },
+        {
+            "copy": "@shared/php-core",
+            "to": "src/Core"
+        },
+        {
+            "copy": "@shared/php-db/{{DB_DRIVER}}"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "env": {
+                "file": ".env",
+                "values": {
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": ""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.production",
+                "values": {
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": ""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.example",
+                "values": {
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": ""
+                }
+            },
+            "when": "noDb"
+        }
+    ],
+    "drivers": [
+        "mysqli",
+        "pdo"
+    ],
+    "controllers": "src/Controllers",
+    "controllerExt": "php",
+    "guide": {
+        "helpers": "src/Helper",
+        "middleware": "src/Middleware/",
+        "entry": "public/index.php",
+        "envDev": ".env",
+        "envProd": ".env.production",
+        "custom": "#[Route('POST', '/{id}/mark-shipped')]",
+        "success": "ResponseHelper::success($response, ['products' => $products])",
+        "body": "$this->body($request)",
+        "missing": "RequestHelper::missing($data, ['name', 'price'])",
+        "db": "$this->fetchAll('SELECT * FROM products WHERE active = ?', [1])",
+        "deploy": "slim"
+    }
+}

@@ -1,0 +1,168 @@
+{
+    "label": "Angular",
+    "order": 55,
+    "description": {
+        "fr": "Le framework complet de Google, en TypeScript : très structuré, apprécié des grandes entreprises",
+        "en": "Google's full framework, in TypeScript: very structured, liked by large companies"
+    },
+    "vscode": [
+        "angular.ng-template"
+    ],
+    "requires": [
+        "node"
+    ],
+    "port": 4200,
+    "versions": [
+        {
+            "package": "@angular/core",
+            "registry": "npm",
+            "stable": "22",
+            "token": "V_ANGULAR"
+        }
+    ],
+    "publicDir": "public",
+    "api": {
+        "file": "src/app/utils/api.js",
+        "imports": "import { environment } from '../../environments/environment'",
+        "base": "environment.apiUrl",
+        "source": "API_URL",
+        "isDev": "!environment.production",
+        "usage": "import { api } from '@/utils/api.js'"
+    },
+    "steps": [
+        {
+            "run": [
+                "npx",
+                "--yes",
+                "@angular/cli@{{V_ANGULAR}}",
+                "new",
+                "{{DIR}}",
+                "--defaults",
+                "--routing",
+                "--style=css",
+                "--ssr=false",
+                "--skip-git",
+                "--skip-tests",
+                "--skip-install",
+                "--ai-config=none",
+                "--package-manager=npm"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "angular.json"
+        },
+        {
+            "remove": [
+                "src/app/app.html",
+                "src/app/app.css",
+                "src/styles.css",
+                ".vscode"
+            ]
+        },
+        {
+            "copy": "@shared/front-core",
+            "to": "src/app"
+        },
+        {
+            "copy": "@shared/front-spa",
+            "to": "src/app"
+        },
+        {
+            "copy": "@shared/front-angular",
+            "to": "src/app"
+        },
+        {
+            "copy": "@shared/dc-scaffold",
+            "to": "src/app/dc-scaffold"
+        },
+        {
+            "copy": "@shared/front-css",
+            "to": "src/assets/css"
+        },
+        {
+            "copy": "@shared/front-scripts"
+        },
+        {
+            "copy": "@shared/front-design"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.predev": "node scripts/design.mjs",
+                    "scripts.prebuild": "node scripts/design.mjs"
+                }
+            }
+        },
+        {
+            "replace": {
+                "file": "angular.json",
+                "find": "\"src/styles.css\"",
+                "with": "\"src/assets/css/main.css\", \"src/assets/css/design.css\""
+            }
+        },
+        {
+            "replace": {
+                "file": "angular.json",
+                "find": "\"browser\": \"src/main.ts\",",
+                "with": "\"browser\": \"src/main.ts\",\n            \"outputPath\": { \"base\": \"dist\", \"browser\": \"\" },"
+            }
+        },
+        {
+            "replace": {
+                "file": "tsconfig.json",
+                "find": "\"compilerOptions\": \\{",
+                "with": "\"compilerOptions\": {\n    \"allowJs\": true,\n    \"outDir\": \"./out-tsc\",\n    \"rootDir\": \"./src\",\n    \"paths\": { \"@/*\": [\"./src/app/*\"] },"
+            }
+        },
+        {
+            "replace": {
+                "file": "src/index.html",
+                "find": "<html lang=\"[^\"]*\">",
+                "with": "<html lang=\"{{DEFAULT_LANG}}\">"
+            }
+        },
+        {
+            "replace": {
+                "file": "src/index.html",
+                "find": "<title>[^<]*</title>",
+                "with": "<title>{{PROJECT_NAME}}</title>"
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.dev": "node scripts/env.mjs && ng serve --port {{APP_PORT}}",
+                    "scripts.start": "npm run dev",
+                    "scripts.build": "node scripts/env.mjs --production && ng build",
+                    "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/app/pages"
+                }
+            }
+        },
+        {
+            "copy": "files-api",
+            "when": "api"
+        }
+    ],
+    "layout": {
+        "src": "src/app/",
+        "css": "src/assets/css",
+        "pages": "src/app/pages/",
+        "storeLib": "Angular signals",
+        "prefsUsage": "userPreferences.preferences()['maps']",
+        "lang": "plugins/lang.ts",
+        "storeFile": "stores/userPreferences.ts",
+        "layoutFile": "components/layout/AppShell/AppShell.ts",
+        "env": "`SITE_NAME` / `SITE_URL`",
+        "public": "frontend/public",
+        "page": "pages/about.ts",
+        "pageCopy": "pages/index.ts",
+        "textUsage": "`{{ lang.getTranslation('introTitle') }}`",
+        "header": "components/layout/Header/Header.ts",
+        "footer": "components/layout/Footer/Footer.ts",
+        "designIndexExt": ""
+    }
+}
