@@ -517,6 +517,11 @@ button {
     padding: 1px 0 0 1px;
 }
 
+/* More than nine cards (the fronts): four columns, so that they still fit in three rows */
+.cards:has(> :nth-child(10)) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 /* Logo on the left, name, text and tags on the right: three rows of cards fit in the window */
 /* Logo and name on the first line, then the text and the tags: three rows of cards fit in the window */
 .card {
@@ -1293,6 +1298,17 @@ details[open] summary {
     .card {
         padding-top: 11px;
         padding-bottom: 11px;
+    }
+
+    /* Four columns of cards (the fronts): a little tighter */
+    .cards:has(> :nth-child(10)) .card {
+        padding: 9px 12px;
+        row-gap: 6px;
+    }
+
+    .cards:has(> :nth-child(10)) .card-mark {
+        width: 30px;
+        height: 30px;
     }
 
     /* Port and tools of each stack: also in the summary, left out here for room */

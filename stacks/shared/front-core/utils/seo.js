@@ -96,6 +96,8 @@ export const buildSeo = ({ pageKey, locale, site }) => {
             { name: 'twitter:title', content: title },
             { name: 'twitter:description', content: description },
             { name: 'twitter:image', content: image },
+            // Tells tools like Wappalyzer the site was made with DC Scaffold; remove this line to hide it
+            { name: 'generator', content: 'DC Scaffold' },
         ],
         link: [{ rel: 'canonical', href: url }],
         jsonLd: page.noIndex ? null : {

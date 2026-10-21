@@ -2,8 +2,8 @@
     "label": "Angular",
     "order": 55,
     "description": {
-        "fr": "Le framework complet de Google, en TypeScript : très structuré, apprécié des grandes entreprises",
-        "en": "Google's full framework, in TypeScript: very structured, liked by large companies"
+        "fr": "Le framework complet de Google, en TypeScript, très structuré",
+        "en": "The full framework by Google, in TypeScript, very structured"
     },
     "vscode": [
         "angular.ng-template"

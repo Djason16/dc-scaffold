@@ -1,0 +1,151 @@
+{
+    "label": "SolidJS",
+    "order": 53,
+    "description": {
+        "fr": "Comme React, en plus rapide et plus léger",
+        "en": "Like React, but faster and lighter"
+    },
+    "requires": [
+        "node"
+    ],
+    "port": 5173,
+    "versions": [
+        {
+            "package": "solid-js",
+            "registry": "npm",
+            "stable": "1",
+            "token": "V_SOLID"
+        },
+        {
+            "package": "@solidjs/router",
+            "registry": "npm",
+            "stable": "1",
+            "token": "V_SOLID_ROUTER"
+        }
+    ],
+    "publicDir": "public",
+    "api": {
+        "file": "src/utils/api.js",
+        "imports": "",
+        "base": "import.meta.env.VITE_API_URL",
+        "source": "VITE_API_URL",
+        "isDev": "import.meta.env.DEV",
+        "usage": "import { api } from '@/utils/api.js'"
+    },
+    "steps": [
+        {
+            "run": [
+                "npm",
+                "create",
+                "vite@latest",
+                "{{DIR}}",
+                "--",
+                "--template",
+                "solid",
+                "--no-interactive",
+                "--no-immediate"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "package.json"
+        },
+        {
+            "remove": [
+                "src/App.css",
+                "src/index.css",
+                "src/App.jsx",
+                "src/assets"
+            ]
+        },
+        {
+            "copy": "@shared/front-core",
+            "to": "src"
+        },
+        {
+            "copy": "@shared/front-spa",
+            "to": "src"
+        },
+        {
+            "copy": "@shared/dc-scaffold",
+            "to": "src/dc-scaffold"
+        },
+        {
+            "copy": "@shared/front-css",
+            "to": "src/assets/css"
+        },
+        {
+            "copy": "@shared/front-scripts"
+        },
+        {
+            "copy": "@shared/front-design"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.predev": "node scripts/design.mjs",
+                    "scripts.prebuild": "node scripts/design.mjs"
+                }
+            }
+        },
+        {
+            "remove": [
+                "public/favicon.svg",
+                "public/icons.svg",
+                "public/vite.svg"
+            ]
+        },
+        {
+            "replace": {
+                "file": "index.html",
+                "find": "<link rel=\"icon\"[^>]*>",
+                "with": "<link rel=\"icon\" href=\"/favicon.ico\" />"
+            }
+        },
+        {
+            "replace": {
+                "file": "index.html",
+                "find": "<html lang=\"[^\"]*\">",
+                "with": "<html lang=\"{{DEFAULT_LANG}}\">"
+            }
+        },
+        {
+            "replace": {
+                "file": "index.html",
+                "find": "<title>[^<]*</title>",
+                "with": "<title>{{PROJECT_NAME}}</title>"
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "dependencies.@solidjs/router": "^{{V_SOLID_ROUTER}}",
+                    "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/pages"
+                }
+            }
+        },
+        {
+            "copy": "files-api",
+            "when": "api"
+        }
+    ],
+    "layout": {
+        "src": "src/",
+        "css": "src/assets/css",
+        "pages": "src/pages/",
+        "storeLib": "Solid `createMutable`",
+        "lang": "plugins/lang.jsx",
+        "storeFile": "stores/userPreferences.js",
+        "layoutFile": "components/layout/AppShell/AppShell.jsx",
+        "env": "`VITE_SITE_NAME` / `VITE_SITE_URL`",
+        "public": "frontend/public",
+        "page": "pages/about.jsx",
+        "pageCopy": "pages/index.jsx",
+        "textUsage": "`{lang.getTranslation('introTitle')}`",
+        "header": "components/layout/Header/Header.jsx",
+        "footer": "components/layout/Footer/Footer.jsx"
+    }
+}

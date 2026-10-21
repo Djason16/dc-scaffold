@@ -64,8 +64,8 @@ export const startApp = ({ site, pageKey = document.body.dataset.page || 'index'
     document.querySelectorAll('[data-back-to-top]').forEach(mountBackToTop)
     document.querySelectorAll('[data-preferences-banner]').forEach(mountPreferencesBanner)
     document.querySelectorAll('[data-preferences-settings]').forEach((button) => {
-        // Forgets the choice: the cookie banner shows again
-        button.addEventListener('click', () => userPreferences.deleteCookie())
+        // Opens the cookie banner again, on the current choice
+        button.addEventListener('click', () => userPreferences.openSettings())
     })
 
     // Fonts of utils/fonts.css loaded: the text will not change size, the loader can go

@@ -1,0 +1,182 @@
+{
+    "label": "Svelte",
+    "order": 52,
+    "description": {
+        "fr": "Application Svelte sur une seule page : très légère, facile à lire",
+        "en": "Svelte app on a single page: very light, easy to read"
+    },
+    "vscode": [
+        "svelte.svelte-vscode"
+    ],
+    "requires": [
+        "node"
+    ],
+    "port": 5173,
+    "versions": [
+        {
+            "package": "svelte",
+            "registry": "npm",
+            "stable": "5",
+            "token": "V_SVELTE",
+            "pin": [
+                "devDependencies.svelte"
+            ]
+        }
+    ],
+    "publicDir": "public",
+    "api": {
+        "file": "src/lib/api.js",
+        "imports": "",
+        "base": "import.meta.env.VITE_API_URL",
+        "source": "VITE_API_URL",
+        "isDev": "import.meta.env.DEV",
+        "usage": "import { api } from '#lib/api.js'"
+    },
+    "steps": [
+        {
+            "run": [
+                "npm",
+                "create",
+                "vite@latest",
+                "{{DIR}}",
+                "--",
+                "--template",
+                "svelte",
+                "--no-interactive",
+                "--no-immediate"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "package.json"
+        },
+        {
+            "remove": [
+                "src/app.css",
+                "src/App.svelte",
+                "src/lib/Counter.svelte",
+                "src/assets"
+            ]
+        },
+        {
+            "copy": "@shared/front-core",
+            "to": "src/lib"
+        },
+        {
+            "copy": "@shared/front-svelte/lib",
+            "to": "src/lib"
+        },
+        {
+            "copy": "@shared/dc-scaffold",
+            "to": "src/lib/dc-scaffold"
+        },
+        {
+            "copy": "@shared/front-css",
+            "to": "src/lib/assets/css"
+        },
+        {
+            "copy": "@shared/front-scripts"
+        },
+        {
+            "copy": "@shared/front-design"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "replace": {
+                "file": "src/lib/components/layout/AppShell/AppShell.svelte",
+                "find": "'\\$app/navigation'",
+                "with": "'#lib/router.svelte.js'"
+            }
+        },
+        {
+            "replace": {
+                "file": "src/lib/components/ui/Seo/Seo.svelte",
+                "find": ", (?:prerendered|pré-rendu)",
+                "with": ""
+            }
+        },
+        {
+            "replace": {
+                "file": "src/lib/components/views/Index/Intro.svelte",
+                "find": "src/routes/\\+page\\.svelte",
+                "with": "src/pages/index.svelte"
+            }
+        },
+        {
+            "replace": {
+                "file": "src/lib/middleware/index.js",
+                "find": "src/routes/\\+layout\\.js",
+                "with": "src/lib/router.svelte.js"
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.predev": "node scripts/design.mjs",
+                    "scripts.prebuild": "node scripts/design.mjs"
+                }
+            }
+        },
+        {
+            "remove": [
+                "public/favicon.svg",
+                "public/icons.svg",
+                "public/vite.svg"
+            ]
+        },
+        {
+            "replace": {
+                "file": "index.html",
+                "find": "<link rel=\"icon\"[^>]*>",
+                "with": "<link rel=\"icon\" href=\"/favicon.ico\" />"
+            }
+        },
+        {
+            "replace": {
+                "file": "index.html",
+                "find": "<html lang=\"[^\"]*\">",
+                "with": "<html lang=\"{{DEFAULT_LANG}}\">"
+            }
+        },
+        {
+            "replace": {
+                "file": "index.html",
+                "find": "<title>[^<]*</title>",
+                "with": "<title>{{PROJECT_NAME}}</title>"
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "imports.#lib/*": "./src/lib/*",
+                    "scripts.check": "svelte-check --tsconfig ./jsconfig.json",
+                    "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/pages",
+                    "devDependencies.svelte-check": "^4.7.7",
+                    "devDependencies.typescript": "^6.0.3"
+                }
+            }
+        },
+        {
+            "copy": "files-api",
+            "when": "api"
+        }
+    ],
+    "layout": {
+        "src": "src/lib/",
+        "css": "src/lib/assets/css",
+        "pages": "src/pages/",
+        "storeLib": "Svelte `$state`",
+        "lang": "plugins/lang.svelte.js",
+        "storeFile": "stores/userPreferences.svelte.js",
+        "layoutFile": "components/layout/AppShell/AppShell.svelte",
+        "env": "`VITE_SITE_NAME` / `VITE_SITE_URL`",
+        "public": "frontend/public",
+        "page": "../pages/about.svelte",
+        "pageCopy": "../pages/index.svelte",
+        "textUsage": "`{lang.getTranslation('introTitle')}`",
+        "header": "components/layout/Header/Header.svelte",
+        "footer": "components/layout/Footer/Footer.svelte"
+    }
+}

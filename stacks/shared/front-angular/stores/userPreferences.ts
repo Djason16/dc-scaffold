@@ -47,6 +47,7 @@ export class UserPreferencesStore {
     readonly acceptAll = () => this.run('acceptAll')
     readonly denyAll = () => this.run('denyAll')
     readonly resetPreferences = () => this.run('resetPreferences')
+    readonly openSettings = () => this.run('openSettings')
     readonly deleteCookie = () => this.run('deleteCookie')
 
     // The actions (stores/actions/) change "this" like in Pinia: they work on a copy of the state,

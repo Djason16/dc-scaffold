@@ -14,7 +14,7 @@ The API is in `backend/`. It always answers in JSON: `{ "success": true, ... }` 
 
 ### New route
 
-Create a controller, for example `backend/{{BACK_CONTROLLERS}}/ProductsController.{{BACK_EXT}}` (full example just below).
+Create a controller, for example `backend/{{BACK_CONTROLLERS}}/{{BACK_CONTROLLER_FILE}}` (full example just below).
 Its methods become routes by themselves:
 
 | Method | Route |
@@ -70,3 +70,5 @@ Its methods become routes by themselves:
 [symfony] - **Online**: upload `backend/` (with `vendor/`), the site points to `backend/public/`, `APP_ENV=prod` in `backend/.env.prod.local`
 [nitro] - **Online**: `start.bat` then `A` (build in `backend/.output`), then `npm start` on the server (Node.js 22.13+)
 [express] - **Online**: upload `backend/`, then `npm install --omit=dev` and `npm start` on the server (Node.js 22.13+)
+[nest] - **Online**: `start.bat` then `A` (build in `backend/dist`), upload `backend/`, then `npm install --omit=dev` and `npm start` on the server (Node.js 22.13+)
+[adonis] - **Online**: `start.bat` then `A` (build in `backend/build`), upload `backend/build/` with `.env.production` renamed `.env`, then `npm ci --omit=dev` and `node bin/server.js` on the server (Node.js 24+)
