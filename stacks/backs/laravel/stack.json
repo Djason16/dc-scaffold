@@ -2,10 +2,13 @@
     "label": "Laravel",
     "order": 20,
     "description": {
-        "fr": "PHP complet, tout est prévu (base de données, commandes...). Le plus populaire en PHP",
-        "en": "Full PHP, everything included (database, commands...). The most popular in PHP"
+        "fr": "PHP complet, tout est prévu. Le plus populaire en PHP",
+        "en": "Full PHP, everything included. The most popular in PHP"
     },
-    "vscode": ["bmewburn.vscode-intelephense-client", "laravel.vscode-laravel"],
+    "vscode": [
+        "bmewburn.vscode-intelephense-client",
+        "laravel.vscode-laravel"
+    ],
     "requires": [
         "composer",
         "docker"

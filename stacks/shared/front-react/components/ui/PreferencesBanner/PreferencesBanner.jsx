@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLang } from '@/composables/useLang.js'
 import { useUserPreferencesStore } from '@/stores/userPreferences.js'
 
@@ -8,6 +8,18 @@ export default function PreferencesBanner() {
     const userPreferences = useUserPreferencesStore()
     const [customizing, setCustomizing] = useState(false)
     const [choices, setChoices] = useState(userPreferences.preferences)
+
+    // Opened again from "Cookie settings": the boxes show the current choice
+    const wasHidden = useRef(false)
+    useEffect(() => {
+        if (userPreferences.hasUserMadeChoice) {
+            wasHidden.current = true
+        } else if (wasHidden.current) {
+            setChoices({ ...userPreferences.preferences })
+            setCustomizing(true)
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userPreferences.hasUserMadeChoice])
 
     // Only shown in the browser: the cookie with the choice is not known while the page is built
     const [mounted, setMounted] = useState(false)

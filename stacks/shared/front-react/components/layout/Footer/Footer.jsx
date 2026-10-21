@@ -6,14 +6,14 @@ import { useUserPreferencesStore } from '@/stores/userPreferences.js'
 export default function Footer() {
     const { getTranslation: t } = useLang()
     const site = useSite()
-    const deleteCookie = useUserPreferencesStore((state) => state.deleteCookie)
+    const openSettings = useUserPreferencesStore((state) => state.openSettings)
 
     return (
         <footer className="footer">
             <div className="container">
                 <p>© {new Date().getFullYear()} {site.name}. {t('allRightsReserved')}</p>
-                {/* Forgets the choice: the cookie banner shows again */}
-                <button type="button" className="footer-link" onClick={deleteCookie}>{t('prefsSettings')}</button>
+                {/* Opens the cookie banner again, on the current choice */}
+                <button type="button" className="footer-link" onClick={openSettings}>{t('prefsSettings')}</button>
             </div>
         </footer>
     )

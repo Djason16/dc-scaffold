@@ -217,7 +217,7 @@ def create_project(kind, stack_id, use_latest, log):
 
 
 def check_front(stack_id, project, log):
-    """The front builds (SvelteKit passes svelte-check, Angular passes the TypeScript check of VS Code)"""
+    """The front builds (SvelteKit and Svelte pass svelte-check, Angular passes the TypeScript check of VS Code; Qwik checks its types while it builds)"""
     frontend = project / "frontend"
     package = frontend / "package.json"
     if not package.exists():
@@ -226,7 +226,7 @@ def check_front(stack_id, project, log):
     script = "generate" if stack_id == "nuxt" else "build"
     if script in scripts and not run(["npm", "run", script], frontend, log):
         return False
-    if stack_id == "sveltekit":
+    if stack_id in ("sveltekit", "svelte"):
         return run(["npx", "svelte-check", "--threshold", "error"], frontend, log)
     if stack_id == "angular":
         # Same check as VS Code (it shows these errors even when the build works)

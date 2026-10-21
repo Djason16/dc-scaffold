@@ -2,6 +2,30 @@
 
 All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachangelog.com/), versions: [SemVer](https://semver.org/).
 
+## [1.1.0] - 2026-10-21
+
+### Fronts
+- Three new sites (front), with the same architecture as the other ones (AppShell, cookie banner, 404 page, SEO, `sitemap.xml`, one or two languages, DC Scaffold design or blank page):
+  - **Svelte (Vite)**: Svelte on a single page, next to SvelteKit; pages = files of `src/pages`, links without reloading
+  - **SolidJS (Vite)**: like React, faster and lighter; Solid Router, store with `createMutable`
+  - **Qwik**: static site from Qwik City, almost no JavaScript to load, in TypeScript; texts written `t(lang, 'key')`
+- The window shows the fronts on four columns, and still fits without scrolling on small laptop screens; shorter card texts
+
+### Back ends
+- Two new servers (back end), with the same helpers (`ResponseHelper`, `RequestHelper`, `fetchAll`...), automatic routes (`getAll()` -> `GET /products`), JSON errors, CORS and MySQL or SQLite:
+  - **NestJS**: official structure of the Nest CLI, in TypeScript; the automatic routes come from `src/controllers`, classic Nest controllers work next to them
+  - **AdonisJS**: official API kit (user accounts with access tokens, VineJS validation, Lucid); the controllers of `app/controllers` get their routes automatically, the queries go through Lucid; needs Node.js 24
+- Shorter card texts for the server step; the comments added by a stack in a file of the framework are in the language of the project too
+
+### SEO
+- Every front adds `<meta name="generator" content="DC Scaffold">`, so tools like Wappalyzer can tell the site was made with DC Scaffold; one line to remove in `utils/seo.js` to hide it
+
+### Fixes
+- Cookie banner: "Cookie settings" opens it again on the current choice, with the boxes shown (all checked after "Accept all"), instead of forgetting the choice; every front
+- Qwik: an address without a page shows the 404 page of the site while it runs (`npm run dev`), not the list of routes of Qwik City
+- "Launch the project": the PowerShell window stayed open half a second then closed; it now opens in its own console and stays open on the dev server
+- SolidJS: `jsconfig.json` without `baseUrl`, which TypeScript marks as deprecated (removed in TypeScript 7)
+
 ## [1.0.0] - 2026-10-19
 
 First public version.

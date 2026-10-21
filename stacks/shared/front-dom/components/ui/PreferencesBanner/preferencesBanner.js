@@ -8,6 +8,7 @@ export const mountPreferencesBanner = (container) => {
     const t = (key) => lang.getTranslation(key)
     const choices = { ...userPreferences.preferences }
     let customizing = false
+    let wasHidden = false
 
     // One checkbox per category of stores/userPreferences.js
     const categories = () => h('div', { class: 'preferences-banner-categories' },
@@ -27,7 +28,16 @@ export const mountPreferencesBanner = (container) => {
         )))
 
     const render = () => {
-        if (userPreferences.hasUserMadeChoice) return container.replaceChildren()
+        if (userPreferences.hasUserMadeChoice) {
+            wasHidden = true
+            return container.replaceChildren()
+        }
+        // Opened again from "Cookie settings": the boxes show the current choice
+        if (wasHidden) {
+            Object.assign(choices, userPreferences.preferences)
+            customizing = true
+            wasHidden = false
+        }
         container.replaceChildren(h('div', { class: 'preferences-banner', role: 'dialog', 'aria-label': t('prefsTitle') },
             h('h2', {}, t('prefsTitle')),
             h('p', {}, t('prefsText')),

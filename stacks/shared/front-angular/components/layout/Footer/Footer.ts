@@ -10,8 +10,8 @@ import { UserPreferencesStore } from '@/stores/userPreferences'
     template: `
         <div class="container">
             <p>© {{ year }} {{ site.name }}. {{ lang.getTranslation('allRightsReserved') }}</p>
-            <!-- Forgets the choice: the cookie banner shows again -->
-            <button type="button" class="footer-link" (click)="userPreferences.deleteCookie()">{{ lang.getTranslation('prefsSettings') }}</button>
+            <!-- Opens the cookie banner again, on the current choice -->
+            <button type="button" class="footer-link" (click)="userPreferences.openSettings()">{{ lang.getTranslation('prefsSettings') }}</button>
         </div>
     `,
 })

@@ -2,8 +2,8 @@
     "label": "Astro",
     "order": 60,
     "description": {
-        "fr": "Pour les sites de contenu (blog, vitrine) : très rapide, peu de JavaScript",
-        "en": "For content sites (blog, showcase): very fast, little JavaScript"
+        "fr": "Pour les sites de contenu (blog, vitrine) : très rapide",
+        "en": "For content sites (blog, showcase): very fast"
     },
     "vscode": [
         "astro-build.astro-vscode"
