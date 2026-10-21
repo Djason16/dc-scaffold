@@ -3,8 +3,8 @@
     <footer class="footer">
         <div class="container">
             <p>© {{ year }} {{ site.name }}. {{ t('allRightsReserved') }}</p>
-            <!-- Forgets the choice: the cookie banner shows again -->
-            <button type="button" class="footer-link" @click="userPreferences.deleteCookie()">{{ t('prefsSettings') }}</button>
+            <!-- Opens the cookie banner again, on the current choice -->
+            <button type="button" class="footer-link" @click="userPreferences.openSettings()">{{ t('prefsSettings') }}</button>
         </div>
     </footer>
 </template>

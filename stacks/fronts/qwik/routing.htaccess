@@ -1,0 +1,8 @@
+# Force trailing slash only if not a file or folder
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !/$
+RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1/ [L,R=301]
+
+# Static site: every page is an HTML file, an unknown address shows 404.html
+ErrorDocument 404 /404.html

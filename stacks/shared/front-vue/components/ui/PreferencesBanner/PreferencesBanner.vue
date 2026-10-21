@@ -28,7 +28,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { useLang } from '@/composables/useLang.js'
 import { useUserPreferencesStore } from '@/stores/userPreferences.js'
 
@@ -36,6 +36,13 @@ const { getTranslation: t } = useLang()
 const userPreferences = useUserPreferencesStore()
 const customizing = ref(false)
 const choices = reactive({ ...userPreferences.preferences })
+
+// Opened again from "Cookie settings": the boxes show the current choice
+watch(() => userPreferences.hasUserMadeChoice, (made) => {
+    if (made) return
+    Object.assign(choices, userPreferences.preferences)
+    customizing.value = true
+})
 
 // Only shown in the browser: the cookie with the choice is not known while the server renders the page
 const mounted = ref(false)

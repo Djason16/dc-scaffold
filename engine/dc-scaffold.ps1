@@ -314,8 +314,8 @@ function Get-InlineText([string]$Key) {
     return $Key
 }
 
-# A call of the templates: t('key'), getTranslation('key'), lang.getTranslation('key', { name: site.name })...
-$InlineCall = '(?:\$?lang\.getTranslation|\bgetTranslation|\bt)\(\s*''(?<key>\w+)''\s*(?:,\s*\{\s*(?<var>\w+)\s*:\s*(?<expr>[^{}()]+?)\s*\}\s*)?\)'
+# A call of the templates: t('key'), getTranslation('key'), lang.getTranslation('key', { name: site.name }), t(lang, 'key') of Qwik...
+$InlineCall = '(?:\$?lang\.getTranslation|\bgetTranslation|\bt)\(\s*(?:lang,\s*)?''(?<key>\w+)''\s*(?:,\s*\{\s*(?<var>\w+)\s*:\s*(?<expr>[^{}()]+?)\s*\}\s*)?\)'
 
 function Convert-InlineTexts([string]$Text) {
     if (-not $Text) { return $Text }
@@ -613,12 +613,13 @@ function Invoke-StackSteps($Stack, [string]$Dir) {
                 }
             }
             'replace' {
-                $with = Expand-Tokens $step.replace.with
+                # Comments of the inserted text in the language of the project, like the copied files
+                $with = Expand-Tokens (Convert-Comments $step.replace.with $step.replace.file)
                 Edit-TextFile (Join-Path $target $step.replace.file) $step.replace.find { $with }
             }
             'insert' {
                 # Keeps the original line break + indentation for what follows
-                $text = Expand-Tokens $step.insert.text
+                $text = Expand-Tokens (Convert-Comments $step.insert.text $step.insert.file)
                 Edit-TextFile (Join-Path $target $step.insert.file) "(?<head>$($step.insert.after))(?<space>\s*)" {
                     param($match) $match.Groups['head'].Value + "`n" + $text + "`n" + $match.Groups['space'].Value
                 }
@@ -1375,6 +1376,8 @@ if ($HasFront -and $FrontStack.layout) {
 if ($HasBack -and $BackStack.guide) {
     $Tokens['BACK_CONTROLLERS'] = $BackStack.controllers
     $Tokens['BACK_EXT'] = $BackStack.controllerExt
+    # Example controller file of the README (AdonisJS names its files products_controller.ts)
+    $Tokens['BACK_CONTROLLER_FILE'] = $(if ($BackStack.controllerFile) { $BackStack.controllerFile } else { "ProductsController.$($BackStack.controllerExt)" })
     foreach ($field in 'helpers', 'middleware', 'entry', 'envDev', 'envProd', 'custom', 'success', 'body', 'missing', 'db') {
         $Tokens["BACK_$(($field -creplace '([A-Z])', '_$1').ToUpper())"] = $BackStack.guide.$field
     }

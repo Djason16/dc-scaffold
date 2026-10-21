@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core'
+import { Component, effect, inject, signal, untracked } from '@angular/core'
 import { useLang } from '@/composables/useLang'
 import { UserPreferencesStore } from '@/stores/userPreferences'
 
@@ -48,6 +48,19 @@ export class PreferencesBanner {
     protected categoryNames = Object.keys(this.userPreferences.categories)
     protected customizing = signal(false)
     protected choices = signal<Record<string, boolean>>({ ...this.userPreferences.preferences() })
+    private wasHidden = false
+
+    constructor() {
+        // Opened again from "Cookie settings": the boxes show the current choice
+        effect(() => {
+            if (this.userPreferences.hasUserMadeChoice()) {
+                this.wasHidden = true
+            } else if (this.wasHidden) {
+                this.choices.set({ ...untracked(this.userPreferences.preferences) })
+                this.customizing.set(true)
+            }
+        })
+    }
 
     choose(name: string, checked: boolean) {
         this.choices.update((choices) => ({ ...choices, [name]: checked }))

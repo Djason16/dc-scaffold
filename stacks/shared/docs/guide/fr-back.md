@@ -14,7 +14,7 @@ L'API est dans `backend/`. Elle répond toujours en JSON : `{ "success": true, .
 
 ### Nouvelle route
 
-Crée un contrôleur, par exemple `backend/{{BACK_CONTROLLERS}}/ProductsController.{{BACK_EXT}}` (exemple complet juste en dessous).
+Crée un contrôleur, par exemple `backend/{{BACK_CONTROLLERS}}/{{BACK_CONTROLLER_FILE}}` (exemple complet juste en dessous).
 Ses méthodes deviennent des routes toutes seules :
 
 | Méthode | Route |
@@ -70,3 +70,5 @@ Ses méthodes deviennent des routes toutes seules :
 [symfony] - **En ligne** : envoie `backend/` (avec `vendor/`), le site pointe sur `backend/public/`, `APP_ENV=prod` dans `backend/.env.prod.local`
 [nitro] - **En ligne** : `start.bat` puis `A` (compilation dans `backend/.output`), puis `npm start` sur le serveur (Node.js 22.13+)
 [express] - **En ligne** : envoie `backend/`, puis `npm install --omit=dev` et `npm start` sur le serveur (Node.js 22.13+)
+[nest] - **En ligne** : `start.bat` puis `A` (compilation dans `backend/dist`), envoie `backend/`, puis `npm install --omit=dev` et `npm start` sur le serveur (Node.js 22.13+)
+[adonis] - **En ligne** : `start.bat` puis `A` (compilation dans `backend/build`), envoie `backend/build/` avec `.env.production` renommé en `.env`, puis `npm ci --omit=dev` et `node bin/server.js` sur le serveur (Node.js 24+)

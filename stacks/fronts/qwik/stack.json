@@ -1,0 +1,133 @@
+{
+    "label": "Qwik",
+    "order": 58,
+    "description": {
+        "fr": "Pages instantanées, presque sans JavaScript, en TypeScript",
+        "en": "Instant pages, almost no JavaScript, in TypeScript"
+    },
+    "requires": [
+        "node"
+    ],
+    "port": 5173,
+    "versions": [
+        {
+            "package": "@builder.io/qwik",
+            "registry": "npm",
+            "stable": "1",
+            "token": "V_QWIK",
+            "pin": [
+                "devDependencies.@builder.io/qwik",
+                "devDependencies.eslint-plugin-qwik"
+            ]
+        },
+        {
+            "package": "@builder.io/qwik-city",
+            "registry": "npm",
+            "stable": "1",
+            "token": "V_QWIK_CITY",
+            "pin": [
+                "devDependencies.@builder.io/qwik-city"
+            ]
+        }
+    ],
+    "publicDir": "public",
+    "api": {
+        "file": "src/utils/api.js",
+        "imports": "",
+        "base": "import.meta.env.PUBLIC_API_URL",
+        "source": "PUBLIC_API_URL",
+        "isDev": "import.meta.env.DEV",
+        "usage": "import { api } from '~/utils/api.js'"
+    },
+    "steps": [
+        {
+            "run": [
+                "npx",
+                "--yes",
+                "create-qwik@1",
+                "empty",
+                "{{DIR}}"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "package.json"
+        },
+        {
+            "remove": [
+                "src/global.css",
+                "src/components/router-head",
+                "src/routes/index.tsx",
+                "public/favicon.svg",
+                "public/manifest.json",
+                "public/robots.txt"
+            ]
+        },
+        {
+            "replace": {
+                "file": "vite.config.ts",
+                "find": "server: \\{",
+                "with": "server: {\n      port: {{APP_PORT}},\n      strictPort: true,"
+            }
+        },
+        {
+            "replace": {
+                "file": "src/entry.ssr.tsx",
+                "find": "lang: \"[^\"]*\"",
+                "with": "lang: \"{{DEFAULT_LANG}}\""
+            }
+        },
+        {
+            "copy": "@shared/front-core",
+            "to": "src"
+        },
+        {
+            "copy": "@shared/dc-scaffold",
+            "to": "src/dc-scaffold"
+        },
+        {
+            "copy": "@shared/front-css",
+            "to": "src/assets/css"
+        },
+        {
+            "copy": "@shared/front-scripts"
+        },
+        {
+            "copy": "@shared/front-design"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.predev": "node scripts/design.mjs",
+                    "scripts.prebuild": "node scripts/design.mjs",
+                    "scripts[build.server]": "qwik check-client src dist && vite build -c adapters/static/vite.config.ts",
+                    "scripts.postbuild": "node scripts/sitemap.mjs dist"
+                }
+            }
+        },
+        {
+            "copy": "files-api",
+            "when": "api"
+        }
+    ],
+    "layout": {
+        "src": "src/",
+        "css": "src/assets/css",
+        "pages": "src/routes/",
+        "storeLib": "Qwik `useStore`",
+        "lang": "plugins/lang.ts",
+        "storeFile": "stores/userPreferences.ts",
+        "layoutFile": "components/layout/AppShell/AppShell.tsx",
+        "env": "`PUBLIC_SITE_NAME` / `PUBLIC_SITE_URL`",
+        "public": "frontend/public",
+        "page": "routes/about/index.tsx",
+        "pageCopy": "routes/index.tsx",
+        "textUsage": "`{t(lang, 'introTitle')}`",
+        "header": "components/layout/Header/Header.tsx",
+        "footer": "components/layout/Footer/Footer.tsx",
+        "designIndexExt": ""
+    }
+}

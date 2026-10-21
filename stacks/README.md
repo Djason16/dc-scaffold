@@ -57,7 +57,7 @@ Fronts uniquement :
 
 Dans les fichiers des fronts, un bloc entre `@two-languages` et `@end-two-languages` (dans un commentaire) n'est gardé que pour un site en deux langues, un bloc entre `@one-language` et `@end-one-language` que pour un site en une langue. Les lignes des marqueurs sont retirées.
 
-Avec une seule langue, il n'y a pas de système de traduction : chaque `t('clé')`, `getTranslation('clé')` et `data-i18n="clé"` des fichiers du front est remplacé par son texte (pris dans `shared/front-core/plugins/translations` et `shared/dc-scaffold/texts`), dans la syntaxe du fichier, et `plugins/lang`, `plugins/translations` et `useLang` ne sont pas créés. Dans un bloc `@one-language`, `{{TEXT:clé}}` (texte brut) et `{{TEXT_JS:clé}}` (texte pour une chaîne JavaScript entre apostrophes) donnent le texte d'une clé.
+Avec une seule langue, il n'y a pas de système de traduction : chaque `t('clé')`, `t(lang, 'clé')` (Qwik), `getTranslation('clé')` et `data-i18n="clé"` des fichiers du front est remplacé par son texte (pris dans `shared/front-core/plugins/translations` et `shared/dc-scaffold/texts`), dans la syntaxe du fichier, et `plugins/lang`, `plugins/translations` et `useLang` ne sont pas créés. Dans un bloc `@one-language`, `{{TEXT:clé}}` (texte brut) et `{{TEXT_JS:clé}}` (texte pour une chaîne JavaScript entre apostrophes) donnent le texte d'une clé.
 
 Design : chaque front copie `shared/dc-scaffold` dans `<src>/dc-scaffold/` (avec ses `Hero`, `NextSteps` et `index.js` propres au framework) et `shared/front-design` à la racine du front. `frontend/dc-scaffold.config.js` (`design: true` ou `false`) est lu par `scripts/design.mjs` avant `npm run dev` et chaque build (`predev`, `prebuild`...) : il écrit `<src>/design.js` (qui exporte `design` et `welcome`, les sections de l'accueil de DC Scaffold, ou `null`) et `<css>/design.css` (qui importe `dc-scaffold/theme.css`, ou rien). Avec `false`, rien du dossier `dc-scaffold` n'entre dans le build. Jetons : `{{DESIGN_FOLDER}}`, `{{DESIGN_JS}}`, `{{DESIGN_CSS}}`, `{{FRONT_DESIGN_CONFIG}}`.
 
@@ -67,7 +67,7 @@ Back ends uniquement :
 | ----- | ---- |
 | `runtime` | `php` (Apache + PHP dans Docker), `node` (lancé sur la machine, sans Docker), `none` |
 | `database` | `true` = toujours MySQL (back ends PHP), `"optional"` = MySQL ou SQLite au choix (back ends JavaScript), `false` = jamais |
-| `controllers`, `controllerExt` | Dossier des contrôleurs et extension, pour les guides |
+| `controllers`, `controllerExt`, `controllerFile` | Dossier des contrôleurs et extension, pour les guides ; `controllerFile` : nom du contrôleur d'exemple (par défaut `ProductsController.<ext>`) |
 | `drivers` | Accès à la base proposé au choix, ex. `["mysqli", "pdo"]` : la valeur choisie remplit `{{DB_DRIVER}}` (`{ "copy": "@shared/php-db/{{DB_DRIVER}}" }`) |
 | `noDatabase` | Texte affiché pour « aucune base » quand le back end a sa propre solution (`fr` / `en`, ex. SQLite pour Laravel) |
 | `fallbackDatabase` | Nom de cette solution dans le menu et le récapitulatif (ex. `"SQLite"`) |

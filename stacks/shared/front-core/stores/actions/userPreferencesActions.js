@@ -97,7 +97,13 @@ export const userPreferencesActions = {
         this.hasUserMadeChoice = false
     },
 
-    // Forgets the choice (e.g. a "Cookie settings" link in the footer): the banner shows again
+    // Shows the banner again on the current choice ("Cookie settings" in the footer): the cookie stays until the visitor chooses again
+    /** @this {UserPreferencesStore} */
+    openSettings() {
+        this.hasUserMadeChoice = false
+    },
+
+    // Forgets the choice: the banner shows again, every optional category off
     /** @this {UserPreferencesStore} */
     deleteCookie() {
         if (!inBrowser()) return

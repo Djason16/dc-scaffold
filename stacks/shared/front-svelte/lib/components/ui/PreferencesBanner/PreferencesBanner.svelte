@@ -8,6 +8,17 @@
     /** @type {Record<string, boolean>} */
     let choices = $state({ ...userPreferences.preferences })
 
+    // Opened again from "Cookie settings": the boxes show the current choice
+    let wasHidden = false
+    $effect(() => {
+        if (userPreferences.hasUserMadeChoice) {
+            wasHidden = true
+        } else if (wasHidden) {
+            choices = { ...userPreferences.preferences }
+            customizing = true
+        }
+    })
+
     // Only shown in the browser: the cookie with the choice is not known while the page is built
     let mounted = $state(false)
     onMount(() => { mounted = true })

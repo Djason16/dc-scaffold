@@ -150,21 +150,31 @@ func startConsoleEngine(root string) error {
 // output of the console to NUL (DCScaffold.exe has no console of its own), and the window would show
 // nothing and close at once. CreateProcess without redirection gives the console its own keyboard and screen.
 func startConsole(root string, args []string) (syscall.Handle, error) {
+	return startScriptConsole(root, enginePath(root), args, productName, true)
+}
+
+// A new console window running a PowerShell script, in the folder dir. pause = the window waits for a key
+// at the end (the last message stays readable); otherwise PowerShell stays open (-NoExit) for more commands.
+func startScriptConsole(dir, script string, args []string, windowTitle string, pause bool) (syscall.Handle, error) {
 	shell, _ := powershell()
 	quoted := make([]string, len(args))
 	for i, arg := range args {
 		quoted[i] = `"` + strings.ReplaceAll(arg, `"`, `\"`) + `"`
 	}
-	// chcp 65001: UTF-8 console for the accents and frames of the engine; pause: the last message stays readable
-	line := fmt.Sprintf(`cmd.exe /c "chcp 65001 >nul & "%s" -NoProfile -ExecutionPolicy Bypass -File "%s" %s & pause"`,
-		shell, enginePath(root), strings.Join(quoted, " "))
+	// chcp 65001: UTF-8 console for the accents and frames of the engine and of start.ps1
+	keep, end := "-NoExit ", ""
+	if pause {
+		keep, end = "", " & pause"
+	}
+	line := fmt.Sprintf(`cmd.exe /c "chcp 65001 >nul & "%s" -NoProfile -ExecutionPolicy Bypass %s-File "%s" %s%s"`,
+		shell, keep, script, strings.Join(quoted, " "), end)
 
 	commandLine, err := syscall.UTF16PtrFromString(line)
 	if err != nil {
 		return 0, err
 	}
-	folder, _ := syscall.UTF16PtrFromString(root)
-	title, _ := syscall.UTF16PtrFromString(productName)
+	folder, _ := syscall.UTF16PtrFromString(dir)
+	title, _ := syscall.UTF16PtrFromString(windowTitle)
 	startup := &syscall.StartupInfo{Title: title}
 	startup.Cb = uint32(unsafe.Sizeof(*startup))
 	info := &syscall.ProcessInformation{}
@@ -307,11 +317,12 @@ func findCode() string {
 	return ""
 }
 
-// start.ps1 -Action D in its own console: Docker, API and front start in their windows
+// start.ps1 -Action D in its own console: Docker, API and front start in their windows.
+// The console stays open afterwards (-NoExit) with the addresses of the project.
 func startProject(path string) error {
-	shell, _ := powershell()
-	cmd := exec.Command(shell, "-NoExit", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", filepath.Join(path, "start.ps1"), "-Action", "D")
-	cmd.Dir = path
-	cmd.SysProcAttr = &syscall.SysProcAttr{CreationFlags: createNewConsole}
-	return cmd.Start()
+	process, err := startScriptConsole(path, filepath.Join(path, "start.ps1"), []string{"-Action", "D"}, filepath.Base(path), false)
+	if err == nil {
+		syscall.CloseHandle(process)
+	}
+	return err
 }

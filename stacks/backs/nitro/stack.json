@@ -2,8 +2,8 @@
     "label": "Nitro",
     "order": 50,
     "description": {
-        "fr": "JavaScript (Node.js) : le moteur serveur de Nuxt, utilisable avec n'importe quel site",
-        "en": "JavaScript (Node.js): the server engine of Nuxt, works with any site"
+        "fr": "JavaScript (Node.js) : le serveur de Nuxt, avec n'importe quel site",
+        "en": "JavaScript (Node.js): the server of Nuxt, with any site"
     },
     "requires": [
         "node",

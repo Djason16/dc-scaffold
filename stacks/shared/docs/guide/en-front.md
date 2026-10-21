@@ -103,7 +103,7 @@ What surrounds every page, the 404 page included, is in `{{FRONT_LAYOUT}}`:
 [one-language] loading screen, header (menu), footer, back to top button and cookie banner.
 
 - **Menu**: add your links in the header (`{{FRONT_HEADER}}`)
-- **Footer**: `{{FRONT_FOOTER}}` (the "Cookie settings" button opens the banner again)
+- **Footer**: `{{FRONT_FOOTER}}` (the "Cookie settings" button opens the banner again, on the current choice)
 - **Loading screen**: on load and on every page change, with the DC Scaffold design; `LOADER_ENABLED` at the top of the AppShell: `true` to always have it, `false` for never
 - **Minimum loading time** between two pages: `LOADER_PAGE_TIME` at the top of the AppShell (400 ms)
 

@@ -227,8 +227,8 @@ const TEXTS = {
 
 // Two letters for the square of each stack (custom stacks: the first letters of their label)
 const MARKS = {
-    nuxt: 'NU', next: 'NX', sveltekit: 'SK', vue: 'VU', react: 'RE', angular: 'NG', astro: 'AS', vanilla: 'JS',
-    slim: 'SL', laravel: 'LA', symfony: 'SY', php: 'PHP', nitro: 'NI', express: 'EX', none: '—',
+    nuxt: 'NU', next: 'NX', sveltekit: 'SK', vue: 'VU', react: 'RE', svelte: 'SV', solid: 'SO', angular: 'NG', qwik: 'QW', astro: 'AS', vanilla: 'JS',
+    slim: 'SL', laravel: 'LA', symfony: 'SY', php: 'PHP', nitro: 'NI', express: 'EX', nest: 'NE', adonis: 'AD', none: '—',
 }
 
 // ---------------------------------------------------------------------------

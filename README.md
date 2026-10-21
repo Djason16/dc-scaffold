@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/VERSION-1.0.0-4084ff?style=for-the-badge&labelColor=09090b" alt="Version 1.0.0">
+  <img src="https://img.shields.io/badge/VERSION-1.1.0-4084ff?style=for-the-badge&labelColor=09090b" alt="Version 1.1.0">
   <img src="https://img.shields.io/badge/WINDOWS-10%20%7C%2011-8b5cf6?style=for-the-badge&labelColor=09090b" alt="Windows 10 | 11">
   <img src="https://img.shields.io/badge/LICENSE-ALL%20RIGHTS%20RESERVED-ec4899?style=for-the-badge&labelColor=09090b" alt="License">
 </p>
@@ -51,8 +51,8 @@ Tous les projets partagent la même architecture, quel que soit le framework :
 - **Installation des prérequis selon tes choix** : Node.js, Git, Docker Desktop, PHP et Composer (pour un serveur PHP) et Visual Studio Code (avec GitHub Copilot et les extensions utiles pour les stacks choisis : Vue, Svelte, Astro, PHP, Laravel) sont installés automatiquement s'ils manquent (via winget, après accord), Docker est démarré s'il est arrêté, les extensions manquantes du PHP local peuvent être activées dans le `php.ini`
 - **Versions toujours à jour** : vérification sur npm et Packagist avant chaque création, une nouvelle version majeure est proposée mais jamais imposée
 - **Versions testées chaque semaine** : un robot crée et compile chaque stack avec les dernières versions ; celles qui marchent sont validées, et DC Scaffold télécharge les stacks à jour tout seul, sans réinstallation (voir [Robot de compatibilité](#robot-de-compatibilité-et-catalogue))
-- **Base de données** : MySQL (dernière LTS, dans Docker, avec phpMyAdmin) pour les back ends PHP, accès par `mysqli` ou `PDO` ; MySQL ou SQLite (un simple fichier, sans serveur) pour Nitro et Express, avec les mêmes méthodes
-- **Même architecture front partout** : `components/ui` et `views`, `composables`, `middleware`, `pages`, `plugins` (langues + traductions), `stores` (Pinia, Zustand, Svelte `$state`, signals d'Angular ou sans dépendance), `utils` (SEO, cookies), `assets/css` ; AppShell (chargement, en-tête, pied de page, retour en haut, langues), bannière cookies, page 404, SEO, `sitemap.xml` et `robots.txt` prêts dans chaque front
+- **Base de données** : MySQL (dernière LTS, dans Docker, avec phpMyAdmin) pour les back ends PHP, accès par `mysqli` ou `PDO` ; MySQL ou SQLite (un simple fichier, sans serveur) pour Nitro, Express, NestJS et AdonisJS, avec les mêmes méthodes
+- **Même architecture front partout** : `components/ui` et `views`, `composables`, `middleware`, `pages`, `plugins` (langues + traductions), `stores` (Pinia, Zustand, Svelte `$state`, Solid `createMutable`, Qwik `useStore`, signals d'Angular ou sans dépendance), `utils` (SEO, cookies), `assets/css` ; AppShell (chargement, en-tête, pied de page, retour en haut, langues), bannière cookies, page 404, SEO, `sitemap.xml` et `robots.txt` prêts dans chaque front
 - **Design de DC Scaffold, ou page blanche** : chaque site s'ouvre avec le design de DC Scaffold (thème sombre, page d'accueil « Et maintenant ? ») ; `design: false` dans `frontend/dc-scaffold.config.js` donne un site vide au style simple, et plus rien du design de DC Scaffold ne va dans le build
 - **Site en une ou deux langues** (français, anglais) : avec deux langues, boutons de langue et textes traduits ; avec une seule, les textes sont écrits directement dans les composants, sans système de traduction
 - **Un seul `README.md` par projet**, dans la langue choisie au démarrage : comment lancer le projet, où changer les couleurs, les textes, les langues, les cookies, ajouter une page ou une route
@@ -69,8 +69,11 @@ Tous les projets partagent la même architecture, quel que soit le framework :
 | SvelteKit | Symfony |
 | Vue (Vite) | PHP sans framework |
 | React (Vite) | Nitro (avec n'importe quel front) |
-| Angular | Express |
-| Astro | Aucun (site statique) |
+| Svelte (Vite) | Express |
+| SolidJS (Vite) | NestJS |
+| Angular | AdonisJS |
+| Qwik | Aucun (site statique) |
+| Astro | |
 | HTML / CSS / JS | |
 | Aucun (API seule) | |
 
@@ -115,9 +118,9 @@ dcscaffold -Name "Boutique" -Front nuxt -Back slim -Database mysql -Driver pdo -
 
 | Option | Valeurs |
 | ------ | ------- |
-| `-Front` | `nuxt`, `next`, `sveltekit`, `vue`, `react`, `astro`, `vanilla`, `none` |
-| `-Back` | `slim`, `laravel`, `symfony`, `php`, `nitro`, `express`, `none` |
-| `-Database` | `mysql`, `sqlite` (Nitro et Express ; les back ends PHP utilisent toujours MySQL) |
+| `-Front` | `nuxt`, `next`, `sveltekit`, `vue`, `react`, `svelte`, `solid`, `angular`, `qwik`, `astro`, `vanilla`, `none` |
+| `-Back` | `slim`, `laravel`, `symfony`, `php`, `nitro`, `express`, `nest`, `adonis`, `none` |
+| `-Database` | `mysql`, `sqlite` (back ends Node.js ; les back ends PHP utilisent toujours MySQL) |
 | `-Driver` | `mysqli`, `pdo` (Slim et PHP) |
 | Autres | `-Lang fr\|en`, `-Destination`, `-Languages fr\|en\|fr,en`, `-AppPort`, `-ApiPort`, `-PmaPort`, `-DbPort`, `-UseLatest`, `-SkipToolCheck`, `-SkipInstall`, `-NoGit`, `-NoEditor`, `-Force` |
 
@@ -181,7 +184,7 @@ Voir [`installer/README.md`](installer/README.md). Un tag `v*` poussé sur GitHu
 
 - Signature de l'exe (plus d'avertissement SmartScreen)
 - Versions macOS et Linux du lanceur
-- Nouveaux stacks (AdonisJS, Django...)
+- Nouveaux stacks (Django, FastAPI, Hono...)
 
 ### Licence
 
@@ -226,8 +229,8 @@ Every project shares the same architecture, whatever the framework:
 - **Prerequisites installed for your choices**: Node.js, Git, Docker Desktop, PHP and Composer (for a PHP server) and Visual Studio Code (with GitHub Copilot and the extensions useful for the chosen stacks: Vue, Svelte, Astro, PHP, Laravel) are installed when missing (through winget, after asking), Docker is started when stopped, missing extensions of the local PHP can be enabled in `php.ini`
 - **Always up to date**: npm and Packagist are checked before each project; a new major version is offered, never forced
 - **Versions tested every week**: a robot creates and builds every stack with the latest versions; the ones that work are validated, and DC Scaffold downloads the updated stacks by itself, without reinstalling (see [Compatibility robot](#compatibility-robot-and-catalog))
-- **Database**: MySQL (latest LTS, in Docker, with phpMyAdmin) for the PHP back ends, through `mysqli` or `PDO`; MySQL or SQLite (a plain file, no server) for Nitro and Express, with the same methods
-- **Same front architecture everywhere**: `components/ui` and `views`, `composables`, `middleware`, `pages`, `plugins` (languages + translations), `stores` (Pinia, Zustand, Svelte `$state`, Angular signals or dependency-free), `utils` (SEO, cookies), `assets/css`; AppShell (loader, header, footer, back to top, languages), cookie banner, 404 page, SEO, `sitemap.xml` and `robots.txt` ready in every front
+- **Database**: MySQL (latest LTS, in Docker, with phpMyAdmin) for the PHP back ends, through `mysqli` or `PDO`; MySQL or SQLite (a plain file, no server) for Nitro, Express, NestJS and AdonisJS, with the same methods
+- **Same front architecture everywhere**: `components/ui` and `views`, `composables`, `middleware`, `pages`, `plugins` (languages + translations), `stores` (Pinia, Zustand, Svelte `$state`, Solid `createMutable`, Qwik `useStore`, Angular signals or dependency-free), `utils` (SEO, cookies), `assets/css`; AppShell (loader, header, footer, back to top, languages), cookie banner, 404 page, SEO, `sitemap.xml` and `robots.txt` ready in every front
 - **DC Scaffold design, or a blank page**: every site opens with the DC Scaffold design (dark theme, "What next?" home page); `design: false` in `frontend/dc-scaffold.config.js` gives a blank site with a simple style, and nothing of the DC Scaffold design goes into the build any more
 - **One- or two-language sites** (French, English): with two, language buttons and translated texts; with one, the texts are written straight into the components, with no translation system
 - **One `README.md` per project**, in the language picked at start: how to run the project, where to change colors, texts, languages, cookies, add a page or a route
@@ -244,8 +247,11 @@ Every project shares the same architecture, whatever the framework:
 | SvelteKit | Symfony |
 | Vue (Vite) | PHP without framework |
 | React (Vite) | Nitro (with any front) |
-| Angular | Express |
-| Astro | None (static site) |
+| Svelte (Vite) | Express |
+| SolidJS (Vite) | NestJS |
+| Angular | AdonisJS |
+| Qwik | None (static site) |
+| Astro | |
 | HTML / CSS / JS | |
 | None (API only) | |
 
@@ -290,9 +296,9 @@ dcscaffold -Name "Shop" -Front nuxt -Back slim -Database mysql -Driver pdo -ApiP
 
 | Option | Values |
 | ------ | ------ |
-| `-Front` | `nuxt`, `next`, `sveltekit`, `vue`, `react`, `astro`, `vanilla`, `none` |
-| `-Back` | `slim`, `laravel`, `symfony`, `php`, `nitro`, `express`, `none` |
-| `-Database` | `mysql`, `sqlite` (Nitro and Express; PHP back ends always use MySQL) |
+| `-Front` | `nuxt`, `next`, `sveltekit`, `vue`, `react`, `svelte`, `solid`, `angular`, `qwik`, `astro`, `vanilla`, `none` |
+| `-Back` | `slim`, `laravel`, `symfony`, `php`, `nitro`, `express`, `nest`, `adonis`, `none` |
+| `-Database` | `mysql`, `sqlite` (Node.js back ends; PHP back ends always use MySQL) |
 | `-Driver` | `mysqli`, `pdo` (Slim and PHP) |
 | Others | `-Lang fr\|en`, `-Destination`, `-Languages fr\|en\|fr,en`, `-AppPort`, `-ApiPort`, `-PmaPort`, `-DbPort`, `-UseLatest`, `-SkipToolCheck`, `-SkipInstall`, `-NoGit`, `-NoEditor`, `-Force` |
 
@@ -356,7 +362,7 @@ See [`installer/README.md`](installer/README.md). Pushing a `v*` tag to GitHub b
 
 - Signed exe (no SmartScreen warning)
 - macOS and Linux launchers
-- More stacks (AdonisJS, Django...)
+- More stacks (Django, FastAPI, Hono...)
 
 ### License
 

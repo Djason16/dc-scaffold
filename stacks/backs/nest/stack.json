@@ -1,0 +1,182 @@
+{
+    "label": "NestJS",
+    "order": 62,
+    "description": {
+        "fr": "TypeScript (Node.js), structuré comme Angular, très demandé",
+        "en": "TypeScript (Node.js), structured like Angular, in demand"
+    },
+    "requires": [
+        "node",
+        "docker"
+    ],
+    "runtime": "node",
+    "database": "optional",
+    "noDatabase": {
+        "fr": "Les données dans un simple fichier, rien à installer",
+        "en": "The data in a plain file, nothing to install"
+    },
+    "fallbackDatabase": "SQLite",
+    "nodeEngine": ">=22.13.0",
+    "versions": [
+        {
+            "package": "@nestjs/core",
+            "registry": "npm",
+            "stable": "12",
+            "token": "V_NEST",
+            "pin": [
+                "dependencies.@nestjs/core",
+                "dependencies.@nestjs/common",
+                "dependencies.@nestjs/platform-express"
+            ]
+        },
+        {
+            "package": "@nestjs/cli",
+            "registry": "npm",
+            "stable": "12",
+            "token": "V_NEST_CLI",
+            "pin": [
+                "devDependencies.@nestjs/cli"
+            ]
+        }
+    ],
+    "steps": [
+        {
+            "run": [
+                "npx",
+                "--yes",
+                "@nestjs/cli@^{{V_NEST_CLI}}",
+                "new",
+                "{{DIR}}",
+                "--skip-git",
+                "--skip-install",
+                "--package-manager",
+                "npm",
+                "--language",
+                "ts"
+            ],
+            "in": "root"
+        },
+        {
+            "check": "nest-cli.json"
+        },
+        {
+            "remove": [
+                "README.md",
+                "src/app.controller.ts",
+                "src/app.service.ts",
+                "src/app.controller.spec.ts",
+                "test",
+                "vitest.config.ts",
+                "vitest.config.e2e.ts"
+            ]
+        },
+        {
+            "copy": "@backs/express/files/utils",
+            "to": "src/utils"
+        },
+        {
+            "copy": "@shared/js-core",
+            "to": "src/utils"
+        },
+        {
+            "copy": "files"
+        },
+        {
+            "replace": {
+                "file": "tsconfig.json",
+                "find": "\"compilerOptions\": \\{",
+                "with": "\"compilerOptions\": {\n    \"allowJs\": true,"
+            }
+        },
+        {
+            "replace": {
+                "file": "tsconfig.json",
+                "find": "\"types\": \\[\"vitest/globals\", \"node\"\\]",
+                "with": "\"types\": [\"node\"]"
+            }
+        },
+        {
+            "npm": {
+                "delete": [
+                    "scripts.test",
+                    "scripts.test:watch",
+                    "scripts.test:cov",
+                    "scripts.test:debug",
+                    "scripts.test:e2e",
+                    "scripts.start:dev",
+                    "scripts.start:prod",
+                    "devDependencies.@nestjs/testing",
+                    "devDependencies.@types/supertest",
+                    "devDependencies.@vitest/coverage-v8",
+                    "devDependencies.supertest",
+                    "devDependencies.vite",
+                    "devDependencies.vitest"
+                ],
+                "set": {
+                    "name": "{{SLUG}}-backend",
+                    "scripts.dev": "nest start --watch",
+                    "scripts.start": "node --env-file=.env.production dist/main.js",
+                    "scripts.lint": "oxlint --type-aware src/",
+                    "dependencies.mysql2": "^3.24.0"
+                }
+            }
+        },
+        {
+            "env": {
+                "file": ".env",
+                "values": {
+                    "DB_CONNECTION": "sqlite",
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": "",
+                    "DB_PORT": ""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.production",
+                "values": {
+                    "DB_CONNECTION": "sqlite",
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": "",
+                    "DB_PORT": ""
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.example",
+                "values": {
+                    "DB_CONNECTION": "sqlite",
+                    "DB_HOST": "",
+                    "DB_NAME": "",
+                    "DB_USER": "",
+                    "DB_PASS": "",
+                    "DB_PORT": ""
+                }
+            },
+            "when": "noDb"
+        }
+    ],
+    "controllers": "src/controllers",
+    "controllerExt": "ts",
+    "guide": {
+        "helpers": "src/utils",
+        "middleware": "src/main.ts",
+        "entry": "src/routes.controller.ts",
+        "envDev": ".env",
+        "envProd": ".env.production",
+        "custom": "static routes = { markShipped: ['POST', '/{id}/mark-shipped'] }",
+        "success": "ResponseHelper.success(res, { products })",
+        "body": "this.body(req)",
+        "missing": "RequestHelper.missing(data, ['name', 'price'])",
+        "db": "await this.fetchAll('SELECT * FROM products WHERE active = ?', [1])",
+        "deploy": "nest"
+    }
+}

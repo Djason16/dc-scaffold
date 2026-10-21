@@ -2,7 +2,7 @@
     "label": "React",
     "order": 50,
     "description": {
-        "fr": "Application React sur une seule page, la bibliothèque la plus répandue",
+        "fr": "Application React sur une seule page, la bibliothèque la plus utilisée",
         "en": "React app on a single page, the most used library"
     },
     "requires": [

@@ -10,7 +10,7 @@ const site = useSite()
 <footer class="footer">
     <div class="container">
         <p>© {new Date().getFullYear()} {site.name}. <span data-i18n="allRightsReserved">{t('allRightsReserved')}</span></p>
-        <!-- Forgets the choice: the cookie banner shows again (plugins/app.js) -->
+        <!-- Opens the cookie banner again, on the current choice (plugins/app.js) -->
         <button type="button" class="footer-link" data-preferences-settings data-i18n="prefsSettings">{t('prefsSettings')}</button>
     </div>
 </footer>

@@ -103,7 +103,7 @@ Ce qui entoure chaque page, et aussi la page 404, est dans `{{FRONT_LAYOUT}}` :
 [one-language] écran de chargement, en-tête (menu), pied de page, bouton retour en haut et bandeau cookies.
 
 - **Menu** : ajoute tes liens dans l'en-tête (`{{FRONT_HEADER}}`)
-- **Pied de page** : `{{FRONT_FOOTER}}` (le bouton « Gérer les cookies » rouvre le bandeau)
+- **Pied de page** : `{{FRONT_FOOTER}}` (le bouton « Gérer les cookies » rouvre le bandeau sur le choix actuel)
 - **Écran de chargement** : au chargement et à chaque changement de page, avec le design de DC Scaffold ; `LOADER_ENABLED` en haut de l'AppShell : `true` pour toujours l'avoir, `false` pour jamais
 - **Durée minimale du chargement** entre deux pages : `LOADER_PAGE_TIME` en haut de l'AppShell (400 ms)
 

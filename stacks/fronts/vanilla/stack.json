@@ -2,8 +2,8 @@
     "label": "HTML / CSS / JS",
     "order": 70,
     "description": {
-        "fr": "Le plus simple : HTML, CSS et JavaScript, rien d'autre à apprendre. Idéal pour débuter",
-        "en": "The simplest: HTML, CSS and JavaScript, nothing else to learn. Great to start"
+        "fr": "Le plus simple : rien d'autre à apprendre. Idéal pour débuter",
+        "en": "The simplest: nothing else to learn. Great to start"
     },
     "requires": [
         "docker"

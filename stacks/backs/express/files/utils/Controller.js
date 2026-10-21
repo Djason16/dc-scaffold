@@ -18,8 +18,8 @@ export class Controller {
     static routes = {}
 
     body = (req) => RequestHelper.body(req)
-    fetchAll = DatabaseHelper.fetchAll
-    fetchOne = DatabaseHelper.fetchOne
-    insert = DatabaseHelper.insert
-    execute = DatabaseHelper.execute
+    fetchAll = (sql, params) => DatabaseHelper.fetchAll(sql, params)
+    fetchOne = (sql, params) => DatabaseHelper.fetchOne(sql, params)
+    insert = (sql, params) => DatabaseHelper.insert(sql, params)
+    execute = (sql, params) => DatabaseHelper.execute(sql, params)
 }
