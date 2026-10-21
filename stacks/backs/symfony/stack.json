@@ -25,7 +25,7 @@
         {
             "package": "symfony/skeleton",
             "registry": "packagist",
-            "stable": "7.4",
+            "stable": "8.1",
             "token": "V_SYMFONY"
         }
     ],

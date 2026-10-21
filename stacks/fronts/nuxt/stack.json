@@ -55,7 +55,7 @@
         {
             "package": "@types/node",
             "registry": "npm",
-            "stable": "24",
+            "stable": "26",
             "token": "V_TYPES_NODE"
         }
     ],
