@@ -271,6 +271,7 @@ def test(kind, stack_id, out):
     entry = next(e for e in json.loads(os.environ.get("ROBOT_PLAN", "[]")) if e["kind"] == kind and e["id"] == stack_id) \
         if os.environ.get("ROBOT_PLAN") else {"kind": kind, "id": stack_id, "packages": [], "newMajor": False}
     log = Path(out).with_suffix(".log")
+    log.parent.mkdir(parents=True, exist_ok=True)  # results/ does not exist in a fresh checkout
     log.write_text("", encoding="utf-8")
     check = check_front if kind == "fronts" else check_back
 
@@ -318,6 +319,7 @@ def infra_test(out):
     """Candidate PHP / MySQL: Docker images of a Slim project, a query on MySQL, every PHP back end"""
     infra = json.loads(os.environ["ROBOT_INFRA"])
     log = Path(out).with_suffix(".log")
+    log.parent.mkdir(parents=True, exist_ok=True)  # results/ does not exist in a fresh checkout
     log.write_text("", encoding="utf-8")
     original = INFRA.read_text(encoding="utf-8")
     php = infra["php"]["candidate"] or infra["php"]["current"]
