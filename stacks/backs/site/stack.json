@@ -280,6 +280,13 @@
                         "find": "trailingSlash: 'always',",
                         "with": "trailingSlash: 'ignore',\n    adapter: node({ mode: 'standalone' }),"
                     }
+                },
+                {
+                    "insert": {
+                        "file": ".env.production",
+                        "after": "APP_NAME=[^\\n]*",
+                        "text": "# Server of the site online (npm start): listens on every address of the host\nHOST=0.0.0.0"
+                    }
                 }
             ],
             "guide": {

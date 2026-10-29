@@ -107,6 +107,9 @@ stack = {
                 # /api/products and /api/products/ both reach the API (the links of the site keep their final /)
                 {"replace": {"file": "astro.config.mjs", "find": "trailingSlash: 'always',",
                              "with": "trailingSlash: 'ignore',\n    adapter: node({ mode: 'standalone' }),"}},
+                # The Node.js server of Astro listens on localhost only by default: online (npm start), every address
+                {"insert": {"file": ".env.production", "after": r"APP_NAME=[^\n]*",
+                            "text": "# Server of the site online (npm start): listens on every address of the host\nHOST=0.0.0.0"}},
             ],
             online=online("pages et API compilées dans `frontend/dist`", "pages and API built into `frontend/dist`"),
         ),
