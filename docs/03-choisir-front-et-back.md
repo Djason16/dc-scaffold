@@ -107,5 +107,5 @@ Docker n'est ajouté que si le projet en a besoin :
 
 Un front JavaScript avec une API JavaScript en SQLite tourne **entièrement sans Docker**.
 
-Versions actuelles des images : PHP **8.4**, MySQL **9.7** (`stacks/infra/versions.json`, mises à jour par le robot
+Versions actuelles des images : PHP **8.5**, MySQL **9.7** (`stacks/infra/versions.json`, mises à jour par le robot
 quand tous les back ends PHP marchent avec la nouvelle version).

@@ -48,9 +48,9 @@ Exemple : Nuxt + Slim. Les étapes du README du projet :
 
 | API | Comment la mettre en ligne |
 | --- | -------------------------- |
-| Slim 4, Laravel | Envoie `backend/` (avec `vendor/`) sur un hébergement PHP 8.4+ ; l'adresse de l'API pointe sur `backend/public/` |
+| Slim 4, Laravel | Envoie `backend/` (avec `vendor/`) sur un hébergement PHP 8.5+ ; l'adresse de l'API pointe sur `backend/public/` |
 | Symfony | Pareil, et `APP_ENV=prod` dans `backend/.env.prod.local` |
-| PHP | Envoie `backend/` sur un hébergement PHP 8.4+ ; l'adresse pointe sur `backend/public/` (sans Composer) |
+| PHP | Envoie `backend/` sur un hébergement PHP 8.5+ ; l'adresse pointe sur `backend/public/` (sans Composer) |
 | Nitro | `start.bat` puis `A` (compilation dans `backend/.output`), envoie `backend/` sur un hébergement Node.js 22.13+ et lance `npm start` |
 | Express | Envoie `backend/` sur un hébergement Node.js 22.13+, puis `npm install --omit=dev` et `npm start` |
 | NestJS | `start.bat` puis `A` (compilation dans `backend/dist`), envoie `backend/`, puis `npm install --omit=dev` et `npm start` |
