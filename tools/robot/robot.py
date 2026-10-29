@@ -372,14 +372,19 @@ def infra_test(out):
             (project / "backend" / "src" / "Controllers" / "RobotController.php").write_text(ROBOT_CONTROLLER, encoding="utf-8")
             compose = ["docker", "compose"]
             if run(compose + ["up", "-d", "--build", "--wait"], project, log, timeout=1800):
+                # Until MySQL really answers: an error (500 while MySQL finishes its first start) is tried again
                 body = ""
                 for _ in range(30):
                     try:
                         with urllib.request.urlopen(f"http://127.0.0.1:{API_PORT}/robot", timeout=5) as response:
                             body = response.read().decode()
-                            break
+                    except urllib.error.HTTPError as error:
+                        body = error.read().decode(errors="replace")
                     except Exception:
-                        time.sleep(2)
+                        body = ""
+                    if '"two"' in body:
+                        break
+                    time.sleep(2)
                 with open(log, "a", encoding="utf-8") as file:
                     file.write(f"\nGET /robot -> {body}\n")
                 result["dockerWorks"] = mysql in body and '"two"' in body
