@@ -5,7 +5,7 @@
 Chaque dossier de `fronts/` ou `backs/` qui contient un `stack.json` apparaît automatiquement dans le menu de DC Scaffold.
 Pour ajouter un framework, copie le dossier le plus proche (par exemple `fronts/vue` pour un front Vite), renomme-le et adapte son `stack.json`. Aucun code à modifier, aucune recompilation.
 
-Poussés sur `main`, les stacks sont testés par le robot de compatibilité puis publiés dans le catalogue en ligne : tous les DC Scaffold installés les reçoivent à leur prochaine ouverture. `version.txt` (la version des stacks) est mis à jour par le robot.
+Poussés sur `master`, les stacks sont testés par le robot de compatibilité puis publiés dans le catalogue en ligne : tous les DC Scaffold installés les reçoivent à leur prochaine ouverture. `version.txt` (la version des stacks) est mis à jour par le robot.
 
 ```
 stacks/
@@ -40,7 +40,7 @@ stacks/
 
 | Champ | Rôle |
 | ----- | ---- |
-| `label`, `order`, `description` | Affichage dans le menu (ordre croissant, description en `fr` / `en`) |
+| `label`, `order`, `description` | Affichage dans le menu (ordre croissant ; `label` et `description` en texte simple ou en `fr` / `en`) |
 | `requires` | Outils vérifiés au démarrage : `node`, `composer`, `docker` |
 | `versions` | Paquets vérifiés sur npm ou Packagist. `stable` = version validée ; une nouvelle version majeure est proposée, jamais imposée. `token` rend la version utilisable dans les fichiers (`^{{V_VUE}}`). `pin` remet le paquet sur la version stable si l'outil de création a installé une majeure plus récente. |
 | `steps` | Étapes exécutées dans l'ordre (voir ci-dessous) |
@@ -53,6 +53,7 @@ Fronts uniquement :
 | `publicDir` | Dossier copié tel quel au build, qui reçoit le `.htaccess` (`""` = racine de `frontend/`) |
 | `docker` | `true` = servi par nginx dans Docker en développement (front sans build) |
 | `port` | Port de développement par défaut du framework (5173 pour Vite, 4321 pour Astro...) |
+| `deploy` | Mise en ligne du site, pour la section « Mettre en ligne » du README et le menu de `start.bat` : `key` (touche de `start.bat` qui produit le site, `B` ou `G`) et `dir` (dossier à envoyer, depuis `frontend/`) ; `key` vide = `frontend/` envoyé tel quel |
 | `layout` | Chemins écrits dans le `README.md` du projet : `src`, `css`, `public`, `storeFile`, `storeLib`, `layoutFile` (AppShell), `header`, `footer`, `page`, `pageCopy`, `pageHero` (haut de page réutilisable, par défaut `components/ui/PageHero/`), `textUsage`, `prefsUsage` (lire un choix du visiteur, par défaut `userPreferences.preferences.maps`), `env` ou `siteFile`, `omitGuide` (lignes à retirer), `designIndexExt` (extension de `dc-scaffold/index`, `.js` par défaut), `designRuntime` (`true` : l'interrupteur du design est lu dans le navigateur, sans build) |
 
 Dans les fichiers des fronts, un bloc entre `@two-languages` et `@end-two-languages` (dans un commentaire) n'est gardé que pour un site en deux langues, un bloc entre `@one-language` et `@end-one-language` que pour un site en une langue. Les lignes des marqueurs sont retirées.
@@ -73,6 +74,9 @@ Back ends uniquement :
 | `fallbackDatabase` | Nom de cette solution dans le menu et le récapitulatif (ex. `"SQLite"`) |
 | `phpExtensions` | Extensions PHP proposées à l'activation dans le `php.ini` local (Composer), ex. `["fileinfo", "mbstring"]` |
 | `nodeEngine` | Version minimale de Node.js demandée par le stack, ex. `">=22.13.0"` (vérifiée et mise à jour au démarrage) |
+| `online` | Mise en ligne de l'API, une phrase en `fr` / `en` (jetons acceptés, ex. `{{PHP_VERSION}}`) : dernière étape de « Mettre en ligne » |
+| `onlyInside` | `true` = ce back end n'existe que dans un front (`inside`), ex. « API dans le site » : il n'est proposé qu'avec ces fronts |
+| `inside` | Fronts qui contiennent déjà ce back end, ex. `{ "nuxt": {...} }` pour Nitro (le serveur de Nuxt). Avec ce front, pas de `backend/` : l'API est rangée dans `frontend/<dir>/`, sur la même adresse que le site (sous `/api`), un seul serveur à lancer et à mettre en ligne. Champs : `dir` (dossier dans le front), `label` et `message` (`fr` / `en`, affichés dans le menu et le récapitulatif), `steps` (exécutées dans `frontend/` après celles du front ; `copy` part du dossier du back end), `api` (remplace des champs de l'`api` du front pour `api.js`), `guide` (chemins relatifs à `frontend/<dir>/`), `doc` (doc.md propre à ce cas), `versions` (paquets ajoutés dans ce cas, ex. l'adaptateur Node.js), `online` (mise en ligne du site + API). Le robot teste ce couple à part (`combos/nuxt-nitro`, `combos/next-site`...). |
 
 Docker n'est ajouté que si nécessaire : back end `php`, base MySQL ou front `"docker": true`.
 
@@ -85,6 +89,7 @@ Toutes acceptent une condition `when` :
 | `api` / `noApi` | le projet a un back end / n'en a pas |
 | `front` / `noFront` | le projet a un front / n'en a pas |
 | `db` / `noDb` | MySQL a été choisi / aucune base |
+| `separateApi` / `insideApi` / `noInsideApi` | le back end est dans `backend/` / il est rangé dans le front (`inside`) / il n'est pas dans le front (y compris sans back end) |
 Les chemins sont relatifs à `frontend/` (front) ou `backend/` (back end), sauf mention contraire.
 
 | Étape | Exemple | Effet |

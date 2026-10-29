@@ -27,7 +27,12 @@ function Get-NpmScripts([string]$Path) {
 
 $ApiScripts = Get-NpmScripts $ApiDir
 $AppScripts = Get-NpmScripts $AppDir
-$FrontBuild = if ($AppScripts.ContainsKey('build:prod')) { 'build:prod' } elseif ($AppScripts.ContainsKey('build')) { 'build' } else { $null }
+# Production of the front: "generate" (static site, Nuxt with a separate API or none) or "build".
+# Only one of them is offered: the one that fits the project.
+$FrontGenerate = $AppScripts.ContainsKey('generate:prod')
+$FrontBuild = if ($FrontGenerate) { $null } elseif ($AppScripts.ContainsKey('build:prod')) { 'build:prod' } elseif ($AppScripts.ContainsKey('build')) { 'build' } else { $null }
+# The front builds a Node.js server with the API inside (Nuxt + Nitro), otherwise a static site to upload
+$FrontServer = '{{FRONT_SERVER}}' -eq 'true'
 
 # ---------------------------------------------------------------------------
 # Actions
@@ -125,10 +130,15 @@ if (-not $Action) {
     }
     Write-MenuItem 'I' 'Install' 'Install / update dependencies (Composer / npm)'
     Write-Host ''
-    if ($AppScripts.ContainsKey('generate:prod')) { Write-MenuItem 'G' 'Generate' 'Static front with .env.production' }
-    if ($FrontBuild) { Write-MenuItem 'B' 'Build front' "npm run $FrontBuild" }
+    if ($FrontGenerate) { Write-MenuItem 'G' 'Generate' 'Static site to upload (frontend/.output/public), with .env.production' }
+    if ($FrontBuild -and $FrontServer) { Write-MenuItem 'B' 'Build' 'Site + API in one Node.js server (then npm start, see the steps below)' }
+    elseif ($FrontBuild) { Write-MenuItem 'B' 'Build front' 'Static site to upload, with .env.production' }
     if ($ApiScripts.ContainsKey('build')) { Write-MenuItem 'A' 'Build API' 'npm run build (backend/)' }
-    if ($FrontBuild -or $ApiScripts.ContainsKey('build')) { Write-Host '' }
+    if ($FrontGenerate -or $FrontBuild -or $ApiScripts.ContainsKey('build')) { Write-Host '' }
+    # How to put this project online (filled by DC Scaffold for the chosen front and back end)
+    Write-Host '  {{DEPLOY_TITLE}}' -ForegroundColor DarkGray
+{{DEPLOY_LINES}}
+    Write-Host ''
     $Action = Read-Default 'Choice' ''
 }
 
@@ -137,7 +147,7 @@ switch ($Action.ToUpper()) {
     'S' { if ($HasDocker) { Invoke-In $Root { docker compose down } | Out-Null } }
     'R' { if ($HasDocker) { Invoke-In $Root { docker compose build --no-cache } | Out-Null } }
     'I' { if (Install-Dependencies -All) { exit 0 } else { exit 1 } }
-    'G' { Start-Window $AppDir 'Front generate (production)' 'npm run generate:prod' }
+    'G' { if ($FrontGenerate) { Start-Window $AppDir 'Front generate (production)' 'npm run generate:prod' } }
     'B' { if ($FrontBuild) { Start-Window $AppDir 'Front build (production)' "npm run $FrontBuild" } }
     'A' { Start-Window $ApiDir 'API build (production)' 'npm run build' }
     default { Write-Fail 'Invalid choice.' }

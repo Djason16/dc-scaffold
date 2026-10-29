@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nitro dev --port {{API_PORT}}",
+    "dev": "nitro dev --port {{API_PORT}} --host --no-qr",
     "build": "nitro build",
     "start": "node --disable-warning=ExperimentalWarning --env-file=.env.production .output/server/index.mjs"
   },

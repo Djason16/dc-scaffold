@@ -17,6 +17,8 @@ How it works:
 3. "test" creates a project with DC Scaffold (on Linux, with PowerShell) and checks it:
    build of the front (and its type check), start of the back end. A stack with a new major version is first tested
    with it (-UseLatest); if that fails, it is tested again with the version already validated.
+   A back end that goes inside a front ("inside" of its stack.json, e.g. Nitro inside Nuxt) is also tested
+   in that front ("combos/nuxt-nitro"): one build, then the site and /api answer.
 4. "publish" raises "stable" in stack.json for every new major version that works (and the PHP /
    MySQL versions when "infra-test" passed), bumps stacks/version.txt when the stacks changed, and
    prepares the online catalog (catalog.json, stacks.zip).
@@ -139,7 +141,8 @@ def plan():
     for kind in ("fronts", "backs"):
         for stack_file in sorted(STACKS.glob(f"{kind}/*/stack.json")):
             stack_id = stack_file.parent.name
-            if stack_id == "none":
+            # "onlyInside" ("API inside the site"): no project of its own, tested inside its fronts (combos)
+            if stack_id == "none" or read_json(stack_file).get("onlyInside"):
                 continue
             packages = []
             for entry in read_json(stack_file).get("versions", []):
@@ -162,6 +165,12 @@ def plan():
                 "packages": packages,
                 "newMajor": any(p["newMajor"] for p in packages),
             })
+    # Back ends inside a front (Nitro inside Nuxt): the pair is tested with the validated versions
+    for stack_file in sorted(STACKS.glob("backs/*/stack.json")):
+        for front in read_json(stack_file).get("inside", {}):
+            if (STACKS / "fronts" / front / "stack.json").exists():
+                entries.append({"kind": "combos", "id": f"{front}-{stack_file.parent.name}", "front": front,
+                                "back": stack_file.parent.name, "packages": [], "newMajor": False})
     print(json.dumps(entries))
 
 
@@ -204,7 +213,10 @@ def create_project(kind, stack_id, use_latest, log):
     name = f"robot-{stack_id}" + ("-latest" if use_latest else "")
     WORK.mkdir(parents=True, exist_ok=True)
     shutil.rmtree(WORK / name, ignore_errors=True)
-    if kind == "fronts":
+    if kind == "combos":
+        front, back = stack_id.split("-", 1)
+        choice = ["-Front", front, "-Back", back, "-Database", "sqlite", "-Languages", "fr,en"]
+    elif kind == "fronts":
         choice = ["-Front", stack_id, "-Back", "none", "-Languages", "fr,en"]
     else:
         database = "mysql" if read_json(STACKS / kind / stack_id / "stack.json").get("database") is True else "sqlite"
@@ -266,13 +278,40 @@ def check_back(stack_id, project, log):
         os.killpg(server.pid, 9)
 
 
+def check_inside(stack_id, project, log):
+    """Back end inside the front: one build, then "npm start" (the server online) answers the site and /api"""
+    frontend = project / "frontend"
+    if not run(["npm", "run", "build"], frontend, log):
+        return False
+    # Same type check as the front alone (SvelteKit: svelte-check), the API code included
+    if stack_id.startswith("sveltekit-") and not run(["npx", "svelte-check", "--threshold", "error"], frontend, log):
+        return False
+    with open(log, "a", encoding="utf-8") as out:
+        server = subprocess.Popen(["npm", "start"], cwd=frontend, stdout=out,
+                                  stderr=subprocess.STDOUT, start_new_session=True, env={**os.environ, "PORT": API_PORT})
+    try:
+        site = http_status(f"http://127.0.0.1:{API_PORT}/")
+        api_body = ""
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{API_PORT}/api", timeout=5) as response:
+                api_body = response.read().decode()
+        except Exception as error:
+            api_body = f"!! {error}"
+        with open(log, "a", encoding="utf-8") as out:
+            out.write(f"\nGET / -> {site}\nGET /api -> {api_body[:300]}\n")
+        return site == 200 and '"success":true' in "".join(api_body.split())
+    finally:
+        os.killpg(server.pid, 9)
+
+
 def test(kind, stack_id, out):
     """Tests a stack, writes its result (JSON) to "out" and its log next to it"""
     entry = next(e for e in json.loads(os.environ.get("ROBOT_PLAN", "[]")) if e["kind"] == kind and e["id"] == stack_id) \
         if os.environ.get("ROBOT_PLAN") else {"kind": kind, "id": stack_id, "packages": [], "newMajor": False}
     log = Path(out).with_suffix(".log")
+    log.parent.mkdir(parents=True, exist_ok=True)  # results/ does not exist in a fresh checkout
     log.write_text("", encoding="utf-8")
-    check = check_front if kind == "fronts" else check_back
+    check = {"fronts": check_front, "combos": check_inside}.get(kind, check_back)
 
     def works(use_latest):
         project = create_project(kind, stack_id, use_latest, log)
@@ -318,6 +357,7 @@ def infra_test(out):
     """Candidate PHP / MySQL: Docker images of a Slim project, a query on MySQL, every PHP back end"""
     infra = json.loads(os.environ["ROBOT_INFRA"])
     log = Path(out).with_suffix(".log")
+    log.parent.mkdir(parents=True, exist_ok=True)  # results/ does not exist in a fresh checkout
     log.write_text("", encoding="utf-8")
     original = INFRA.read_text(encoding="utf-8")
     php = infra["php"]["candidate"] or infra["php"]["current"]
@@ -326,24 +366,35 @@ def infra_test(out):
     try:
         write_infra({"php": php, "mysql": mysql})
 
-        # 1. Slim project with MySQL in Docker: build, start, query
-        project = create_project("backs", "slim", False, log)
+        # 1. Slim project with MySQL in Docker: build, start, query. Its own log (infra-docker.log), shown in the issue
+        docker_log = log.with_name("infra-docker.log")
+        docker_log.write_text("", encoding="utf-8")
+        project = create_project("backs", "slim", False, docker_log)
         if project:
             (project / "backend" / "src" / "Controllers" / "RobotController.php").write_text(ROBOT_CONTROLLER, encoding="utf-8")
             compose = ["docker", "compose"]
-            if run(compose + ["up", "-d", "--build", "--wait"], project, log, timeout=1800):
+            if run(compose + ["up", "-d", "--build", "--wait"], project, docker_log, timeout=1800):
+                # Until MySQL really answers: an error (500 while MySQL finishes its first start) is tried again
                 body = ""
                 for _ in range(30):
                     try:
                         with urllib.request.urlopen(f"http://127.0.0.1:{API_PORT}/robot", timeout=5) as response:
                             body = response.read().decode()
-                            break
+                    except urllib.error.HTTPError as error:
+                        body = error.read().decode(errors="replace")
                     except Exception:
-                        time.sleep(2)
-                with open(log, "a", encoding="utf-8") as file:
+                        body = ""
+                    if '"two"' in body:
+                        break
+                    time.sleep(2)
+                with open(docker_log, "a", encoding="utf-8") as file:
                     file.write(f"\nGET /robot -> {body}\n")
                 result["dockerWorks"] = mysql in body and '"two"' in body
-            run(compose + ["down", "-v"], project, log)
+            if not result["dockerWorks"]:
+                # What the containers said: the cause of a failed start or of an error of the API
+                run(compose + ["ps", "-a"], project, docker_log)
+                run(compose + ["logs", "--no-color", "--tail", "40"], project, docker_log)
+            run(compose + ["down", "-v"], project, docker_log)
 
         # 2. Every PHP back end, with the candidate PHP of the runner
         for stack_id in ("slim", "laravel", "symfony", "php"):
@@ -395,13 +446,26 @@ def next_version(current):
     return f"{base}.1"
 
 
+def log_tail(result_file, lines=60, name=None):
+    """End of the log of a test (next to its result, or "name" in the same folder), for the GitHub issue:
+    the cause without opening the job. Passwords of the test projects are masked."""
+    log = Path(result_file).with_name(name) if name else Path(result_file).with_suffix(".log")
+    if not log.exists():
+        return ""
+    text = "\n".join(log.read_text(encoding="utf-8", errors="replace").splitlines()[-lines:])
+    text = re.sub(r"\x1b\[[0-9;]*m", "", text).replace("```", "'''")  # no terminal colors, no end of the code block
+    text = re.sub(r"(root / |PASS(?:WORD)?[=:] ?)\S+", r"\1***", text)
+    return f"\n  <details><summary>End of the log</summary>\n\n```\n{text}\n```\n  </details>"
+
+
 def publish(results_dir, dist, previous_catalog=None):
-    results = [read_json(p) for p in sorted(Path(results_dir).rglob("*.json"))]
+    result_files = sorted(Path(results_dir).rglob("*.json"))
+    results = [read_json(p) for p in result_files]
     dist = Path(dist)
     dist.mkdir(parents=True, exist_ok=True)
     changes, broken = [], []
 
-    for result in results:
+    for result_file, result in zip(result_files, results):
         if result.get("infra"):
             candidates = {name: result[name]["candidate"] for name in ("php", "mysql") if result[name]["candidate"]}
             names = ", ".join(f"{name.upper()} {value}" for name, value in candidates.items())
@@ -412,7 +476,8 @@ def publish(results_dir, dist, previous_catalog=None):
                 failed = [stack for stack, works in result["backs"].items() if not works]
                 why = "the Docker images do not start" if not result["dockerWorks"] else "broken: " + ", ".join(failed)
                 broken.append(f"- **Docker images** ({names}): not used yet, {why}. "
-                              f"DC Scaffold stays on the current versions.")
+                              f"DC Scaffold stays on the current versions."
+                              + log_tail(result_file, name=None if result["dockerWorks"] else "infra-docker.log"))
             continue
         stack_file = STACKS / result["kind"] / result["id"] / "stack.json"
         if result.get("latestWorks"):
@@ -424,10 +489,10 @@ def publish(results_dir, dist, previous_catalog=None):
         elif result.get("newMajor") and result.get("stableWorks"):
             new = ", ".join(f"{p['package']} {p['latest']}" for p in result["packages"] if p["newMajor"])
             broken.append(f"- **{result['id']}**: the new major version does not work yet ({new}); "
-                          f"DC Scaffold stays on the validated version, which still works.")
+                          f"DC Scaffold stays on the validated version, which still works." + log_tail(result_file))
         if result.get("stableWorks") is False:
             broken.append(f"- **{result['id']}**: does not work, even with the validated version. "
-                          f"To fix quickly: see the log of the job \"{result['kind']}/{result['id']}\".")
+                          f"To fix quickly: see the log of the job \"{result['kind']}/{result['id']}\"." + log_tail(result_file))
 
     # New version of the stacks when they changed since the last catalog (catalog.json of the last run)
     version_file = STACKS / "version.txt"

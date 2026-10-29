@@ -10,6 +10,10 @@
  *
  * Any other method becomes a route through: static routes = { markShipped: ['POST', '/{id}/mark-shipped'] }
  */
+/**
+ * @typedef {{ methods: string[], path: string, pattern: RegExp, handler: Function }} Route
+ * @type {Record<string, [string[], string]>}
+ */
 const REST_ACTIONS = {
     getAll: [['GET'], ''],
     getOne: [['GET'], '/{id}'],
@@ -19,13 +23,20 @@ const REST_ACTIONS = {
 }
 
 // ProductsController -> /products
+/** @param {string} name */
 const defaultPrefix = (name) =>
     '/' + name.replace(/Controller$/, '').replace(/(?<!^)[A-Z]/g, '-$&').toLowerCase()
 
 // '/products/{id}' -> /^\/products\/(?<id>[^/]+)$/
+/** @param {string} path */
 const toPattern = (path) => new RegExp(`^${path.replace(/\{(\w+)\}/g, '(?<$1>[^/]+)')}$`)
 
 // [HTTP methods, path] for a controller method, or null when it is not a route
+/**
+ * @param {any} ControllerClass
+ * @param {string} action
+ * @returns {[string[], string] | null}
+ */
 const routeOf = (ControllerClass, action) => {
     const custom = ControllerClass.routes ?? {}
     if (Object.hasOwn(custom, action)) return [[custom[action][0].toUpperCase()], custom[action][1]]
@@ -35,6 +46,7 @@ const routeOf = (ControllerClass, action) => {
 export const RouteDiscovery = {
     /** @param {{ name: string, controller: any }[]} controllers */
     scan(controllers) {
+        /** @type {Route[]} */
         const routes = []
 
         for (const { name, controller: ControllerClass } of controllers) {
@@ -55,6 +67,11 @@ export const RouteDiscovery = {
     },
 
     /** Finds the route for a request; pathExists tells a 405 from a 404 */
+    /**
+     * @param {Route[]} routes
+     * @param {string} method
+     * @param {string} path
+     */
     match(routes, method, path) {
         let pathExists = false
 

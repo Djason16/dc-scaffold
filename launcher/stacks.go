@@ -72,7 +72,7 @@ func readStacks(root, kind string) []map[string]any {
 				continue
 			}
 			view := map[string]any{"id": entry.Name(), "custom": folder != builtIn}
-			for _, field := range []string{"label", "order", "description", "database", "drivers", "fallbackDatabase", "noDatabase", "port", "runtime", "requires", "docker"} {
+			for _, field := range []string{"label", "order", "description", "database", "drivers", "fallbackDatabase", "noDatabase", "port", "runtime", "requires", "docker", "inside", "onlyInside"} {
 				if value, ok := stack[field]; ok {
 					view[field] = value
 				}

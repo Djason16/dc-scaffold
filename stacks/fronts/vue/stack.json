@@ -123,5 +123,9 @@
         "textUsage": "`{{ $lang.getTranslation('introTitle') }}`",
         "header": "components/layout/Header/Header.vue",
         "footer": "components/layout/Footer/Footer.vue"
+    },
+    "deploy": {
+        "key": "B",
+        "dir": "dist"
     }
 }

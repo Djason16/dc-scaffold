@@ -75,6 +75,7 @@ const TEXTS = {
         noneBack: 'Pas de serveur : un site simple, sans données à enregistrer',
         noDatabase: 'Aucune',
         custom: 'Perso',
+        insideTag: 'API dans le site',
         running: 'Création en cours',
         starting: 'Démarrage',
         cancel: 'Annuler',
@@ -183,6 +184,7 @@ const TEXTS = {
         noneBack: 'No server: a simple site, with no data to save',
         noDatabase: 'None',
         custom: 'Custom',
+        insideTag: 'API inside the site',
         running: 'Creating',
         starting: 'Starting',
         cancel: 'Cancel',
@@ -228,7 +230,7 @@ const TEXTS = {
 // Two letters for the square of each stack (custom stacks: the first letters of their label)
 const MARKS = {
     nuxt: 'NU', next: 'NX', sveltekit: 'SK', vue: 'VU', react: 'RE', svelte: 'SV', solid: 'SO', angular: 'NG', qwik: 'QW', astro: 'AS', vanilla: 'JS',
-    slim: 'SL', laravel: 'LA', symfony: 'SY', php: 'PHP', nitro: 'NI', express: 'EX', nest: 'NE', adonis: 'AD', none: '—',
+    site: 'SV', slim: 'SL', laravel: 'LA', symfony: 'SY', php: 'PHP', nitro: 'NI', express: 'EX', nest: 'NE', adonis: 'AD', none: '—',
 }
 
 // ---------------------------------------------------------------------------
@@ -288,7 +290,7 @@ function slugify(name) {
 
 const stack = (kind, id) => state.info[kind].find((item) => item.id === id)
 const localized = (value) => (value && typeof value === 'object' ? value[state.lang] ?? value.en : value ?? '')
-const labelOf = (item) => (item.id === 'none' ? t('none') : item.label)
+const labelOf = (item) => (item.id === 'none' ? t('none') : localized(item.label))
 const projectFolder = () => {
     const destination = state.destination.replace(/[\\/]+$/, '')
     return destination + state.info.separator + slugify(state.name)
@@ -374,15 +376,20 @@ function stackTags(kind, item) {
         tags.push(item.runtime === 'php' ? 'PHP · Docker' : 'Node.js')
         if (item.database === true) tags.push('MySQL')
         if (item.database === 'optional') tags.push(`MySQL / ${item.fallbackDatabase ?? 'SQLite'}`)
+        // The chosen front already contains this back end (Nitro inside Nuxt): it goes into the site
+        if (item.inside?.[state.front]) tags.push(t('insideTag'))
     }
     if (item.custom) tags.push(t('custom'))
     return tags.map((tag) => `<span class="tag">${escape(tag)}</span>`).join('')
 }
 
+// A back end that only lives inside a front ("API inside the site"): shown with those fronts only
+const offered = (kind, item) => kind === 'fronts' || !item.onlyInside || Boolean(item.inside?.[state.front])
+
 function renderStacks(kind) {
     const front = kind === 'fronts'
     const chosen = front ? state.front : state.back
-    const cards = state.info[kind].map((item) => {
+    const cards = state.info[kind].filter((item) => offered(kind, item)).map((item) => {
         const mark = MARKS[item.id] ?? item.label.replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase()
         const text = item.id === 'none' ? t(front ? 'noneFront' : 'noneBack') : localized(item.description)
         return `<button type="button" class="card ${chosen === item.id ? 'selected' : ''}" data-pick="${escape(item.id)}">
@@ -440,7 +447,9 @@ function options() {
     const databaseKind = hasBack ? back.database : false
     const hasDatabase = databaseKind === true || (databaseKind === 'optional' && state.database === 'mysql')
     const drivers = (back?.drivers ?? []).filter(Boolean)
-    return { front, back, hasFront, hasBack, databaseKind, hasDatabase, drivers, nodeBack: back?.runtime === 'node' }
+    // Back end the front already contains (Nitro inside Nuxt): one folder, one server, the API under /api
+    const inside = hasFront && hasBack ? back?.inside?.[state.front] ?? null : null
+    return { front, back, hasFront, hasBack, databaseKind, hasDatabase, drivers, nodeBack: back?.runtime === 'node', inside }
 }
 
 function languageValue(code) {
@@ -489,7 +498,7 @@ function renderOptions() {
 function renderPorts(o) {
     const ports = [
         o.hasFront && ['app', t('portApp')],
-        o.hasBack && ['api', t('portApi')],
+        o.hasBack && !o.inside && ['api', t('portApi')],
         o.hasDatabase && ['pma', t('portPma')],
         o.hasDatabase && o.nodeBack && ['db', t('portDb')],
     ].filter(Boolean)
@@ -512,13 +521,14 @@ function renderSummary(o) {
         [t('summaryProject'), state.name],
         [t('summaryFolder'), projectFolder(), 'mono'],
         [t('summaryFront'), labelOf(o.front)],
-        [t('summaryBack'), labelOf(o.back)],
+        [t('summaryBack'), o.inside?.label ? localized(o.inside.label) : labelOf(o.back)],
         database && [t('summaryDatabase'), database],
         o.hasFront && [t('summaryLanguages'), languages[state.languages]],
     ].filter(Boolean)
     return `<aside class="summary">
         <h3>${t('summary')}</h3>
         <dl>${rows.map(([label, value, kind]) => `<div><dt>${escape(label)}</dt><dd class="${kind ?? ''}" title="${escape(value)}">${kind === 'mono' ? `<bdi>${escape(value)}</bdi>` : escape(value)}</dd></div>`).join('')}</dl>
+        ${o.inside ? `<p class="summary-note">${escape(localized(o.inside.message))}</p>` : ''}
     </aside>`
 }
 
@@ -627,7 +637,7 @@ function payload() {
         driver: o.hasDatabase && o.drivers.length > 1 ? state.driver : '',
         languages: o.hasFront ? state.languages : '',
         appPort: o.hasFront ? state.ports.app : 0,
-        apiPort: o.hasBack ? state.ports.api : 0,
+        apiPort: o.hasBack && !o.inside ? state.ports.api : 0,
         pmaPort: o.hasDatabase ? state.ports.pma : 0,
         dbPort: o.hasDatabase && o.nodeBack ? state.ports.db : 0,
         git: state.git,
@@ -824,8 +834,12 @@ function bindStep() {
     })
 
     $$('[data-pick]').forEach((card) => card.addEventListener('click', () => {
-        if (state.step === 1) state.front = card.dataset.pick
-        else state.back = card.dataset.pick
+        if (state.step === 1) {
+            state.front = card.dataset.pick
+            // The chosen back end does not exist with this front ("API inside the site"): choose it again
+            const back = stack('backs', state.back)
+            if (back && !offered('backs', back)) state.back = null
+        } else state.back = card.dataset.pick
         state.error = ''
         render()
     }))

@@ -178,5 +178,9 @@
         "textUsage": "`{lang.getTranslation('introTitle')}`",
         "header": "components/layout/Header/Header.svelte",
         "footer": "components/layout/Footer/Footer.svelte"
+    },
+    "deploy": {
+        "key": "B",
+        "dir": "dist"
     }
 }

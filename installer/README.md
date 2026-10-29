@@ -29,7 +29,13 @@ Linux / WSL (Go, `nsis`, `mingw-w64`):
 UPDATE_REPO=owner/repo ./installer/build.sh
 ```
 
-Windows (Go and NSIS 3):
+Windows with Docker Desktop (recommended on Windows: the same build as GitHub, nothing else to install):
+
+```
+.\installer\build-docker.ps1 -UpdateRepo owner/repo
+```
+
+Windows without Docker (Go and NSIS 3 with the `amd64-unicode` stubs; the official NSIS for Windows does not have them):
 
 ```
 .\installer\build.ps1 -UpdateRepo owner/repo
@@ -40,6 +46,6 @@ The GitHub workflow fills it: pushing a `v*` tag builds the installer and publis
 which every installed DC Scaffold then offers as an update (the repository must be public).
 
 ```
-git tag v1.1.0
+git tag v1.2.0
 git push --tags
 ```
