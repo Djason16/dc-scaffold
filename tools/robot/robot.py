@@ -440,13 +440,24 @@ def next_version(current):
     return f"{base}.1"
 
 
+def log_tail(result_file, lines=60):
+    """End of the log of a test (next to its result), for the GitHub issue: the cause without opening the job"""
+    log = Path(result_file).with_suffix(".log")
+    if not log.exists():
+        return ""
+    text = "\n".join(log.read_text(encoding="utf-8", errors="replace").splitlines()[-lines:])
+    text = re.sub(r"\x1b\[[0-9;]*m", "", text).replace("```", "'''")  # no terminal colors, no end of the code block
+    return f"\n  <details><summary>End of the log</summary>\n\n```\n{text}\n```\n  </details>"
+
+
 def publish(results_dir, dist, previous_catalog=None):
-    results = [read_json(p) for p in sorted(Path(results_dir).rglob("*.json"))]
+    result_files = sorted(Path(results_dir).rglob("*.json"))
+    results = [read_json(p) for p in result_files]
     dist = Path(dist)
     dist.mkdir(parents=True, exist_ok=True)
     changes, broken = [], []
 
-    for result in results:
+    for result_file, result in zip(result_files, results):
         if result.get("infra"):
             candidates = {name: result[name]["candidate"] for name in ("php", "mysql") if result[name]["candidate"]}
             names = ", ".join(f"{name.upper()} {value}" for name, value in candidates.items())
@@ -457,7 +468,7 @@ def publish(results_dir, dist, previous_catalog=None):
                 failed = [stack for stack, works in result["backs"].items() if not works]
                 why = "the Docker images do not start" if not result["dockerWorks"] else "broken: " + ", ".join(failed)
                 broken.append(f"- **Docker images** ({names}): not used yet, {why}. "
-                              f"DC Scaffold stays on the current versions.")
+                              f"DC Scaffold stays on the current versions." + log_tail(result_file))
             continue
         stack_file = STACKS / result["kind"] / result["id"] / "stack.json"
         if result.get("latestWorks"):
@@ -469,10 +480,10 @@ def publish(results_dir, dist, previous_catalog=None):
         elif result.get("newMajor") and result.get("stableWorks"):
             new = ", ".join(f"{p['package']} {p['latest']}" for p in result["packages"] if p["newMajor"])
             broken.append(f"- **{result['id']}**: the new major version does not work yet ({new}); "
-                          f"DC Scaffold stays on the validated version, which still works.")
+                          f"DC Scaffold stays on the validated version, which still works." + log_tail(result_file))
         if result.get("stableWorks") is False:
             broken.append(f"- **{result['id']}**: does not work, even with the validated version. "
-                          f"To fix quickly: see the log of the job \"{result['kind']}/{result['id']}\".")
+                          f"To fix quickly: see the log of the job \"{result['kind']}/{result['id']}\"." + log_tail(result_file))
 
     # New version of the stacks when they changed since the last catalog (catalog.json of the last run)
     version_file = STACKS / "version.txt"

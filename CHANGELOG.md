@@ -16,6 +16,7 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 - One folder, one `npm run dev`, one build (`start.bat` then `B`) and one `npm start` online (Node.js host): Next.js runs `next start`, SvelteKit `adapter-node`, Astro `@astrojs/node`, Qwik its Node.js server adapter; the pages stay prerendered, only `/api` answers on each request
 - A new controller file is picked up by itself, also while `npm run dev` runs (`import.meta.glob`)
 - The compatibility robot tests each pair (`combos/next-site`, `combos/sveltekit-site`, `combos/astro-site`, `combos/qwik-site`)
+- The GitHub issue of the compatibility robot shows the end of the log of every failure: the cause without opening the job
 
 ### Going online, step by step
 - Every project has a "Going online" section in its README, and the same steps under the `start.bat` menu, for the chosen front and back end: online settings of the API, address of the API for the site (before the build), what to upload for the site, what to upload for the API
