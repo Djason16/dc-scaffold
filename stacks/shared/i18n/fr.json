@@ -735,7 +735,11 @@
         "API (inside the site): environment": "API (dans le site) : environnement",
         "TCP (127.0.0.1), not the socket: on the first start MySQL runs a temporary server without network": "TCP (127.0.0.1), pas le socket : au premier démarrage, MySQL lance un serveur temporaire sans réseau",
         "to create the database, and the socket would answer before the real server is ready": "pour créer la base, et le socket répondrait avant que le vrai serveur soit prêt",
-        "Server of the site online (npm start): listens on every address of the host": "Serveur du site en ligne (npm start) : écoute sur toutes les adresses de l'hébergement"
+        "Server of the site online (npm start): listens on every address of the host": "Serveur du site en ligne (npm start) : écoute sur toutes les adresses de l'hébergement",
+        "Start of the MySQL container: mysql/logs/ of the project is mounted on /var/lib/mysql-logs.": "Démarrage du conteneur MySQL : mysql/logs/ du projet est monté sur /var/lib/mysql-logs.",
+        "On Linux and macOS it belongs to the user of the computer, and MySQL (user \"mysql\") could not write": "Sous Linux et macOS, il appartient à l'utilisateur de l'ordinateur, et MySQL (utilisateur \"mysql\") ne pourrait pas y écrire",
+        "its error log there and would stop: it is given to \"mysql\" first, then MySQL starts as usual.": "son journal d'erreurs et s'arrêterait : il est d'abord donné à \"mysql\", puis MySQL démarre normalement.",
+        "The logs folder (mounted from mysql/logs) is given to MySQL on every start: see entrypoint.sh": "Le dossier des journaux (monté depuis mysql/logs) est donné à MySQL à chaque démarrage : voir entrypoint.sh"
     },
     "strings": {
         "The composer.lock file does not match, running composer update...": "Le composer.lock ne correspond pas, lancement de composer update...",

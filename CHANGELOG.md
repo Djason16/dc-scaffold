@@ -25,6 +25,7 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 ### Fixes
 - `start.bat` offers only the production build that fits the project: Nuxt with a separate API (PHP or other) or without one gets `G` (static site) only, no more `B` (`nuxt build`, a Node.js server that made no sense next to a PHP API); Nuxt + Nitro gets `B` only (site + API in one Node.js server). Every option says what it produces
 - Nitro (separate): `npm run dev` only answered on `::1` (IPv6) since the latest Nitro 2, so `http://127.0.0.1` and the compatibility robot could not reach it; it now listens on every address, like Express and NestJS
+- MySQL in Docker starts on Linux and macOS: it could not write its error log in the `mysql/logs/` folder of the project (owned by the user of the computer) and stopped at once; Windows was not affected
 - MySQL in Docker is "healthy" only once really ready: on the first start, the API (and the compatibility robot) could reach it while MySQL was still creating the database, and get an error
 - Docker image of the PHP back ends: works with PHP 8.5 (OPcache is built into PHP since 8.5 and could no longer be installed), so the compatibility robot can move to PHP 8.5
 
