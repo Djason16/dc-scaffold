@@ -366,12 +366,14 @@ def infra_test(out):
     try:
         write_infra({"php": php, "mysql": mysql})
 
-        # 1. Slim project with MySQL in Docker: build, start, query
-        project = create_project("backs", "slim", False, log)
+        # 1. Slim project with MySQL in Docker: build, start, query. Its own log (infra-docker.log), shown in the issue
+        docker_log = log.with_name("infra-docker.log")
+        docker_log.write_text("", encoding="utf-8")
+        project = create_project("backs", "slim", False, docker_log)
         if project:
             (project / "backend" / "src" / "Controllers" / "RobotController.php").write_text(ROBOT_CONTROLLER, encoding="utf-8")
             compose = ["docker", "compose"]
-            if run(compose + ["up", "-d", "--build", "--wait"], project, log, timeout=1800):
+            if run(compose + ["up", "-d", "--build", "--wait"], project, docker_log, timeout=1800):
                 # Until MySQL really answers: an error (500 while MySQL finishes its first start) is tried again
                 body = ""
                 for _ in range(30):
@@ -385,10 +387,14 @@ def infra_test(out):
                     if '"two"' in body:
                         break
                     time.sleep(2)
-                with open(log, "a", encoding="utf-8") as file:
+                with open(docker_log, "a", encoding="utf-8") as file:
                     file.write(f"\nGET /robot -> {body}\n")
                 result["dockerWorks"] = mysql in body and '"two"' in body
-            run(compose + ["down", "-v"], project, log)
+            if not result["dockerWorks"]:
+                # What the containers said: the cause of a failed start or of an error of the API
+                run(compose + ["ps", "-a"], project, docker_log)
+                run(compose + ["logs", "--no-color", "--tail", "40"], project, docker_log)
+            run(compose + ["down", "-v"], project, docker_log)
 
         # 2. Every PHP back end, with the candidate PHP of the runner
         for stack_id in ("slim", "laravel", "symfony", "php"):
@@ -440,13 +446,15 @@ def next_version(current):
     return f"{base}.1"
 
 
-def log_tail(result_file, lines=60):
-    """End of the log of a test (next to its result), for the GitHub issue: the cause without opening the job"""
-    log = Path(result_file).with_suffix(".log")
+def log_tail(result_file, lines=60, name=None):
+    """End of the log of a test (next to its result, or "name" in the same folder), for the GitHub issue:
+    the cause without opening the job. Passwords of the test projects are masked."""
+    log = Path(result_file).with_name(name) if name else Path(result_file).with_suffix(".log")
     if not log.exists():
         return ""
     text = "\n".join(log.read_text(encoding="utf-8", errors="replace").splitlines()[-lines:])
     text = re.sub(r"\x1b\[[0-9;]*m", "", text).replace("```", "'''")  # no terminal colors, no end of the code block
+    text = re.sub(r"(root / |PASS(?:WORD)?[=:] ?)\S+", r"\1***", text)
     return f"\n  <details><summary>End of the log</summary>\n\n```\n{text}\n```\n  </details>"
 
 
@@ -468,7 +476,8 @@ def publish(results_dir, dist, previous_catalog=None):
                 failed = [stack for stack, works in result["backs"].items() if not works]
                 why = "the Docker images do not start" if not result["dockerWorks"] else "broken: " + ", ".join(failed)
                 broken.append(f"- **Docker images** ({names}): not used yet, {why}. "
-                              f"DC Scaffold stays on the current versions." + log_tail(result_file))
+                              f"DC Scaffold stays on the current versions."
+                              + log_tail(result_file, name=None if result["dockerWorks"] else "infra-docker.log"))
             continue
         stack_file = STACKS / result["kind"] / result["id"] / "stack.json"
         if result.get("latestWorks"):
