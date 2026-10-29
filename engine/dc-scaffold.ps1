@@ -533,6 +533,8 @@ function Get-Stacks([string]$Kind) {
             Write-Warn (T 'stack_invalid' $file)
             continue
         }
+        # A label can be in two languages ({ "fr": ..., "en": ... }), like the description
+        if ($stack.label -and $stack.label -isnot [string]) { $stack.label = Get-Localized $stack.label }
         $stack | Add-Member -NotePropertyName id -NotePropertyValue $folder.Name -Force
         $stack | Add-Member -NotePropertyName path -NotePropertyValue $folder.FullName -Force
         $stack | Add-Member -NotePropertyName custom -NotePropertyValue $folder.FullName.StartsWith($SettingsDir) -Force
@@ -563,7 +565,9 @@ function Read-Stack([string]$Prompt, $Stacks) {
 function Invoke-StackSteps($Stack, [string]$Dir) {
     $target = Join-Path $Root $Dir
     $Tokens['DIR'] = $Dir
-    $conditions = @{ api = $HasBack; noApi = -not $HasBack; front = $HasFront; noFront = -not $HasFront; db = $HasDatabase; noDb = -not $HasDatabase }
+    # separateApi: an API in backend/, insideApi: an API inside the front (Nitro inside Nuxt)
+    $conditions = @{ api = $HasBack; noApi = -not $HasBack; front = $HasFront; noFront = -not $HasFront; db = $HasDatabase; noDb = -not $HasDatabase
+        separateApi = $HasBack -and -not $BackInside; insideApi = $BackInside; noInsideApi = -not $BackInside }
 
     foreach ($step in @($Stack.steps)) {
         if ($step.when -and -not $conditions[$step.when]) { continue }
@@ -1086,7 +1090,10 @@ if ($Interactive) {
         $Front = Read-Stack (T 'ask_choice') $Fronts
         Write-Host ''
         Write-Info (T 'back_title')
-        $Back = Read-Stack (T 'ask_choice') $Backs
+        # A back end that only lives inside a front ("onlyInside", e.g. "API inside the site") is offered with those fronts only
+        $offered = [ordered]@{}
+        foreach ($id in $Backs.Keys) { if (-not $Backs[$id].onlyInside -or $Backs[$id].inside.$Front) { $offered[$id] = $Backs[$id] } }
+        $Back = Read-Stack (T 'ask_choice') $offered
         if ($Front -ne 'none' -or $Back -ne 'none') { break }
         Write-Warn (T 'need_one_side')
     }
@@ -1102,6 +1109,17 @@ $BackStack = $Backs[$Back]
 $HasFront = $Front -ne 'none'
 $HasBack = $Back -ne 'none'
 $NodeBack = $BackStack.runtime -eq 'node'
+# A back end the front already contains ("inside" of its stack.json, e.g. Nitro inside Nuxt): its code goes
+# into frontend/<dir>/, no backend/ folder, one server for the site and the API (under /api)
+$Inside = if ($HasFront -and $HasBack -and $BackStack.inside) { $BackStack.inside.$Front } else { $null }
+$BackInside = [bool]$Inside
+if ($BackStack.onlyInside -and -not $BackInside) {
+    $hosts = @($BackStack.inside.PSObject.Properties.Name | Where-Object { $Fronts.Contains($_) } | ForEach-Object { $Fronts[$_].label })
+    Write-Fail (T 'back_only_inside' $BackStack.label ($hosts -join ', '))
+    exit 1
+}
+$BackDir = if ($BackInside) { "frontend/$($Inside.dir)" } else { 'backend' }
+$BackRoot = if ($BackInside) { 'frontend' } else { 'backend' }
 
 # Default port of the front framework (Vite 5173, Astro 4321...), unless -AppPort is given
 if (-not $AppPort) { $AppPort = if ($FrontStack.port) { [int]$FrontStack.port } else { 3000 } }
@@ -1154,7 +1172,7 @@ if (-not $SiteLanguages) { $SiteLanguages = @('fr') }
 
 if ($Interactive) {
     if ($HasFront) { $AppPort = [int](Read-Default (T 'ask_app_port') $AppPort) }
-    if ($HasBack) { $ApiPort = [int](Read-Default (T 'ask_api_port') $ApiPort) }
+    if ($HasBack -and -not $BackInside) { $ApiPort = [int](Read-Default (T 'ask_api_port') $ApiPort) }
     if ($HasDatabase) {
         $PmaPort = [int](Read-Default (T 'ask_pma_port') $PmaPort)
         if ($NodeBack) { $DbPort = [int](Read-Default (T 'ask_db_port') $DbPort) }
@@ -1192,7 +1210,7 @@ $DbPass = New-Secret
 
 $labels = @()
 if ($HasFront) { $labels += $FrontStack.label }
-if ($HasBack) { $labels += $BackStack.label }
+if ($HasBack) { $labels += $(if ($BackInside -and $Inside.label) { Get-Localized $Inside.label } else { $BackStack.label }) }
 if ($HasDatabase) { $labels += "MySQL $MySqlVersion" + $(if ($drivers.Count -gt 1) { " ($(if ($Driver -eq 'pdo') { 'PDO' } else { $Driver }))" } else { '' }) }
 if ($HasBack -and -not $HasDatabase) { $labels += $(if ($BackStack.fallbackDatabase) { $BackStack.fallbackDatabase } else { T 'no_database' }) }
 if (-not $HasBack) { $labels += (T 'static_site') }
@@ -1202,10 +1220,11 @@ $StackLabel = $labels -join '  ·  '
 Write-Ok "$((T 'project').PadRight(9)) $ProjectName"
 Write-Ok "$((T 'folder').PadRight(9)) $Root"
 Write-Ok "$((T 'stack').PadRight(9)) $StackLabel"
+if ($BackInside) { Write-Info (Get-Localized $Inside.message) }
 
 $ports = @()
 if ($HasFront) { $ports += $AppPort }
-if ($HasBack) { $ports += $ApiPort }
+if ($HasBack -and -not $BackInside) { $ports += $ApiPort }
 if ($HasDatabase) { $ports += $PmaPort }
 if ($HasDatabase -and $NodeBack) { $ports += $DbPort }
 foreach ($port in $ports) { if (Test-PortInUse $port) { Write-Warn (T 'port_used' $port) } }
@@ -1217,7 +1236,8 @@ foreach ($port in $ports) { if (Test-PortInUse $port) { Write-Warn (T 'port_used
 Write-Title "[2/8] $(T 'step_tools')"
 Send-UiEvent @{ type = 'step'; step = 2; total = 8; title = "$(T 'step_tools')" }
 
-$versionEntries = @($FrontStack.versions) + @($BackStack.versions) | Where-Object { $_ }
+# A back end inside the front comes with the front (Nitro with Nuxt): only the versions of the front
+$versionEntries = @($FrontStack.versions) + @(if ($BackInside) { $Inside.versions } else { $BackStack.versions }) | Where-Object { $_ }
 # Docker is needed for PHP back ends, MySQL and the static front server; a Node.js API alone runs without it
 $backNeeds = @($BackStack.requires | Where-Object { $_ -and ($_ -ne 'docker' -or $BackStack.runtime -eq 'php' -or $HasDatabase) })
 $needs = @($FrontStack.requires) + $backNeeds + @(if ($BackStack.runtime -eq 'php') { 'php' }) | Where-Object { $_ } | Select-Object -Unique
@@ -1244,9 +1264,16 @@ if (-not $versionEntries) { Write-Info (T 'no_dependency') }
 # ===========================================================================
 
 $api = $FrontStack.api
+# API inside the front: same site, the client of the API changes only what the back end gives ("api" of "inside")
+if ($BackInside -and $Inside.api -and $api) {
+    $merged = [ordered]@{}
+    foreach ($property in $api.PSObject.Properties) { $merged[$property.Name] = $property.Value }
+    foreach ($property in $Inside.api.PSObject.Properties) { $merged[$property.Name] = $property.Value }
+    $api = [pscustomobject]$merged
+}
 $urlRows = @()
 if ($HasFront) { $urlRows += , @('Front', "http://localhost:$AppPort") }
-if ($HasBack) { $urlRows += , @('API', "http://localhost:$ApiPort") }
+if ($HasBack) { $urlRows += , @('API', $(if ($BackInside) { "http://localhost:$AppPort/api" } else { "http://localhost:$ApiPort" })) }
 if ($HasDatabase) { $urlRows += , @('phpMyAdmin', "http://localhost:$PmaPort") }
 
 
@@ -1263,6 +1290,11 @@ $Tokens = [ordered]@{
     DB_HOST_PORT        = $DbPort
     DB_PORTS            = $(if ($NodeBack) { "    ports:`n      - '${DbPort}:3306'`n" } else { '' })
     DB_DRIVER           = $Driver
+    # Folder of the API code (backend, or frontend/server when the front contains the back end) and of its .env
+    BACK_DIR            = $BackDir
+    BACK_ROOT           = $BackRoot
+    # start.bat: the build of the front is a Node.js server with the API inside (Nuxt + Nitro), not a static site
+    FRONT_SERVER        = $(if ($BackInside) { 'true' } else { 'false' })
     API_DEPENDS_ON      = $(if ($HasDatabase) { "    depends_on:`n      db:`n        condition: service_healthy`n" } else { '' })
     DB_SERVER_VERSION   = "$MySqlVersion.0"
     MYSQL_VERSION       = $MySqlVersion
@@ -1364,7 +1396,9 @@ if ($HasFront -and $FrontStack.layout) {
     $Tokens['FRONT_TEXT_USAGE'] = $layout.textUsage
     $Tokens['FRONT_SITE_CONFIG'] = $(if ($layout.siteFile) { $Strings.guide_site_file -f (Get-FrontPath $layout.siteFile) } else { $Strings.guide_env -f $layout.env })
     # doc.md of the front: [fr] / [en] lines, [fr-api] / [en-api] only with a back end
-    $docTags = @($Lang) + $(if ($HasBack) { "$Lang-api" } else { @() }) + "$Lang-$(if ($SiteLanguages.Count -gt 1) { 'two-languages' } else { 'one-language' })"
+    # [fr-inside] / [en-inside]: the API is inside the front, [fr-separate] / [en-separate]: it is not (or there is none)
+    $docTags = @($Lang) + $(if ($HasBack) { "$Lang-api" } else { @() }) + "$Lang-$(if ($SiteLanguages.Count -gt 1) { 'two-languages' } else { 'one-language' })" +
+        "$Lang-$(if ($BackInside) { 'inside' } else { 'separate' })"
     $Tokens['FRONT_DOC'] = (Select-GuideLines (Read-StackFile (Join-Path $FrontStack.path 'doc.md')) $docTags).Trim()
     $text = [System.IO.File]::ReadAllText((Join-Path $StacksDir "shared\docs\guide\$Lang-front.md"))
     # Lines that do not apply to this front ("omitGuide": text they contain)
@@ -1378,19 +1412,65 @@ if ($HasBack -and $BackStack.guide) {
     $Tokens['BACK_EXT'] = $BackStack.controllerExt
     # Example controller file of the README (AdonisJS names its files products_controller.ts)
     $Tokens['BACK_CONTROLLER_FILE'] = $(if ($BackStack.controllerFile) { $BackStack.controllerFile } else { "ProductsController.$($BackStack.controllerExt)" })
+    # Inside the front, "guide" of "inside" replaces the paths that change (relative to frontend/<dir>/)
     foreach ($field in 'helpers', 'middleware', 'entry', 'envDev', 'envProd', 'custom', 'success', 'body', 'missing', 'db') {
-        $Tokens["BACK_$(($field -creplace '([A-Z])', '_$1').ToUpper())"] = $BackStack.guide.$field
+        $value = if ($BackInside -and $Inside.guide.$field) { $Inside.guide.$field } else { $BackStack.guide.$field }
+        $Tokens["BACK_$(($field -creplace '([A-Z])', '_$1').ToUpper())"] = $value
     }
     $Tokens['BACK_CUSTOM_ROUTE'] = $BackStack.guide.custom
+    # Full paths of the guide ("../" and "./" resolved: the route file of an API inside the front can be next to its folder)
+    foreach ($field in 'controllers', 'helpers', 'middleware', 'entry') {
+        $value = if ($field -eq 'controllers') { $BackStack.controllers } else { $Tokens["BACK_$($field.ToUpper())"] }
+        $parts = New-Object System.Collections.Generic.List[string]
+        foreach ($part in "$BackDir/$value" -split '/') {
+            if ($part -eq '..') { $parts.RemoveAt($parts.Count - 1) } elseif ($part -and $part -ne '.') { $parts.Add($part) }
+        }
+        $Tokens["BACK_$($field.ToUpper())_PATH"] = ($parts -join '/') + $(if ("$value".EndsWith('/')) { '/' } else { '' })
+    }
     # doc.md of the back end: folder tree and full controller example
-    $Tokens['BACK_DOC'] = (Select-GuideLines (Read-StackFile (Join-Path $BackStack.path 'doc.md')) @($Lang)).Trim()
-    # Lines starting with [tag] are kept only for this project: back end id, docker / node, mysql / sqlite, mysqli / pdo, front
-    $tags = @($Back, $(if ($BackStack.runtime -eq 'php') { 'docker' } else { 'node' }), $(if ($HasDatabase) { 'mysql' } else { 'sqlite' }))
+    $docFile = if ($BackInside -and $Inside.doc) { Join-Path $BackStack.path $Inside.doc } else { Join-Path $BackStack.path 'doc.md' }
+    $Tokens['BACK_DOC'] = (Select-GuideLines (Read-StackFile $docFile) @($Lang)).Trim()
+    # Lines starting with [tag] are kept only for this project: back end id, docker / node, mysql / sqlite, mysqli / pdo, front.
+    # Inside the front: "inside" and "<back>-in-<front>" (nitro-in-nuxt) instead of the back end id, node and front
+    $tags = if ($BackInside) { @("$Back-in-$Front", 'inside') }
+            else { @($Back, $(if ($BackStack.runtime -eq 'php') { 'docker' } else { 'node' })) }
+    $tags += $(if ($HasDatabase) { 'mysql' } else { 'sqlite' })
     if ($HasDatabase -and $drivers.Count -gt 1) { $tags += $Driver }
-    if ($HasFront) { $tags += 'front' }
+    if ($HasFront -and -not $BackInside) { $tags += 'front' }
     $guideParts += Expand-Tokens (Select-GuideLines ([System.IO.File]::ReadAllText((Join-Path $StacksDir "shared\docs\guide\$Lang-back.md"))) $tags)
 }
 $Tokens['GUIDE'] = ($guideParts | ForEach-Object { $_.Trim() }) -join "`n`n"
+
+# "Going online" of the README and of the start.bat menu: the steps of this project, in order.
+# A separate API is a second upload (the build of the site never contains it); an API inside the front is one server.
+$deploySteps = @()
+$deployNote = ''
+$apiEnvProd = $null
+if ($HasBack -and $BackStack.guide) {
+    $envProd = if ($BackInside -and $Inside.guide.envProd) { $Inside.guide.envProd } else { $BackStack.guide.envProd }
+    $apiEnvProd = "$BackRoot/$envProd"
+}
+if ($BackInside) {
+    if ($apiEnvProd) { $deploySteps += T 'deploy_inside_env' $apiEnvProd }
+    if ($Inside.online) { $deploySteps += Expand-Tokens (Get-Localized $Inside.online) }
+    $deployNote = T 'deploy_inside_note'
+} else {
+    if ($apiEnvProd) { $deploySteps += T $(if ($HasFront) { 'deploy_api_env' } else { 'deploy_api_env_alone' }) $apiEnvProd }
+    if ($HasFront -and $HasBack -and $FrontStack.api) {
+        # HTML / CSS / JS: the address is in a file (js/config.js), the other fronts read a variable of .env.production
+        $deploySteps += if ($FrontStack.api.source -match '\.') { T 'deploy_front_config' "frontend/$($FrontStack.api.source)" } else { T 'deploy_front_env' $FrontStack.api.source }
+    }
+    if ($HasFront -and $FrontStack.deploy) {
+        $deploySteps += if ($FrontStack.deploy.key) { T 'deploy_site' $FrontStack.deploy.key "frontend/$($FrontStack.deploy.dir)" } else { T 'deploy_site_asis' }
+    }
+    if ($HasBack -and $BackStack.online) { $deploySteps += T $(if ($HasFront) { 'deploy_api' } else { 'deploy_api_alone' }) (Expand-Tokens (Get-Localized $BackStack.online)) }
+    if ($HasFront -and $HasBack) { $deployNote = T 'deploy_two_parts' }
+}
+$deployList = for ($i = 0; $i -lt $deploySteps.Count; $i++) { "$($i + 1). $($deploySteps[$i])" }
+$Tokens['DEPLOY_STEPS'] = ((@($deployList) + $(if ($deployNote) { @('', $deployNote) } else { @() })) -join "`n").Trim()
+# start.bat: the same steps, without the Markdown
+$Tokens['DEPLOY_TITLE'] = (T 'deploy_title').Replace("'", "''")
+$Tokens['DEPLOY_LINES'] = (@($deployList) | ForEach-Object { "    Write-Host '   $(($_ -replace '`', '').Replace("'", "''"))' -ForegroundColor DarkGray" }) -join "`n"
 $readmeTags = @($(if (-not $HasFront) { 'nofront' }), $(if (-not $HasBack) { 'noback' })) | Where-Object { $_ }
 $readme = Select-GuideLines ([System.IO.File]::ReadAllText((Join-Path $StacksDir "shared\docs\readme\$Lang.md"))) $readmeTags
 # One empty line at most between blocks (lines removed by tags)
@@ -1440,9 +1520,14 @@ function Stop-Creation([string]$Message) {
     exit 1
 }
 
-Write-Title "[5/8] API ($($BackStack.label))"
-Send-UiEvent @{ type = 'step'; step = 5; total = 8; title = "API ($($BackStack.label))" }
-if ($HasBack) {
+# API inside the site: its own name ("API dans le site", "Nitro, API dans le site"), without "API (...)" around it
+$apiTitle = if ($BackInside -and $Inside.label) { Get-Localized $Inside.label } else { "API ($($BackStack.label))" }
+Write-Title "[5/8] $apiTitle"
+Send-UiEvent @{ type = 'step'; step = 5; total = 8; title = $apiTitle }
+if ($BackInside) {
+    # Created with the front, in the next step
+    Write-Info (T 'api_inside' $BackStack.label $FrontStack.label $BackDir)
+} elseif ($HasBack) {
     if (-not (Invoke-StackSteps $BackStack 'backend')) { Stop-Creation (T 'api_failed') }
     Set-PinnedVersions $BackStack 'backend'
     # One README for the whole project, at the root: the one of the framework goes away
@@ -1462,6 +1547,11 @@ if ($HasFront) {
     else {
         Set-PinnedVersions $FrontStack 'frontend'
         Remove-Item -LiteralPath (Join-Path $Root 'frontend\README.md') -Force -ErrorAction SilentlyContinue
+        # The back end inside the front: its steps ("steps" of "inside") run in frontend/, its files come from its own folder
+        if ($BackInside) {
+            Write-Info (T 'api_inside_done' $BackStack.label $BackDir)
+            if (-not (Invoke-StackSteps ([pscustomobject]@{ path = $BackStack.path; steps = $Inside.steps }) 'frontend')) { Stop-Creation (T 'api_failed') }
+        }
         # One language: no language buttons and no translation system (the texts are in the components)
         if ($SiteLanguages.Count -eq 1) {
             Get-ChildItem -LiteralPath (Join-Path $Root 'frontend') -Recurse -File -Include 'ChangeLanguageButton.*', 'changeLanguageButton.js', 'useLang.*' -ErrorAction SilentlyContinue |

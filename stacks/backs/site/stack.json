@@ -1,0 +1,510 @@
+{
+    "label": {
+        "fr": "API dans le site",
+        "en": "API inside the site"
+    },
+    "order": 70,
+    "description": {
+        "fr": "L'API rangée dans le site lui-même (Next.js, SvelteKit, Astro, Qwik) : un seul projet, un seul serveur",
+        "en": "The API placed inside the site itself (Next.js, SvelteKit, Astro, Qwik): one project, one server"
+    },
+    "requires": [
+        "node",
+        "docker"
+    ],
+    "runtime": "node",
+    "database": "optional",
+    "noDatabase": {
+        "fr": "Les données dans un simple fichier, rien à installer",
+        "en": "The data in a plain file, nothing to install"
+    },
+    "fallbackDatabase": "SQLite",
+    "nodeEngine": ">=22.13.0",
+    "onlyInside": true,
+    "controllers": "controllers",
+    "controllerExt": "js",
+    "guide": {
+        "helpers": ".",
+        "middleware": "handler.js",
+        "envDev": ".env",
+        "envProd": ".env.production",
+        "custom": "static routes = { markShipped: ['POST', '/{id}/mark-shipped'] }",
+        "success": "ResponseHelper.success({ products })",
+        "body": "await this.body(request)",
+        "missing": "RequestHelper.missing(data, ['name', 'price'])",
+        "db": "await this.fetchAll('SELECT * FROM products WHERE active = ?', [1])"
+    },
+    "inside": {
+        "sveltekit": {
+            "dir": "src/lib/server",
+            "label": {
+                "fr": "API dans le site",
+                "en": "API inside the site"
+            },
+            "message": {
+                "fr": "API dans le site : l'API est rangée dans frontend/src/lib/server/ et répond sous /api, avec le serveur de SvelteKit. Un seul dossier, un seul serveur à lancer et à mettre en ligne (hébergement Node.js).",
+                "en": "API inside the site: the API goes into frontend/src/lib/server/ and answers under /api, with the server of SvelteKit. One folder, one server to start and to put online (Node.js host)."
+            },
+            "versions": [
+                {
+                    "package": "@sveltejs/adapter-node",
+                    "registry": "npm",
+                    "stable": "6",
+                    "token": "V_SVELTE_ADAPTER_NODE"
+                }
+            ],
+            "api": {
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "source": "same site, under /api",
+                "usage": "Same site: api.get('/products') calls /api/products.",
+                "imports": "import { dev } from '$app/env'"
+            },
+            "steps": [
+                {
+                    "copy": "core",
+                    "to": "src/lib/server"
+                },
+                {
+                    "copy": "@shared/js-core",
+                    "to": "src/lib/server"
+                },
+                {
+                    "copy": "env"
+                },
+                {
+                    "env": {
+                        "file": ".env",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.production",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.example",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "dependencies.mysql2": "^3.24.0"
+                        }
+                    }
+                },
+                {
+                    "copy": "inside/sveltekit/files"
+                },
+                {
+                    "npm": {
+                        "delete": [
+                            "devDependencies.@sveltejs/adapter-static",
+                            "scripts.postbuild"
+                        ],
+                        "set": {
+                            "devDependencies.@sveltejs/adapter-node": "^{{V_SVELTE_ADAPTER_NODE}}",
+                            "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production build"
+                        }
+                    }
+                },
+                {
+                    "remove": [
+                        "scripts/sitemap.mjs"
+                    ]
+                },
+                {
+                    "replace": {
+                        "file": "vite.config.js",
+                        "find": "@sveltejs/adapter-static",
+                        "with": "@sveltejs/adapter-node"
+                    }
+                },
+                {
+                    "replace": {
+                        "file": "vite.config.js",
+                        "find": "adapter: adapter\\(\\{ fallback: '200.html' \\}\\)",
+                        "with": "adapter: adapter()"
+                    }
+                }
+            ],
+            "guide": {
+                "entry": "../../routes/api/[...path]/+server.js"
+            },
+            "online": {
+                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/build`), envoie `frontend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
+                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/build`), upload `frontend/` to a Node.js 22.13+ host and run `npm start`"
+            },
+            "doc": "inside/sveltekit/doc.md"
+        },
+        "astro": {
+            "dir": "src/server",
+            "label": {
+                "fr": "API dans le site",
+                "en": "API inside the site"
+            },
+            "message": {
+                "fr": "API dans le site : l'API est rangée dans frontend/src/server/ et répond sous /api, avec le serveur de Astro. Un seul dossier, un seul serveur à lancer et à mettre en ligne (hébergement Node.js).",
+                "en": "API inside the site: the API goes into frontend/src/server/ and answers under /api, with the server of Astro. One folder, one server to start and to put online (Node.js host)."
+            },
+            "versions": [
+                {
+                    "package": "@astrojs/node",
+                    "registry": "npm",
+                    "stable": "11",
+                    "token": "V_ASTRO_NODE"
+                }
+            ],
+            "api": {
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "source": "same site, under /api",
+                "usage": "Same site: api.get('/products') calls /api/products."
+            },
+            "steps": [
+                {
+                    "copy": "core",
+                    "to": "src/server"
+                },
+                {
+                    "copy": "@shared/js-core",
+                    "to": "src/server"
+                },
+                {
+                    "copy": "env"
+                },
+                {
+                    "env": {
+                        "file": ".env",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.production",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.example",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "dependencies.mysql2": "^3.24.0"
+                        }
+                    }
+                },
+                {
+                    "copy": "inside/astro/files"
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "dependencies.@astrojs/node": "^{{V_ASTRO_NODE}}",
+                            "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production dist/server/entry.mjs",
+                            "scripts.postbuild": "node scripts/sitemap.mjs dist/client"
+                        }
+                    }
+                },
+                {
+                    "replace": {
+                        "file": "astro.config.mjs",
+                        "find": "import \\{ defineConfig \\} from 'astro/config'",
+                        "with": "import node from '@astrojs/node'\nimport { defineConfig } from 'astro/config'"
+                    }
+                },
+                {
+                    "replace": {
+                        "file": "astro.config.mjs",
+                        "find": "(?m)^//[^\\n]*\\n(?=export default defineConfig)",
+                        "with": "// Pages prerendered in dist/client, the API (src/pages/api) answered by the Node.js server (dist/server)\n"
+                    }
+                },
+                {
+                    "replace": {
+                        "file": "astro.config.mjs",
+                        "find": "trailingSlash: 'always',",
+                        "with": "trailingSlash: 'ignore',\n    adapter: node({ mode: 'standalone' }),"
+                    }
+                }
+            ],
+            "guide": {
+                "entry": "../pages/api/[...path].js"
+            },
+            "online": {
+                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/dist`), envoie `frontend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
+                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/dist`), upload `frontend/` to a Node.js 22.13+ host and run `npm start`"
+            },
+            "doc": "inside/astro/doc.md"
+        },
+        "next": {
+            "dir": "server",
+            "label": {
+                "fr": "API dans le site",
+                "en": "API inside the site"
+            },
+            "message": {
+                "fr": "API dans le site : l'API est rangée dans frontend/server/ et répond sous /api, avec le serveur de Next.js. Un seul dossier, un seul serveur à lancer et à mettre en ligne (hébergement Node.js).",
+                "en": "API inside the site: the API goes into frontend/server/ and answers under /api, with the server of Next.js. One folder, one server to start and to put online (Node.js host)."
+            },
+            "versions": [],
+            "api": {
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "source": "same site, under /api",
+                "usage": "Same site: api.get('/products') calls /api/products."
+            },
+            "steps": [
+                {
+                    "copy": "core",
+                    "to": "server"
+                },
+                {
+                    "copy": "@shared/js-core",
+                    "to": "server"
+                },
+                {
+                    "copy": "env"
+                },
+                {
+                    "env": {
+                        "file": ".env",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.production",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.example",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "dependencies.mysql2": "^3.24.0"
+                        }
+                    }
+                },
+                {
+                    "copy": "inside/next/files"
+                },
+                {
+                    "replace": {
+                        "file": "next.config.mjs",
+                        "find": "(?m)^ *//[^\\n]*\\n *//[^\\n]*\\n *output: 'export',\\n",
+                        "with": "    // Node.js server (npm start): the pages and the API (app/api) together\n"
+                    }
+                },
+                {
+                    "replace": {
+                        "file": "next.config.mjs",
+                        "find": "trailingSlash: true,",
+                        "with": "trailingSlash: true,\n    // /api/products and /api/products/ both reach the API, without a redirect\n    skipTrailingSlashRedirect: true,"
+                    }
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "scripts.start": "next start",
+                            "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --to public"
+                        }
+                    }
+                }
+            ],
+            "guide": {
+                "entry": "../app/api/[[...path]]/route.js"
+            },
+            "online": {
+                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/.next`), envoie `frontend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
+                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/.next`), upload `frontend/` to a Node.js 22.13+ host and run `npm start`"
+            },
+            "doc": "inside/next/doc.md"
+        },
+        "qwik": {
+            "dir": "src/server",
+            "label": {
+                "fr": "API dans le site",
+                "en": "API inside the site"
+            },
+            "message": {
+                "fr": "API dans le site : l'API est rangée dans frontend/src/server/ et répond sous /api, avec le serveur de Qwik. Un seul dossier, un seul serveur à lancer et à mettre en ligne (hébergement Node.js).",
+                "en": "API inside the site: the API goes into frontend/src/server/ and answers under /api, with the server of Qwik. One folder, one server to start and to put online (Node.js host)."
+            },
+            "versions": [],
+            "api": {
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "source": "same site, under /api",
+                "usage": "Same site: api.get('/products') calls /api/products."
+            },
+            "steps": [
+                {
+                    "copy": "core",
+                    "to": "src/server"
+                },
+                {
+                    "copy": "@shared/js-core",
+                    "to": "src/server"
+                },
+                {
+                    "copy": "env"
+                },
+                {
+                    "env": {
+                        "file": ".env",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.production",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.example",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "dependencies.mysql2": "^3.24.0"
+                        }
+                    }
+                },
+                {
+                    "copy": "inside/qwik/files"
+                },
+                {
+                    "remove": [
+                        "adapters/static"
+                    ]
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "scripts[build.server]": "qwik check-client src dist && vite build -c adapters/node-server/vite.config.ts",
+                            "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production server/entry.node-server.js"
+                        }
+                    }
+                }
+            ],
+            "guide": {
+                "entry": "../routes/api/[...path]/index.ts"
+            },
+            "online": {
+                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/dist` et `frontend/server`), envoie `frontend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
+                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/dist` and `frontend/server`), upload `frontend/` to a Node.js 22.13+ host and run `npm start`"
+            },
+            "doc": "inside/qwik/doc.md"
+        }
+    }
+}

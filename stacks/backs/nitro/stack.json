@@ -96,5 +96,132 @@
         "missing": "RequestHelper.missing(data, ['name', 'price'])",
         "db": "await this.fetchAll('SELECT * FROM products WHERE active = ?', [1])",
         "deploy": "nitro"
+    },
+    "inside": {
+        "nuxt": {
+            "dir": "server",
+            "message": {
+                "fr": "API dans le site : Nuxt contient déjà Nitro, l'API est donc rangée dans frontend/server/ et répond sous /api. Un seul dossier, un seul serveur à lancer et à mettre en ligne (hébergement Node.js).",
+                "en": "API inside the site: Nuxt already contains Nitro, so the API goes into frontend/server/ and answers under /api. One folder, one server to start and to put online (Node.js host)."
+            },
+            "label": {
+                "fr": "Nitro, API dans le site",
+                "en": "Nitro, API inside the site"
+            },
+            "api": {
+                "imports": "import { useRequestEvent } from '#imports'\n\n// First display of a page (on the server): the API is called inside Nuxt, without going through the network\nconst requestFetch = () => {\n    try { return useRequestEvent()?.fetch } catch { return undefined }\n}\nconst fetch = (url, options) => ((import.meta.server && requestFetch()) || globalThis.fetch)(url, options)",
+                "base": "'/api'",
+                "source": "same site, under /api",
+                "isDev": "import.meta.dev",
+                "usage": "Auto-imported by Nuxt: api.get('/products') anywhere (calls /api/products)."
+            },
+            "steps": [
+                {
+                    "copy": "inside/nuxt/files"
+                },
+                {
+                    "copy": "files/utils",
+                    "to": "server/utils"
+                },
+                {
+                    "copy": "@shared/js-core",
+                    "to": "server/utils"
+                },
+                {
+                    "replace": {
+                        "file": "server/utils/DatabaseHelper.js",
+                        "find": "backend/\\.env",
+                        "with": "frontend/.env"
+                    }
+                },
+                {
+                    "replace": {
+                        "file": "server/utils/DatabaseHelper.js",
+                        "find": "backend/\\.env",
+                        "with": "frontend/.env"
+                    }
+                },
+                {
+                    "replace": {
+                        "file": "nuxt.config.ts",
+                        "find": "(?m)^//[^\\n]*\\n//[^\\n]*\\n(?=export default defineNuxtConfig)",
+                        "with": "// Site + API (server/): \"nuxt build\" (start.bat then B) builds both into .output, \"npm start\" runs them.\n// Every page is rendered on each visit (always the latest data of the API), @nuxtjs/sitemap lists them automatically.\n"
+                    }
+                },
+                {
+                    "replace": {
+                        "file": "nuxt.config.ts",
+                        "find": "\\n *prerender: \\{ crawlLinks: true, routes: \\['/'\\] \\},",
+                        "with": ""
+                    }
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "dependencies.mysql2": "^3.24.0",
+                            "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production .output/server/index.mjs"
+                        }
+                    }
+                },
+                {
+                    "env": {
+                        "file": ".env",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.production",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.example",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                }
+            ],
+            "guide": {
+                "helpers": "utils",
+                "middleware": "middleware/",
+                "entry": "api/[...path].ts",
+                "envDev": ".env",
+                "envProd": ".env.production"
+            },
+            "doc": "inside/nuxt/doc.md",
+            "online": {
+                "fr": "Site + API : `start.bat` puis `B` (compilés ensemble dans `frontend/.output`), envoie `frontend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
+                "en": "Site + API: `start.bat` then `B` (built together into `frontend/.output`), upload `frontend/` to a Node.js 22.13+ host and run `npm start`"
+            }
+        }
+    },
+    "online": {
+        "fr": "`start.bat` puis `A` (compilation dans `backend/.output`), envoie `backend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
+        "en": "`start.bat` then `A` (build in `backend/.output`), upload `backend/` to a Node.js 22.13+ host and run `npm start`"
     }
 }

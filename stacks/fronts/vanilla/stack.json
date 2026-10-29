@@ -72,5 +72,9 @@
         "pageHero": "../pages/404.html",
         "designRuntime": true,
         "homeSections": "../pages/index.html"
+    },
+    "deploy": {
+        "key": "",
+        "dir": ""
     }
 }

@@ -202,5 +202,9 @@
         "missing": "RequestHelper.missing(data, ['name', 'price'])",
         "db": "await this.fetchAll('SELECT * FROM products WHERE active = ?', [1])",
         "deploy": "adonis"
+    },
+    "online": {
+        "fr": "`start.bat` puis `A` (compilation dans `backend/build`), envoie `backend/build/` sur un hébergement Node.js 24+ avec `.env.production` renommé `.env`, puis `npm ci --omit=dev` et `node bin/server.js`",
+        "en": "`start.bat` then `A` (build in `backend/build`), upload `backend/build/` to a Node.js 24+ host with `.env.production` renamed `.env`, then `npm ci --omit=dev` and `node bin/server.js`"
     }
 }

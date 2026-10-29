@@ -121,12 +121,31 @@
             "npm": {
                 "set": {
                     "scripts.predev": "node scripts/design.mjs",
-                    "scripts.prebuild": "node scripts/design.mjs",
-                    "scripts.pregenerate": "node scripts/design.mjs",
-                    "scripts.prebuild:prod": "node scripts/design.mjs",
-                    "scripts.pregenerate:prod": "node scripts/design.mjs"
+                    "scripts.prebuild": "node scripts/design.mjs"
                 }
             }
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.pregenerate": "node scripts/design.mjs",
+                    "scripts.pregenerate:prod": "node scripts/design.mjs",
+                    "scripts.generate:prod": "nuxt generate --dotenv .env.production"
+                }
+            },
+            "when": "noInsideApi"
+        },
+        {
+            "npm": {
+                "delete": [
+                    "scripts.generate"
+                ],
+                "set": {
+                    "scripts.prebuild:prod": "node scripts/design.mjs",
+                    "scripts.build:prod": "nuxt build --dotenv .env.production"
+                }
+            },
+            "when": "insideApi"
         },
         {
             "npm": {
@@ -136,15 +155,13 @@
                     "dependencies.@nuxtjs/sitemap": "^{{V_NUXT_SITEMAP}}",
                     "dependencies.@nuxtjs/robots": "^{{V_NUXT_ROBOTS}}",
                     "dependencies.@nuxt/image": "^{{V_NUXT_IMAGE}}",
-                    "scripts.generate:prod": "nuxt generate --dotenv .env.production",
-                    "scripts.build:prod": "nuxt build --dotenv .env.production",
                     "devDependencies.@types/node": "^{{V_TYPES_NODE}}"
                 }
             }
         },
         {
             "copy": "files-api",
-            "when": "api"
+            "when": "separateApi"
         }
     ],
     "layout": {
@@ -162,5 +179,9 @@
         "textUsage": "`{{ $lang.getTranslation('introTitle') }}`",
         "header": "components/layout/Header/Header.vue",
         "footer": "components/layout/Footer/Footer.vue"
+    },
+    "deploy": {
+        "key": "G",
+        "dir": ".output/public"
     }
 }

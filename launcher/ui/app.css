@@ -876,6 +876,15 @@ details[open] summary {
     overflow-wrap: anywhere;
 }
 
+/* Back end inside the front (Nitro inside Nuxt): what it changes, under the choices */
+.summary-note {
+    padding: 10px 20px 14px;
+    border-top: 1px solid var(--line);
+    color: var(--green);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+}
+
 /* Folder: on one line, its end shown (the whole path when the mouse is over it) */
 .summary dd.mono {
     overflow: hidden;

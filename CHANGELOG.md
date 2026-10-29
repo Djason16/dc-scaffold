@@ -2,6 +2,30 @@
 
 All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachangelog.com/), versions: [SemVer](https://semver.org/).
 
+## [1.2.0] - 2026-10-29
+
+### Nuxt + Nitro: one project
+- Nitro is the server of Nuxt: with Nuxt, the API now goes inside the site (`frontend/server/`) instead of a separate `backend/` folder. One folder, one `npm run dev` (site on http://localhost:3000, API on http://localhost:3000/api), one build (`start.bat` then `B`) and one `npm start` to put both online
+- Same controllers, helpers, automatic routes, JSON errors and MySQL or SQLite as the separate Nitro; no CORS to set (same address); `api.get('/products')` calls `/api/products`, also on the first display of a page (inside Nuxt, without the network)
+- The pages are rendered on each visit (always the latest data of the API) instead of a static site
+- With any other front, Nitro stays in `backend/` as before. The window says it on the Nitro card ("Inside Nuxt") and in the summary, and hides the API port
+- For stack authors: `"inside"` in the stack.json of a back end (see stacks/README.md), conditions `separateApi` / `insideApi`; the compatibility robot tests these pairs (`combos/nuxt-nitro`)
+
+### API inside the site: also for Next.js, SvelteKit, Astro and Qwik
+- New back end **API inside the site**, offered with the fronts that have their own server (same mode as Nuxt + Nitro): the API goes into the site (`frontend/server/` for Next.js, `src/lib/server/` for SvelteKit, `src/server/` for Astro and Qwik), under `/api`, with the same controllers, helpers, automatic routes, JSON errors and MySQL (phpMyAdmin in Docker) or SQLite
+- One folder, one `npm run dev`, one build (`start.bat` then `B`) and one `npm start` online (Node.js host): Next.js runs `next start`, SvelteKit `adapter-node`, Astro `@astrojs/node`, Qwik its Node.js server adapter; the pages stay prerendered, only `/api` answers on each request
+- A new controller file is picked up by itself, also while `npm run dev` runs (`import.meta.glob`)
+- The compatibility robot tests each pair (`combos/next-site`, `combos/sveltekit-site`, `combos/astro-site`, `combos/qwik-site`)
+
+### Going online, step by step
+- Every project has a "Going online" section in its README, and the same steps under the `start.bat` menu, for the chosen front and back end: online settings of the API, address of the API for the site (before the build), what to upload for the site, what to upload for the API
+- With a separate API (PHP, Express...), it says it plainly: the build of the site does not contain the API, they are two separate uploads (often two addresses); with an API inside the site, one server and one upload
+
+### Fixes
+- `start.bat` offers only the production build that fits the project: Nuxt with a separate API (PHP or other) or without one gets `G` (static site) only, no more `B` (`nuxt build`, a Node.js server that made no sense next to a PHP API); Nuxt + Nitro gets `B` only (site + API in one Node.js server). Every option says what it produces
+- Nitro (separate): `npm run dev` only answered on `::1` (IPv6) since the latest Nitro 2, so `http://127.0.0.1` and the compatibility robot could not reach it; it now listens on every address, like Express and NestJS
+- Docker image of the PHP back ends: works with PHP 8.5 (OPcache is built into PHP since 8.5 and could no longer be installed), so the compatibility robot can move to PHP 8.5
+
 ## [1.1.0] - 2026-10-21
 
 ### Fronts

@@ -80,5 +80,9 @@
         "missing": "RequestHelper::missing($data, ['name', 'price'])",
         "db": "$this->fetchAll('SELECT * FROM products WHERE active = ?', [1])",
         "deploy": "php"
+    },
+    "online": {
+        "fr": "envoie `backend/` sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur `backend/public/` (sans Composer)",
+        "en": "upload `backend/` to a PHP {{PHP_VERSION}}+ host; the address of the API points to `backend/public/` (no Composer)"
     }
 }

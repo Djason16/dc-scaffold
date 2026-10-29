@@ -73,7 +73,7 @@
         },
         {
             "copy": "files-api",
-            "when": "api"
+            "when": "separateApi"
         }
     ],
     "layout": {
@@ -95,5 +95,9 @@
             "LOADER_PAGE_TIME"
         ],
         "designClientTexts": true
+    },
+    "deploy": {
+        "key": "B",
+        "dir": "dist"
     }
 }

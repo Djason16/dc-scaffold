@@ -117,7 +117,7 @@
         },
         {
             "copy": "files-api",
-            "when": "api"
+            "when": "separateApi"
         }
     ],
     "layout": {
@@ -135,5 +135,9 @@
         "textUsage": "`{lang.getTranslation('introTitle')}`",
         "header": "components/layout/Header/Header.jsx",
         "footer": "components/layout/Footer/Footer.jsx"
+    },
+    "deploy": {
+        "key": "B",
+        "dir": "out"
     }
 }

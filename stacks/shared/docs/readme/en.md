@@ -28,6 +28,10 @@ This file tells where each part of the project is and how to change it. Technica
 
 {{GUIDE}}
 
+## Going online
+
+{{DEPLOY_STEPS}}
+
 ## Environment files
 
 `.env` and `.env.production` stay on your computer (they hold the passwords); only the `.env.example` files go to Git
@@ -36,7 +40,7 @@ This file tells where each part of the project is and how to change it. Technica
 ## Small glossary
 
 - **Front**: the site, what visitors see in their browser (`frontend/`).
-- **Back end / API**: the server that saves and sends back the data (`backend/`). The site talks to it through addresses like `/products`.
+- **Back end / API**: the server that saves and sends back the data (`{{BACK_DIR}}/`). The site talks to it through addresses like `/products`.
 - **Docker**: a program that runs MySQL (and PHP) without installing anything else on your computer.
 - **Port**: the number at the end of a local address (`localhost:3000`); each program has its own.
 - **`.env`**: the settings and passwords of the project. They never leave your computer.

@@ -28,6 +28,10 @@ Ce fichier explique où se trouve chaque chose et comment la changer. Les mots t
 
 {{GUIDE}}
 
+## Mettre en ligne
+
+{{DEPLOY_STEPS}}
+
 ## Fichiers d'environnement
 
 Les `.env` et `.env.production` restent sur ton ordinateur (ils contiennent les mots de passe) ; seuls les `.env.example`
@@ -36,7 +40,7 @@ vont sur Git (GitHub par exemple).
 ## Petit lexique
 
 - **Front** : le site, ce que voient les visiteurs dans leur navigateur (`frontend/`).
-- **Back end / API** : le serveur qui enregistre et renvoie les données (`backend/`). Le site lui parle par des adresses comme `/products`.
+- **Back end / API** : le serveur qui enregistre et renvoie les données (`{{BACK_DIR}}/`). Le site lui parle par des adresses comme `/products`.
 - **Docker** : un logiciel qui fait tourner MySQL (et PHP) sans rien installer d'autre sur ton ordinateur.
 - **Port** : le numéro à la fin d'une adresse locale (`localhost:3000`) ; chaque programme a le sien.
 - **`.env`** : les réglages et les mots de passe du projet. Ils ne quittent pas ton ordinateur.

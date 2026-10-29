@@ -17,6 +17,8 @@ How it works:
 3. "test" creates a project with DC Scaffold (on Linux, with PowerShell) and checks it:
    build of the front (and its type check), start of the back end. A stack with a new major version is first tested
    with it (-UseLatest); if that fails, it is tested again with the version already validated.
+   A back end that goes inside a front ("inside" of its stack.json, e.g. Nitro inside Nuxt) is also tested
+   in that front ("combos/nuxt-nitro"): one build, then the site and /api answer.
 4. "publish" raises "stable" in stack.json for every new major version that works (and the PHP /
    MySQL versions when "infra-test" passed), bumps stacks/version.txt when the stacks changed, and
    prepares the online catalog (catalog.json, stacks.zip).
@@ -139,7 +141,8 @@ def plan():
     for kind in ("fronts", "backs"):
         for stack_file in sorted(STACKS.glob(f"{kind}/*/stack.json")):
             stack_id = stack_file.parent.name
-            if stack_id == "none":
+            # "onlyInside" ("API inside the site"): no project of its own, tested inside its fronts (combos)
+            if stack_id == "none" or read_json(stack_file).get("onlyInside"):
                 continue
             packages = []
             for entry in read_json(stack_file).get("versions", []):
@@ -162,6 +165,12 @@ def plan():
                 "packages": packages,
                 "newMajor": any(p["newMajor"] for p in packages),
             })
+    # Back ends inside a front (Nitro inside Nuxt): the pair is tested with the validated versions
+    for stack_file in sorted(STACKS.glob("backs/*/stack.json")):
+        for front in read_json(stack_file).get("inside", {}):
+            if (STACKS / "fronts" / front / "stack.json").exists():
+                entries.append({"kind": "combos", "id": f"{front}-{stack_file.parent.name}", "front": front,
+                                "back": stack_file.parent.name, "packages": [], "newMajor": False})
     print(json.dumps(entries))
 
 
@@ -204,7 +213,10 @@ def create_project(kind, stack_id, use_latest, log):
     name = f"robot-{stack_id}" + ("-latest" if use_latest else "")
     WORK.mkdir(parents=True, exist_ok=True)
     shutil.rmtree(WORK / name, ignore_errors=True)
-    if kind == "fronts":
+    if kind == "combos":
+        front, back = stack_id.split("-", 1)
+        choice = ["-Front", front, "-Back", back, "-Database", "sqlite", "-Languages", "fr,en"]
+    elif kind == "fronts":
         choice = ["-Front", stack_id, "-Back", "none", "-Languages", "fr,en"]
     else:
         database = "mysql" if read_json(STACKS / kind / stack_id / "stack.json").get("database") is True else "sqlite"
@@ -266,6 +278,32 @@ def check_back(stack_id, project, log):
         os.killpg(server.pid, 9)
 
 
+def check_inside(stack_id, project, log):
+    """Back end inside the front: one build, then "npm start" (the server online) answers the site and /api"""
+    frontend = project / "frontend"
+    if not run(["npm", "run", "build"], frontend, log):
+        return False
+    # Same type check as the front alone (SvelteKit: svelte-check), the API code included
+    if stack_id.startswith("sveltekit-") and not run(["npx", "svelte-check", "--threshold", "error"], frontend, log):
+        return False
+    with open(log, "a", encoding="utf-8") as out:
+        server = subprocess.Popen(["npm", "start"], cwd=frontend, stdout=out,
+                                  stderr=subprocess.STDOUT, start_new_session=True, env={**os.environ, "PORT": API_PORT})
+    try:
+        site = http_status(f"http://127.0.0.1:{API_PORT}/")
+        api_body = ""
+        try:
+            with urllib.request.urlopen(f"http://127.0.0.1:{API_PORT}/api", timeout=5) as response:
+                api_body = response.read().decode()
+        except Exception as error:
+            api_body = f"!! {error}"
+        with open(log, "a", encoding="utf-8") as out:
+            out.write(f"\nGET / -> {site}\nGET /api -> {api_body[:300]}\n")
+        return site == 200 and '"success":true' in "".join(api_body.split())
+    finally:
+        os.killpg(server.pid, 9)
+
+
 def test(kind, stack_id, out):
     """Tests a stack, writes its result (JSON) to "out" and its log next to it"""
     entry = next(e for e in json.loads(os.environ.get("ROBOT_PLAN", "[]")) if e["kind"] == kind and e["id"] == stack_id) \
@@ -273,7 +311,7 @@ def test(kind, stack_id, out):
     log = Path(out).with_suffix(".log")
     log.parent.mkdir(parents=True, exist_ok=True)  # results/ does not exist in a fresh checkout
     log.write_text("", encoding="utf-8")
-    check = check_front if kind == "fronts" else check_back
+    check = {"fronts": check_front, "combos": check_inside}.get(kind, check_back)
 
     def works(use_latest):
         project = create_project(kind, stack_id, use_latest, log)

@@ -55,6 +55,8 @@
     "pinned": "{0} gardé en version ^{1}",
     "nothing_to_create": "Rien à créer.",
     "api_failed": "La création du serveur a échoué (voir le message juste au-dessus).",
+    "api_inside": "{0} : l'API sera rangée dans {2}/, avec le site {1}, à l'étape suivante.",
+    "api_inside_done": "API rangée dans le site : {1}/",
     "front_failed": "La création du site a échoué (voir le message juste au-dessus).",
     "install_later": "Installation sautée (-SkipInstall) : start.bat la fera au premier lancement.",
     "git_missing": "Git introuvable.",
@@ -127,5 +129,18 @@
     "text_aboutText": "Une petite équipe passionnée de web.",
     "text_contact": "Nous contacter",
     "text_logoAlt": "Logo du site",
-    "text_logoTitle": "Accueil"
+    "text_logoTitle": "Accueil",
+    "deploy_title": "En ligne (détails dans README.md, « Mettre en ligne ») :",
+    "deploy_api_env": "Réglages en ligne de l'API dans `{0}` : la base de données du serveur, et `APP_BASE_URL` = l'adresse réelle du site (seul le site peut appeler l'API)",
+    "deploy_api_env_alone": "Réglages en ligne de l'API dans `{0}` : la base de données du serveur",
+    "deploy_front_env": "Adresse de l'API en ligne, pour le site : `{0}` dans `frontend/.env.production` (avant le build du site)",
+    "deploy_front_config": "Adresse de l'API en ligne, pour le site : dans `{0}`",
+    "deploy_site": "Site : `start.bat` puis `{0}`, puis envoie le contenu de `{1}/` sur l'hébergement du site (un hébergement statique suffit)",
+    "deploy_site_asis": "Site : envoie `frontend/` tel quel sur l'hébergement du site (`.htaccess` compris)",
+    "deploy_api": "API, à part : {0}",
+    "deploy_two_parts": "Le build du site ne contient pas l'API : ce sont deux envois séparés, en général à deux adresses (par exemple `example.com` pour le site et `api.example.com` pour l'API).",
+    "deploy_inside_env": "Réglages en ligne dans `{0}` : la base de données du serveur",
+    "deploy_inside_note": "Le site et l'API sont un seul serveur : un seul envoi, une seule adresse (l'API répond sous `/api`).",
+    "deploy_api_alone": "API : {0}",
+    "back_only_inside": "« {0} » n'est possible qu'avec un front qui a son propre serveur : choisis {1}."
 }
