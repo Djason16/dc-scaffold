@@ -3,7 +3,7 @@
 # (release "catalog": catalog.json + stacks.zip) that DC Scaffold downloads when it opens.
 # A stack that breaks: a GitHub issue is opened, and DC Scaffold stays on the version that works.
 #
-# Also run by hand (Actions > Compatibility > Run workflow), and after every change of stacks/
+# Also run by hand (Actions > Compatibility > Run workflow), and after every change of stacks/ (or of the robot)
 # on master: a fixed stack reaches everyone without a new version of DC Scaffold.
 name: Compatibility
 
@@ -13,7 +13,7 @@ on:
   workflow_dispatch:
   push:
     branches: [master]
-    paths: ['stacks/**']
+    paths: ['stacks/**', 'tools/robot/**', '.github/workflows/compatibility.yml']
 
 permissions:
   contents: write
