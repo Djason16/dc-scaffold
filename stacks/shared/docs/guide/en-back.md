@@ -70,8 +70,8 @@ Its methods become routes by themselves:
 [docker] - **Commands in the container**: `docker compose exec backend ...` (Composer, scripts)
 [inside] - **Development**: `start.bat` then `D` (or `npm run dev` in `frontend/`): the site on http://localhost:{{APP_PORT}}, the API on http://localhost:{{APP_PORT}}/api, everything restarts on every change
 [node] - **Development**: `start.bat` then `D` (or `npm run dev` in `backend/`), on http://localhost:{{API_PORT}}, restarts on every change
-[slim] - **Online**: upload `backend/` (with `vendor/`) to a PHP host, the site points to `backend/public/`
-[php] - **Online**: upload `backend/` to a PHP host, the site points to `backend/public/` (no Composer needed)
+[slim] - **Online**: upload `backend/` (with `vendor/` and `.env.production`, without the `.env`) to a PHP host, the site points to `backend/public/`. Without `.env`, the API reads `.env.production` (`config/env.php`): nothing to set on the server
+[php] - **Online**: upload `backend/` (with `.env.production`, without the `.env`) to a PHP host, the site points to `backend/public/` (no Composer needed). Without `.env`, the API reads `.env.production` (`config/env.php`): nothing to set on the server
 [laravel] - **Online**: upload `backend/` (with `vendor/`), the site points to `backend/public/`
 [symfony] - **Online**: upload `backend/` (with `vendor/`), the site points to `backend/public/`, `APP_ENV=prod` in `backend/.env.prod.local`
 [nitro] - **Online**: `start.bat` then `A` (build in `backend/.output`), then `npm start` on the server (Node.js 22.13+)

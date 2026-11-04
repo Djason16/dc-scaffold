@@ -1,6 +1,5 @@
 <?php
 
-use App\Core\Env;
 use App\Helper\ResponseHelper;
 
 /*
@@ -19,10 +18,11 @@ require __DIR__ . '/config/database.php';
 
 /*
 |--------------------------------------------------------------------------
-| Load environment (.env locally, .env.production on the server)
+| Load environment (.env locally, .env.production on the server): config/env.php
 |--------------------------------------------------------------------------
 */
-Env::load(__DIR__ . '/' . (getenv('APP_ENV') === 'production' ? '.env.production' : '.env'));
+require __DIR__ . '/config/env.php';
+loadEnv();
 
 date_default_timezone_set($_ENV['DB_TIMEZONE'] ?? 'Europe/Paris');
 

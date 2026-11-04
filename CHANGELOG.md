@@ -2,6 +2,11 @@
 
 All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachangelog.com/), versions: [SemVer](https://semver.org/).
 
+## [1.2.1] - 2026-11-04
+
+### Back ends
+- Slim and PHP: the settings are loaded by `config/env.php` (`loadEnv()`): `.env` when it exists, otherwise `.env.production`. Nothing to set on the server any more: send `.env.production`, never the `.env`. The `SetEnv APP_ENV` of the `.htaccess` is gone (it also overrode the `.env` of Laravel and Symfony). Same loading as the projects Battle Arena and David Noguier
+
 ## [1.2.0] - 2026-10-29
 
 ### Nuxt + Nitro: one project
