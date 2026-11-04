@@ -110,7 +110,7 @@
         },
         {
             "copy": "files-api",
-            "when": "api"
+            "when": "separateApi"
         }
     ],
     "layout": {
@@ -129,5 +129,9 @@
         "header": "components/layout/Header/Header.tsx",
         "footer": "components/layout/Footer/Footer.tsx",
         "designIndexExt": ""
+    },
+    "deploy": {
+        "key": "B",
+        "dir": "dist"
     }
 }

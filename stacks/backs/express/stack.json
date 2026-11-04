@@ -90,5 +90,9 @@
         "missing": "RequestHelper.missing(data, ['name', 'price'])",
         "db": "await this.fetchAll('SELECT * FROM products WHERE active = ?', [1])",
         "deploy": "express"
+    },
+    "online": {
+        "fr": "envoie `backend/` sur un hébergement Node.js 22.13+, puis `npm install --omit=dev` et `npm start`",
+        "en": "upload `backend/` to a Node.js 22.13+ host, then `npm install --omit=dev` and `npm start`"
     }
 }

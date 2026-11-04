@@ -55,6 +55,8 @@
     "pinned": "{0} kept on version ^{1}",
     "nothing_to_create": "Nothing to create.",
     "api_failed": "The creation of the server failed (see the message just above).",
+    "api_inside": "{0}: the API goes into {2}/, with the {1} site, in the next step.",
+    "api_inside_done": "API inside the site: {1}/",
     "front_failed": "The creation of the site failed (see the message just above).",
     "install_later": "Install skipped (-SkipInstall): start.bat will do it the first time it runs.",
     "git_missing": "Git not found.",
@@ -127,5 +129,18 @@
     "text_aboutText": "A small team who loves the web.",
     "text_contact": "Contact us",
     "text_logoAlt": "Site logo",
-    "text_logoTitle": "Home"
+    "text_logoTitle": "Home",
+    "deploy_title": "Online (details in README.md, \"Going online\"):",
+    "deploy_api_env": "Online settings of the API in `{0}`: the database of the server, and `APP_BASE_URL` = the real address of the site (only the site can call the API)",
+    "deploy_api_env_alone": "Online settings of the API in `{0}`: the database of the server",
+    "deploy_front_env": "Online address of the API, for the site: `{0}` in `frontend/.env.production` (before building the site)",
+    "deploy_front_config": "Online address of the API, for the site: in `{0}`",
+    "deploy_site": "Site: `start.bat` then `{0}`, then upload the content of `{1}/` to the host of the site (a static host is enough)",
+    "deploy_site_asis": "Site: upload `frontend/` as it is to the host of the site (`.htaccess` included)",
+    "deploy_api": "API, on its own: {0}",
+    "deploy_two_parts": "The build of the site does not contain the API: they are two separate uploads, usually on two addresses (for example `example.com` for the site and `api.example.com` for the API).",
+    "deploy_inside_env": "Online settings in `{0}`: the database of the server",
+    "deploy_inside_note": "The site and the API are one server: one upload, one address (the API answers under `/api`).",
+    "deploy_api_alone": "API: {0}",
+    "back_only_inside": "\"{0}\" is only possible with a front that has its own server: choose {1}."
 }

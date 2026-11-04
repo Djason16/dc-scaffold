@@ -164,5 +164,9 @@
         "header": "components/layout/Header/Header.ts",
         "footer": "components/layout/Footer/Footer.ts",
         "designIndexExt": ""
+    },
+    "deploy": {
+        "key": "B",
+        "dir": "dist"
     }
 }

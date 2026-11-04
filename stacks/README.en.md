@@ -5,7 +5,7 @@
 Every folder in `fronts/` or `backs/` that contains a `stack.json` shows up automatically in the DC Scaffold menu.
 To add a framework, copy the closest folder (for instance `fronts/vue` for a Vite front), rename it and adapt its `stack.json`. No code to change, no rebuild.
 
-Once pushed to `main`, the stacks are tested by the compatibility robot and published in the online catalog: every installed DC Scaffold gets them the next time it opens. `version.txt` (the version of the stacks) is updated by the robot.
+Once pushed to `master`, the stacks are tested by the compatibility robot and published in the online catalog: every installed DC Scaffold gets them the next time it opens. `version.txt` (the version of the stacks) is updated by the robot.
 
 ```
 stacks/
@@ -40,7 +40,7 @@ stacks/
 
 | Field | Purpose |
 | ----- | ------- |
-| `label`, `order`, `description` | Menu display (ascending order, description in `fr` / `en`) |
+| `label`, `order`, `description` | Menu display (ascending order; `label` and `description` as plain text or in `fr` / `en`) |
 | `requires` | Tools checked (and installed) at startup: `node`, `composer`, `docker` |
 | `versions` | Packages checked on npm or Packagist. `stable` = tested version; a newer major is offered, never forced. `token` makes the version usable in files (`^{{V_VUE}}`). `pin` sets the package back to the stable version when the create tool installed a newer major. |
 | `steps` | Steps run in order (see below) |
@@ -53,6 +53,7 @@ Fronts only:
 | `publicDir` | Folder copied as-is on build, receives the `.htaccess` (`""` = root of `frontend/`) |
 | `docker` | `true` = served by nginx in Docker during development (front without build) |
 | `port` | Default development port of the framework (5173 for Vite, 4321 for Astro...) |
+| `deploy` | How the site goes online, for the "Going online" section of the README and the `start.bat` menu: `key` (key of `start.bat` that produces the site, `B` or `G`) and `dir` (folder to upload, from `frontend/`); empty `key` = `frontend/` uploaded as it is |
 | `layout` | Paths written into the `README.md` of the project: `src`, `css`, `public`, `storeFile`, `storeLib`, `layoutFile` (AppShell), `header`, `footer`, `page`, `pageCopy`, `pageHero` (reusable top of page, `components/ui/PageHero/` by default), `textUsage`, `prefsUsage` (reading a choice of the visitor, `userPreferences.preferences.maps` by default), `env` or `siteFile`, `omitGuide` (lines to remove), `designIndexExt` (extension of `dc-scaffold/index`, `.js` by default), `designRuntime` (`true`: the design switch is read in the browser, no build) |
 
 In front files, a block between `@two-languages` and `@end-two-languages` (in a comment) is kept only for a two-language site, a block between `@one-language` and `@end-one-language` only for a one-language site. The marker lines are removed.
@@ -73,6 +74,9 @@ Back ends only:
 | `fallbackDatabase` | Name of that fallback in the menu and the summary (e.g. `"SQLite"`) |
 | `phpExtensions` | PHP extensions offered for activation in the local `php.ini` (Composer), e.g. `["fileinfo", "mbstring"]` |
 | `nodeEngine` | Minimum Node.js version the stack needs, e.g. `">=22.13.0"` (checked and updated at startup) |
+| `online` | How the API goes online, one sentence in `fr` / `en` (tokens allowed, e.g. `{{PHP_VERSION}}`): last step of "Going online" |
+| `onlyInside` | `true` = this back end only exists inside a front (`inside`), e.g. "API inside the site": it is offered with those fronts only |
+| `inside` | Fronts that already contain this back end, e.g. `{ "nuxt": {...} }` for Nitro (the server of Nuxt). With that front, no `backend/`: the API goes into `frontend/<dir>/`, on the same address as the site (under `/api`), one server to start and to put online. Fields: `dir` (folder inside the front), `label` and `message` (`fr` / `en`, shown in the menu and the summary), `steps` (run in `frontend/` after the ones of the front; `copy` starts from the folder of the back end), `api` (replaces fields of the `api` of the front for `api.js`), `guide` (paths relative to `frontend/<dir>/`), `doc` (doc.md of that case), `versions` (packages added in that case, e.g. the Node.js adapter), `online` (how the site + API goes online). The robot tests that pair on its own (`combos/nuxt-nitro`, `combos/next-site`...). |
 
 Docker is only added when needed: `php` back end, MySQL database or `"docker": true` front.
 
@@ -85,6 +89,7 @@ Every step accepts a `when` condition:
 | `api` / `noApi` | the project has a back end / has none |
 | `front` / `noFront` | the project has a front / has none |
 | `db` / `noDb` | MySQL was chosen / no database |
+| `separateApi` / `insideApi` / `noInsideApi` | the back end is in `backend/` / it goes inside the front (`inside`) / it is not inside the front (no back end included) |
 
 Paths are relative to `frontend/` (front) or `backend/` (back end) unless stated otherwise.
 

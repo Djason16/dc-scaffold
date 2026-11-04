@@ -109,5 +109,9 @@
         "missing": "RequestHelper::missing($data, ['name', 'price'])",
         "db": "$this->fetchAll('SELECT * FROM products WHERE active = ?', [1])",
         "deploy": "slim"
+    },
+    "online": {
+        "fr": "envoie `backend/` (avec `vendor/` et `.env.production`, **sans le `.env`**) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur `backend/public/`. Rien à régler sur le serveur : sans `.env`, l'API lit `.env.production`",
+        "en": "upload `backend/` (with `vendor/` and `.env.production`, **without the `.env`**) to a PHP {{PHP_VERSION}}+ host; the address of the API points to `backend/public/`. Nothing to set on the server: without `.env`, the API reads `.env.production`"
     }
 }

@@ -9,5 +9,4 @@ RewriteRule ^ - [L]
 RewriteCond %{REQUEST_URI} !^/public/
 RewriteRule ^(.*)$ /public/$1 [L]
 
-# Environment for Slim (switch to "production" on the server)
-SetEnv APP_ENV development
+# No APP_ENV here: it comes from .env (development) or .env.production (online), nothing to change on the server

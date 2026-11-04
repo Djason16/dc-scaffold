@@ -8,8 +8,15 @@ import { dirname, resolve } from 'node:path'
  * The SQL stays the same for simple queries: "?" placeholders work with both.
  */
 
+/**
+ * @typedef {any[]} Params values of the "?" of a query
+ * @typedef {{ all: (sql: string, params: Params) => Promise<any[]>, run: (sql: string, params: Params) => Promise<{ id: number, changes: number }> }} Driver
+ */
+
+/** @type {Promise<Driver> | null} */
 let driver = null
 
+/** @returns {Promise<Driver>} */
 const mysqlDriver = async () => {
     const mysql = (await import('mysql2/promise')).default
     if (!process.env.DB_HOST) throw new Error('MySQL is not configured: set DB_HOST in backend/.env')
@@ -23,22 +30,24 @@ const mysqlDriver = async () => {
         dateStrings: true,
     })
     return {
-        all: async (sql, params) => (await pool.execute(sql, params))[0],
+        all: async (sql, params) => /** @type {any[]} */ ((await pool.execute(sql, params))[0]),
         run: async (sql, params) => {
-            const [result] = await pool.execute(sql, params)
+            const [result] = /** @type {[import('mysql2').ResultSetHeader, unknown]} */ (await pool.execute(sql, params))
             return { id: result.insertId, changes: result.affectedRows }
         },
     }
 }
 
+/** @returns {Promise<Driver>} */
 const sqliteDriver = async () => {
     const { DatabaseSync } = await import('node:sqlite')
-    const file = resolve(process.env.DB_FILE || 'database/database.sqlite')
+    // turbopackIgnore: a file chosen when the server runs, not a part of the build (Next.js)
+    const file = resolve(/* turbopackIgnore: true */ process.env.DB_FILE || 'database/database.sqlite')
     mkdirSync(dirname(file), { recursive: true })
     const db = new DatabaseSync(file)
     db.exec('PRAGMA foreign_keys = ON; PRAGMA journal_mode = WAL;')
     return {
-        all: async (sql, params) => db.prepare(sql).all(...params),
+        all: async (sql, params) => /** @type {any[]} */ (db.prepare(sql).all(...params)),
         run: async (sql, params) => {
             const result = db.prepare(sql).run(...params)
             return { id: Number(result.lastInsertRowid), changes: Number(result.changes) }
@@ -66,23 +75,43 @@ const getDriver = () => {
  *   await DatabaseHelper.execute('DELETE FROM products WHERE id = ?', [id])
  */
 export const DatabaseHelper = {
-    /** All matching rows (empty array when none). */
+    /**
+     * All matching rows (empty array when none).
+     * @param {string} sql
+     * @param {Params} [params]
+     * @returns {Promise<any[]>}
+     */
     async fetchAll(sql, params = []) {
         return (await getDriver()).all(sql, params)
     },
 
-    /** First matching row, or null. */
+    /**
+     * First matching row, or null.
+     * @param {string} sql
+     * @param {Params} [params]
+     * @returns {Promise<any>}
+     */
     async fetchOne(sql, params = []) {
         const rows = await DatabaseHelper.fetchAll(sql, params)
         return rows[0] ?? null
     },
 
-    /** Runs an INSERT and returns the new id. */
+    /**
+     * Runs an INSERT and returns the new id.
+     * @param {string} sql
+     * @param {Params} [params]
+     * @returns {Promise<number>}
+     */
     async insert(sql, params = []) {
         return (await (await getDriver()).run(sql, params)).id
     },
 
-    /** Runs an UPDATE / DELETE and returns the number of affected rows. */
+    /**
+     * Runs an UPDATE / DELETE and returns the number of affected rows.
+     * @param {string} sql
+     * @param {Params} [params]
+     * @returns {Promise<number>}
+     */
     async execute(sql, params = []) {
         return (await (await getDriver()).run(sql, params)).changes
     },

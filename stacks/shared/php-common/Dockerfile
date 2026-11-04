@@ -1,6 +1,6 @@
 FROM php:{{PHP_VERSION}}-apache
 
-# PHP extensions and Apache modules
+# PHP extensions and Apache modules (OPcache is built into PHP since 8.5: installed only before)
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd intl mysqli pdo_mysql zip opcache \
+    && docker-php-ext-install gd intl mysqli pdo_mysql zip $(php -m | grep -qi 'zend opcache' || echo opcache) \
     && a2enmod rewrite headers \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
