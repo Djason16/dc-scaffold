@@ -70,8 +70,8 @@ Ses méthodes deviennent des routes toutes seules :
 [docker] - **Commandes dans le conteneur** : `docker compose exec backend ...` (Composer, scripts)
 [inside] - **Développement** : `start.bat` puis `D` (ou `npm run dev` dans `frontend/`) : le site sur http://localhost:{{APP_PORT}}, l'API sur http://localhost:{{APP_PORT}}/api, tout redémarre à chaque modification
 [node] - **Développement** : `start.bat` puis `D` (ou `npm run dev` dans `backend/`), sur http://localhost:{{API_PORT}}, redémarre à chaque modification
-[slim] - **En ligne** : envoie `backend/` (avec `vendor/`) sur un hébergement PHP, le site pointe sur `backend/public/`
-[php] - **En ligne** : envoie `backend/` sur un hébergement PHP, le site pointe sur `backend/public/` (aucun Composer nécessaire)
+[slim] - **En ligne** : envoie `backend/` (avec `vendor/` et `.env.production`, sans le `.env`) sur un hébergement PHP, le site pointe sur `backend/public/`. Sans `.env`, l'API lit `.env.production` (`config/env.php`) : rien à régler sur le serveur
+[php] - **En ligne** : envoie `backend/` (avec `.env.production`, sans le `.env`) sur un hébergement PHP, le site pointe sur `backend/public/` (aucun Composer nécessaire). Sans `.env`, l'API lit `.env.production` (`config/env.php`) : rien à régler sur le serveur
 [laravel] - **En ligne** : envoie `backend/` (avec `vendor/`), le site pointe sur `backend/public/`
 [symfony] - **En ligne** : envoie `backend/` (avec `vendor/`), le site pointe sur `backend/public/`, `APP_ENV=prod` dans `backend/.env.prod.local`
 [nitro] - **En ligne** : `start.bat` puis `A` (compilation dans `backend/.output`), puis `npm start` sur le serveur (Node.js 22.13+)

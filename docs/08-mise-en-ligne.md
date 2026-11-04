@@ -48,16 +48,21 @@ Exemple : Nuxt + Slim. Les étapes du README du projet :
 
 | API | Comment la mettre en ligne |
 | --- | -------------------------- |
-| Slim 4, Laravel | Envoie `backend/` (avec `vendor/`) sur un hébergement PHP 8.5+ ; l'adresse de l'API pointe sur `backend/public/` |
+| Slim 4 | Envoie `backend/` (avec `vendor/` et `.env.production`, **sans le `.env`**) sur un hébergement PHP 8.5+ ; l'adresse de l'API pointe sur `backend/public/` |
+| Laravel | Envoie `backend/` (avec `vendor/`) sur un hébergement PHP 8.5+ ; l'adresse de l'API pointe sur `backend/public/` |
 | Symfony | Pareil, et `APP_ENV=prod` dans `backend/.env.prod.local` |
-| PHP | Envoie `backend/` sur un hébergement PHP 8.5+ ; l'adresse pointe sur `backend/public/` (sans Composer) |
+| PHP | Envoie `backend/` (avec `.env.production`, **sans le `.env`**) sur un hébergement PHP 8.5+ ; l'adresse pointe sur `backend/public/` (sans Composer) |
 | Nitro | `start.bat` puis `A` (compilation dans `backend/.output`), envoie `backend/` sur un hébergement Node.js 22.13+ et lance `npm start` |
 | Express | Envoie `backend/` sur un hébergement Node.js 22.13+, puis `npm install --omit=dev` et `npm start` |
 | NestJS | `start.bat` puis `A` (compilation dans `backend/dist`), envoie `backend/`, puis `npm install --omit=dev` et `npm start` |
 | AdonisJS | `start.bat` puis `A` (compilation dans `backend/build`), envoie `backend/build/` avec `.env.production` renommé `.env`, puis `npm ci --omit=dev` et `node bin/server.js` (Node.js 24+) |
 
 « L'adresse de l'API pointe sur `backend/public/` » : chez l'hébergeur, le domaine (ou sous-domaine) de l'API a pour
-dossier racine `backend/public/`. Le reste de `backend/` (code, `.env`, `vendor/`) n'est ainsi pas accessible depuis le web.
+dossier racine `backend/public/`. Le reste de `backend/` (code, `.env.production`, `vendor/`) n'est ainsi pas accessible depuis le web.
+
+**Slim et PHP : rien à régler sur le serveur.** Leurs réglages sont lus par `config/env.php` : le `.env` s'il existe
+(sur ton ordinateur), sinon le `.env.production`. Il suffit donc de **ne pas envoyer le `.env`** : en ligne, l'API lit
+`.env.production` toute seule (pas de `SetEnv APP_ENV` à changer dans un `.htaccess`).
 
 ## Site + API dans le site
 

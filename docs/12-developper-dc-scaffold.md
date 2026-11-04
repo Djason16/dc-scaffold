@@ -97,7 +97,7 @@ Résultat : `DCScaffold-Setup.exe` à la racine du dépôt.
 3. Commite et pousse (le robot republie le catalogue avec `minApp` = cette version).
 4. Crée le tag et pousse-le :
    ```
-   git tag v1.2.0
+   git tag v1.2.1
    git push --tags
    ```
    Le workflow `build.yml` compile le setup et le publie dans *Releases* : les DC Scaffold installés le proposent en mise à jour.

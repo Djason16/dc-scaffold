@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/VERSION-1.2.0-4084ff?style=for-the-badge&labelColor=09090b" alt="Version 1.2.0">
+  <img src="https://img.shields.io/badge/VERSION-1.2.1-4084ff?style=for-the-badge&labelColor=09090b" alt="Version 1.2.1">
   <img src="https://img.shields.io/badge/WINDOWS-10%20%7C%2011-8b5cf6?style=for-the-badge&labelColor=09090b" alt="Windows 10 | 11">
   <img src="https://img.shields.io/badge/LICENSE-ALL%20RIGHTS%20RESERVED-ec4899?style=for-the-badge&labelColor=09090b" alt="License">
 </p>

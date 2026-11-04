@@ -16,13 +16,11 @@ require __DIR__ . '/../config/database.php';
 
 /*
 |--------------------------------------------------------------------------
-| Load environment (.env locally, .env.production on the server)
+| Load environment (.env locally, .env.production on the server): config/env.php
 |--------------------------------------------------------------------------
 */
-$envFile = getenv('APP_ENV') === 'production' ? '.env.production' : '.env';
-
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../', $envFile);
-$dotenv->load();
+require __DIR__ . '/../config/env.php';
+loadEnv();
 
 date_default_timezone_set($_ENV['DB_TIMEZONE'] ?? 'Europe/Paris');
 
