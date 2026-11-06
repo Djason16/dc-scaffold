@@ -21,9 +21,11 @@ dist/
 out/
 build/
 
-# User uploads
-**/uploads/*
-!**/uploads/.htaccess
+# Files sent by the visitors (only these folders: a code folder named uploads, such as server/routes/uploads/, stays in Git;
+# the .htaccess that forbids scripts stays in Git too)
+/backend/uploads/*
+/frontend/uploads/*
+!/backend/uploads/.htaccess
 
 # Local data
 .data/

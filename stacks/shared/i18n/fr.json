@@ -838,7 +838,9 @@
         "Security headers of every answer of the API, errors included: no guessing of the file types, never shown in a frame,": "En-têtes de sécurité de chaque réponse de l'API, erreurs comprises : pas de devinette du type des fichiers, jamais affiché dans un cadre,",
         "no address of origin sent, HTTPS forced for a year (HSTS, only over HTTPS), version of PHP hidden.": "aucune adresse d'origine envoyée, HTTPS imposé pendant un an (HSTS, seulement en HTTPS), version de PHP cachée.",
         "Called first in public/index.php: the headers are there with any server (Apache, Nginx, php -S), also in .htaccess.": "Appelé en premier dans public/index.php : les en-têtes sont là avec n'importe quel serveur (Apache, Nginx, php -S), aussi dans .htaccess.",
-        "trusts one proxy in front (the host): req.ip = last entry of X-Forwarded-For, req.secure = HTTPS of the visitor": "fait confiance à un proxy devant (l'hébergeur) : req.ip = dernière entrée de X-Forwarded-For, req.secure = HTTPS du visiteur"
+        "trusts one proxy in front (the host): req.ip = last entry of X-Forwarded-For, req.secure = HTTPS of the visitor": "fait confiance à un proxy devant (l'hébergeur) : req.ip = dernière entrée de X-Forwarded-For, req.secure = HTTPS du visiteur",
+        "Files sent by the visitors (only these folders: a code folder named uploads, such as server/routes/uploads/, stays in Git;": "Fichiers envoyés par les visiteurs (seulement ces dossiers : un dossier de code nommé uploads, comme server/routes/uploads/, reste dans Git ;",
+        "the .htaccess that forbids scripts stays in Git too)": "le .htaccess qui interdit les scripts reste aussi dans Git)"
     },
     "strings": {
         "The composer.lock file does not match, running composer update...": "Le composer.lock ne correspond pas, lancement de composer update...",
