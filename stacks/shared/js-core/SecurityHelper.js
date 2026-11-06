@@ -6,7 +6,7 @@
  *   SecurityHelper.ip(forwardedFor, remoteAddress)          address of the visitor: the LAST entry of X-Forwarded-For
  *   SecurityHelper.fileType(buffer)                         real type of a file sent ("image/png"...), read in its first bytes
  *   SecurityHelper.tooLong(data, { name: 100, message: 5000 }) error message when a text is too long, else null
- * The counters stay in memory: they start again from zero when the server restarts.
+ * The counters stay in memory: they start again from zero when the server restarts; those untouched for a day are removed.
  */
 
 /** @type {Map<string, number[]>} */
@@ -21,6 +21,15 @@ const SIGNATURES = [
     { type: 'image/avif', offset: 4, bytes: [0x66, 0x74, 0x79, 0x70, 0x61, 0x76, 0x69, 0x66] },
     { type: 'application/pdf', offset: 0, bytes: [0x25, 0x50, 0x44, 0x46] },
 ]
+
+// Counters untouched for a day are removed from time to time (1 save in 100): the memory never grows
+/** @param {string} key @param {number[]} times */
+const save = (key, times) => {
+    tries.set(key, times)
+    if (Math.random() >= 0.01) return
+    const oldest = Date.now() - 86400 * 1000
+    for (const [name, list] of tries) if ((list.at(-1) ?? 0) < oldest) tries.delete(name)
+}
 
 /** @param {string} key @param {string} ip @param {number} seconds */
 const recent = (key, ip, seconds) => {
@@ -49,13 +58,13 @@ export const SecurityHelper = {
     tooMany(key, ip, max, seconds, count = true) {
         const times = recent(key, ip, seconds)
         if (times.length >= max) return true
-        if (count) tries.set(`${key}|${ip}`, [...times, Date.now()])
+        if (count) save(`${key}|${ip}`, [...times, Date.now()])
         return false
     },
 
     /** @param {string} key @param {string} ip @param {number} seconds */
     hit(key, ip, seconds) {
-        tries.set(`${key}|${ip}`, [...recent(key, ip, seconds), Date.now()])
+        save(`${key}|${ip}`, [...recent(key, ip, seconds), Date.now()])
     },
 
     /** @param {string} key @param {string} ip */

@@ -57,16 +57,35 @@ class RateLimitHelper
     private static function save(string $key, array $times): void
     {
         @file_put_contents(self::file($key), json_encode($times), LOCK_EX);
+        // From time to time (1 save in 100), counters untouched for a day are removed: the folder never grows
+        if (random_int(1, 100) === 1) {
+            self::prune();
+        }
     }
 
-    // One file per action and visitor; the address is hashed (nothing personal written in clear)
-    private static function file(string $key): string
+    private static function prune(): void
+    {
+        $oldest = time() - 86400;
+        foreach (glob(self::directory() . '/*.json') ?: [] as $file) {
+            if ((int) @filemtime($file) < $oldest) {
+                @unlink($file);
+            }
+        }
+    }
+
+    private static function directory(): string
     {
         $directory = dirname(__DIR__, 2) . '/var/rate-limit';
         if (!is_dir($directory)) {
             @mkdir($directory, 0755, true);
         }
 
-        return $directory . '/' . hash('sha256', $key . '|' . self::ip()) . '.json';
+        return $directory;
+    }
+
+    // One file per action and visitor; the address is hashed (nothing personal written in clear)
+    private static function file(string $key): string
+    {
+        return self::directory() . '/' . hash('sha256', $key . '|' . self::ip()) . '.json';
     }
 }

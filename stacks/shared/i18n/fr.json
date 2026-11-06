@@ -806,7 +806,9 @@
         "SecurityHelper.ip(forwardedFor, remoteAddress)          address of the visitor: the LAST entry of X-Forwarded-For": "SecurityHelper.ip(forwardedFor, remoteAddress)          adresse du visiteur : la DERNIÈRE entrée de X-Forwarded-For",
         "SecurityHelper.fileType(buffer)                         real type of a file sent (\"image/png\"...), read in its first bytes": "SecurityHelper.fileType(buffer)                         vrai type d'un fichier envoyé (\"image/png\"...), lu dans ses premiers octets",
         "SecurityHelper.tooLong(data, { name: 100, message: 5000 }) error message when a text is too long, else null": "SecurityHelper.tooLong(data, { name: 100, message: 5000 }) message d'erreur quand un texte est trop long, sinon null",
-        "The counters stay in memory: they start again from zero when the server restarts.": "Les compteurs restent en mémoire : ils repartent de zéro au redémarrage du serveur.",
+        "The counters stay in memory: they start again from zero when the server restarts; those untouched for a day are removed.": "Les compteurs restent en mémoire : ils repartent de zéro au redémarrage du serveur ; ceux qui n'ont pas bougé depuis un jour sont effacés.",
+        "Counters untouched for a day are removed from time to time (1 save in 100): the memory never grows": "Les compteurs qui n'ont pas bougé depuis un jour sont effacés de temps en temps (1 enregistrement sur 100) : la mémoire ne grossit jamais",
+        "From time to time (1 save in 100), counters untouched for a day are removed: the folder never grows": "De temps en temps (1 enregistrement sur 100), les compteurs qui n'ont pas bougé depuis un jour sont effacés : le dossier ne grossit jamais",
         "Signatures of the first bytes of the files accepted (offset in the file, bytes)": "Signatures des premiers octets des fichiers acceptés (position dans le fichier, octets)",
         "Real type of a file sent by a visitor, read in its content (finfo): the type given by the browser can be faked": "Vrai type d'un fichier envoyé par un visiteur, lu dans son contenu (finfo) : le type donné par le navigateur peut être truqué",
         "(a PHP file named photo.png and sent as image/png). Check it before saving the file, and save it with the": "(un fichier PHP nommé photo.png et envoyé comme image/png). Vérifie-le avant d'enregistrer le fichier, et enregistre-le avec",
@@ -838,7 +840,9 @@
         "Security headers of every answer of the API, errors included: no guessing of the file types, never shown in a frame,": "En-têtes de sécurité de chaque réponse de l'API, erreurs comprises : pas de devinette du type des fichiers, jamais affiché dans un cadre,",
         "no address of origin sent, HTTPS forced for a year (HSTS, only over HTTPS), version of PHP hidden.": "aucune adresse d'origine envoyée, HTTPS imposé pendant un an (HSTS, seulement en HTTPS), version de PHP cachée.",
         "Called first in public/index.php: the headers are there with any server (Apache, Nginx, php -S), also in .htaccess.": "Appelé en premier dans public/index.php : les en-têtes sont là avec n'importe quel serveur (Apache, Nginx, php -S), aussi dans .htaccess.",
-        "trusts one proxy in front (the host): req.ip = last entry of X-Forwarded-For, req.secure = HTTPS of the visitor": "fait confiance à un proxy devant (l'hébergeur) : req.ip = dernière entrée de X-Forwarded-For, req.secure = HTTPS du visiteur"
+        "trusts one proxy in front (the host): req.ip = last entry of X-Forwarded-For, req.secure = HTTPS of the visitor": "fait confiance à un proxy devant (l'hébergeur) : req.ip = dernière entrée de X-Forwarded-For, req.secure = HTTPS du visiteur",
+        "Files sent by the visitors (only these folders: a code folder named uploads, such as server/routes/uploads/, stays in Git;": "Fichiers envoyés par les visiteurs (seulement ces dossiers : un dossier de code nommé uploads, comme server/routes/uploads/, reste dans Git ;",
+        "the .htaccess that forbids scripts stays in Git too)": "le .htaccess qui interdit les scripts reste aussi dans Git)"
     },
     "strings": {
         "The composer.lock file does not match, running composer update...": "Le composer.lock ne correspond pas, lancement de composer update...",
