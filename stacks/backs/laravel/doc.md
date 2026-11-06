@@ -4,8 +4,8 @@
 
 [fr] - `app/Http/Controllers/` — `Controller.php` (base : `fetchAll`, `fetchOne`, `insert`, `execute`, `body`) + tes contrôleurs
 [en] - `app/Http/Controllers/` — `Controller.php` (base: `fetchAll`, `fetchOne`, `insert`, `execute`, `body`) + your controllers
-[fr] - `app/Helper/` — `ResponseHelper` (mêmes méthodes, renvoie une `JsonResponse`), `RequestHelper::missing()`
-[en] - `app/Helper/` — `ResponseHelper` (same methods, returns `JsonResponse`), `RequestHelper::missing()`
+[fr] - `app/Helper/` — `ResponseHelper` (mêmes méthodes, renvoie une `JsonResponse`), `RequestHelper::missing()`, `RateLimitHelper`, `FileTypeHelper`, `LengthHelper`
+[en] - `app/Helper/` — `ResponseHelper` (same methods, returns `JsonResponse`), `RequestHelper::missing()`, `RateLimitHelper`, `FileTypeHelper`, `LengthHelper`
 [fr] - `app/Core/` — attribut `Route` + `RouteDiscovery` (utilisé dans `routes/api.php`)
 [en] - `app/Core/` — `Route` attribute + `RouteDiscovery` (used in `routes/api.php`)
 [fr] - `bootstrap/app.php` — pas de préfixe `/api`, sessions, toutes les erreurs au format JSON commun

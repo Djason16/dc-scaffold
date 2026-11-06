@@ -2,6 +2,9 @@ import { TRAILING_SLASH_ENABLED } from './utils/pathHelpers.js'
 
 const isDev = process.env.NODE_ENV !== 'production'
 
+// Private pages (admin, account...): left out of sitemap.xml and forbidden to crawlers in robots.txt, e.g. ['/admin', '/account']
+const privateRoutes: string[] = []
+
 // Static site: "nuxt generate" (start.bat then G) prerenders every page reachable from "/" by its links,
 // and @nuxtjs/sitemap lists them automatically: no route to write by hand.
 export default defineNuxtConfig({
@@ -21,6 +24,8 @@ export default defineNuxtConfig({
     name: process.env.NUXT_PUBLIC_SITE_NAME,
     trailingSlash: TRAILING_SLASH_ENABLED,
   },
+  robots: { disallow: privateRoutes.map((route) => `${route}/`) },
+  sitemap: { exclude: privateRoutes.flatMap((route) => [route, `${route}/**`]) },
 
   // Public values read with useRuntimeConfig().public, filled from the NUXT_PUBLIC_* variables
   runtimeConfig: {
@@ -55,9 +60,9 @@ export default defineNuxtConfig({
     compressPublicAssets: { gzip: true, brotli: true },
   },
 
+  // No "esbuild" option here: Nuxt 4.6+ builds with Rolldown, and that option gave hydration errors on the pages
   vite: {
     build: { target: 'es2022' },
-    esbuild: { drop: isDev ? [] : ['console', 'debugger'], legalComments: 'none' },
   },
 
   image: {

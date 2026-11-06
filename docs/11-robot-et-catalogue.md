@@ -17,7 +17,9 @@ Le workflow [`.github/workflows/compatibility.yml`](../.github/workflows/compati
 
 ## Ce qu'il fait
 
-1. **`plan`** : pour chaque paquet de chaque `stack.json`, il cherche la dernière version **stable** sur npm / Packagist.
+1. **`plan`** : il vérifie d'abord les textes de `shared/i18n/` (deux clés qui ne diffèrent que par la casse empêchent
+   PowerShell de lire le fichier : les projets dans cette langue garderaient leurs commentaires en anglais). Puis, pour chaque
+   paquet de chaque `stack.json`, il cherche la dernière version **stable** sur npm / Packagist.
    Une nouvelle version majeure n'est testée que **30 jours** après sa première sortie (le temps des premières corrections).
 2. **`infra-plan`** : pour les images Docker (`stacks/infra/versions.json`), la dernière **MySQL LTS** et le dernier
    **PHP** sorti depuis **6 mois** et encore maintenu.

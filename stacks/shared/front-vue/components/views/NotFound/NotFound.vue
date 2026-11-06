@@ -3,7 +3,7 @@
     <section class="section">
         <div class="container">
             <PageHero :eyebrow="t('notFoundEyebrow')" :title="t('notFoundTitle')" :text="t('notFoundText')">
-                <RouterLink to="/" class="btn btn-primary">{{ t('backHome') }}</RouterLink>
+                <RouterLink to="/" class="btn btn-primary" :title="t('backHome')">{{ t('backHome') }}</RouterLink>
             </PageHero>
         </div>
     </section>

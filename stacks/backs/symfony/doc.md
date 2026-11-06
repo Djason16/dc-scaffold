@@ -4,8 +4,8 @@
 
 [fr] - `src/Controller/` — `Controller.php` (base : `fetchAll`, `fetchOne`, `insert`, `execute`, `body`) + tes contrôleurs
 [en] - `src/Controller/` — `Controller.php` (base: `fetchAll`, `fetchOne`, `insert`, `execute`, `body`) + your controllers
-[fr] - `src/Helper/` — `ResponseHelper` (mêmes méthodes, renvoie une `JsonResponse`), `RequestHelper`
-[en] - `src/Helper/` — `ResponseHelper` (same methods, returns `JsonResponse`), `RequestHelper`
+[fr] - `src/Helper/` — `ResponseHelper` (mêmes méthodes, renvoie une `JsonResponse`), `RequestHelper`, `RateLimitHelper`, `FileTypeHelper`, `LengthHelper`
+[en] - `src/Helper/` — `ResponseHelper` (same methods, returns `JsonResponse`), `RequestHelper`, `RateLimitHelper`, `FileTypeHelper`, `LengthHelper`
 [fr] - `src/Core/` — attribut `Route` + `RouteDiscovery` (utilisé dans `config/routes/auto_routes.php`)
 [en] - `src/Core/` — `Route` attribute + `RouteDiscovery` (used in `config/routes/auto_routes.php`)
 [fr] - `src/EventListener/ExceptionListener.php` — toutes les erreurs au format JSON commun

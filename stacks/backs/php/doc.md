@@ -12,8 +12,8 @@ backend/
 [en]     ├── Controllers/          Controller.php (base) + your controllers
 [fr]     ├── Core/                 Router, Env, attribut Route + RouteDiscovery
 [en]     ├── Core/                 Router, Env, Route attribute + RouteDiscovery
-[fr]     └── Helper/               ResponseHelper, RequestHelper, DatabaseHelper (mysqli ou PDO)
-[en]     └── Helper/               ResponseHelper, RequestHelper, DatabaseHelper (mysqli or PDO)
+[fr]     └── Helper/               ResponseHelper, RequestHelper, DatabaseHelper (mysqli ou PDO), RateLimitHelper, FileTypeHelper, LengthHelper
+[en]     └── Helper/               ResponseHelper, RequestHelper, DatabaseHelper (mysqli or PDO), RateLimitHelper, FileTypeHelper, LengthHelper
 ```
 
 `backend/src/Controllers/ProductsController.php`

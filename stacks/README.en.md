@@ -124,7 +124,7 @@ Paths are relative to `frontend/` (front) or `backend/` (back end) unless stated
 
 The stack files are commented in English. When DC Scaffold runs in French, each comment is replaced by its translation from
 `shared/i18n/fr.json` (`comments`: exact English text → French text; `strings`: messages of `start.ps1`).
-A comment missing from the file stays in English: after adding or changing comments, add their translation.
+A comment missing from the file stays in English: after adding or changing comments, add their translation. Two English texts must never differ only by case ("One proxy..." and "one proxy..."): PowerShell then refuses the whole file, and the robot stops.
 
 ## Keeping the same architecture
 

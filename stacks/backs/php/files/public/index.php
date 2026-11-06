@@ -3,8 +3,12 @@
 use App\Core\RouteDiscovery;
 use App\Core\Router;
 use App\Helper\ResponseHelper;
+use App\Helper\SecurityHelper;
 
 require __DIR__ . '/../bootstrap.php';
+
+// Security headers on every answer, errors included (src/Helper/SecurityHelper.php)
+SecurityHelper::sendHeaders();
 
 $router = new Router();
 

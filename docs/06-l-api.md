@@ -98,6 +98,19 @@ L'exemple de **ton** back end (PHP, Nitro, Express...) est dans le `README.md` d
 
 Les `?` des requêtes SQL protègent des injections : ne mets jamais une valeur du visiteur directement dans le texte SQL.
 
+### Sécurité
+
+| Helper | Méthodes |
+| ------ | -------- |
+| **RateLimitHelper** (PHP) | `tooMany('contact', 5, 600)` (vrai après 5 essais en 10 minutes, puis erreur 429), `hit`, `clear`, `ip()` (dernière adresse de `X-Forwarded-For`). Compteurs dans `backend/var/rate-limit/` |
+| **FileTypeHelper** (PHP) | `of($path)`, `isImage($path)`, `extension($path)` : le vrai type d'un fichier envoyé, lu dans son contenu (finfo) |
+| **LengthHelper** (PHP) | `tooLong($data, ['name' => 100])` : erreur 400 claire au lieu d'une erreur 500 de la base |
+| **SecurityHelper** (JavaScript) | `headers(isHttps)`, `tooMany(clé, ip, max, secondes)`, `hit`, `clear`, `ip(forwardedFor, remote)`, `fileType(buffer)` (premiers octets), `tooLong(data, max)` |
+
+- **En-têtes de sécurité** sur chaque réponse, erreurs comprises (nosniff, X-Frame-Options, Referrer-Policy, HSTS en HTTPS), sans `X-Powered-By` : `backend/.htaccess` et `php.ini` (PHP), le serveur (Express, NestJS), `middleware/security.ts` (Nitro), `app/middleware/security_headers_middleware.ts` (AdonisJS), `handler.js` (API dans le site).
+- **`uploads/.htaccess`** (Slim, PHP) : un fichier envoyé n'est jamais lancé comme du code.
+- **Mot de passe oublié** : toujours un lien valable une heure, jamais un nouveau mot de passe envoyé tout de suite.
+
 ## Chaque back end
 
 | Back end | Contrôleurs | Helpers | Démarrage | Répondre | Lire le corps |

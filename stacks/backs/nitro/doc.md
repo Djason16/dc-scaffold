@@ -5,8 +5,8 @@ backend/
 [en] ├── controllers/              your controllers (routes built automatically)
 [fr] ├── routes/                   index.get.ts (route de base) + [...path].ts (routeur des contrôleurs)
 [en] ├── routes/                   index.get.ts (base route) + [...path].ts (controller router)
-[fr] ├── utils/                    Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery (importés automatiquement)
-[en] ├── utils/                    Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery (auto-imported)
+[fr] ├── utils/                    Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery, SecurityHelper (importés automatiquement)
+[en] ├── utils/                    Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery, SecurityHelper (auto-imported)
 [fr] ├── middleware/cors.ts        seulement APP_BASE_URL, avec les cookies
 [en] ├── middleware/cors.ts        only APP_BASE_URL, with cookies
 [fr] └── error.ts                  toutes les erreurs au format JSON commun

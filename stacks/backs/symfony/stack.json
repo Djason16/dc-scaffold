@@ -119,6 +119,10 @@
             "to": "src/Core"
         },
         {
+            "copy": "@shared/php-security",
+            "to": "src/Helper"
+        },
+        {
             "copy": "files"
         },
         {

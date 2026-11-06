@@ -123,7 +123,7 @@ Les chemins sont relatifs à `frontend/` (front) ou `backend/` (back end), sauf 
 
 Les fichiers des stacks sont commentés en anglais. Quand DC Scaffold tourne en français, chaque commentaire est remplacé
 par sa traduction de `shared/i18n/fr.json` (`comments` : texte anglais exact → texte français ; `strings` : messages de `start.ps1`).
-Un commentaire absent du fichier reste en anglais : après avoir ajouté ou modifié des commentaires, ajoute leur traduction.
+Un commentaire absent du fichier reste en anglais : après avoir ajouté ou modifié des commentaires, ajoute leur traduction. Deux textes anglais ne doivent jamais différer seulement par la casse (« One proxy... » et « one proxy... ») : PowerShell refuse alors tout le fichier, et le robot s'arrête.
 
 ## Garder la même architecture
 

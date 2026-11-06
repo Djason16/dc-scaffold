@@ -87,6 +87,18 @@ Le nom du cookie et sa durée (180 jours) sont en haut de `{{FRONT_ACTIONS}}`.
 [one-language] - Titre, description et image de partage de chaque page : `{{FRONT_SEO}}` (`SEO_PAGES`)
 - Image de partage par défaut : `{{FRONT_PUBLIC}}/og-image.jpg` (1200 × 630 px)
 - `sitemap.xml` et `robots.txt` sont créés automatiquement avec le site de production
+- Pages privées (admin, compte...) : ajoute-les à `privateRoutes` (en haut de `nuxt.config.ts` avec Nuxt) ou à `PRIVATE_ROUTES` (en haut de `scripts/sitemap.mjs`) : elles sortent du sitemap.xml et `robots.txt` les interdit aux robots
+- Un seul `<h1>` par page ; si le titre visible n'en est pas un, ajoute `<h1 class="visually-hidden">Titre</h1>` (caché à l'écran, lu par Google et les lecteurs d'écran)
+
+### Accessibilité
+
+Déjà en place dans `{{FRONT_CSS}}/base/accessibility.css`, et vérifié par la recette d'un site avant sa mise en ligne :
+
+- **Focus visible au clavier** sur les liens, boutons et champs ; ne mets jamais `outline: none` sans `:focus-visible`
+- **Zones à toucher** : sur écran tactile, boutons et liens du menu et du pied de page font au moins 24 px de haut, sans rien changer à la souris
+- **Textes longs** : la classe `text-long` limite la ligne à environ 80 caractères
+- **Chaque lien a un `title`** et **chaque image un `alt` et un `title`** remplis (jamais `alt=""`) : ils décrivent la destination ou l'image
+- **Images** : compresse-les avant de les mettre dans le site (WebP, 300 Ko au plus pour une grande image)
 
 ### Nom et adresse du site
 

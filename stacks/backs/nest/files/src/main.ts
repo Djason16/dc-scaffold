@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core'
 import type { NextFunction, Request, Response } from 'express'
 import { AppModule } from './app.module.js'
 import { ErrorsFilter } from './errors.filter.js'
+import { SecurityHelper } from './utils/SecurityHelper.js'
 
 // Settings of backend/.env (online, npm start reads .env.production instead)
 if (!process.env.APP_ENV) process.loadEnvFile('.env')
@@ -20,8 +21,13 @@ app.enableCors({
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'user_id', 'X-Requested-With'],
 })
+// Security headers on every answer (utils/SecurityHelper.js); no "X-Powered-By: Express" header;
+// trusts one proxy in front (the host): req.ip = last entry of X-Forwarded-For, req.secure = HTTPS of the visitor
+const server = app.getHttpAdapter().getInstance()
+server.disable('x-powered-by')
+server.set('trust proxy', 1)
 app.use((req: Request, res: Response, next: NextFunction) => {
-    res.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()')
+    res.set({ ...SecurityHelper.headers(req.secure), 'Permissions-Policy': 'geolocation=(), microphone=(), camera=()' })
     next()
 })
 

@@ -6,8 +6,8 @@
 [en] - `app/controllers/` — your controllers, one `products_controller.ts` file per resource (`node ace make:controller products`)
 [fr] - `app/core/` — `Controller` (base : `fetchAll`, `fetchOne`, `insert`, `execute`, `body`, par Lucid) + `RouteDiscovery`
 [en] - `app/core/` — `Controller` (base: `fetchAll`, `fetchOne`, `insert`, `execute`, `body`, through Lucid) + `RouteDiscovery`
-[fr] - `app/helpers/` — `ResponseHelper`, `RequestHelper`
-[en] - `app/helpers/` — `ResponseHelper`, `RequestHelper`
+[fr] - `app/helpers/` — `ResponseHelper`, `RequestHelper` ; `app/core/SecurityHelper.js`
+[en] - `app/helpers/` — `ResponseHelper`, `RequestHelper` ; `app/core/SecurityHelper.js`
 [fr] - `start/routes.ts` — route de base, comptes (`/auth/signup`, `/auth/login`, `/account/profile`), routes automatiques
 [en] - `start/routes.ts` — base route, accounts (`/auth/signup`, `/auth/login`, `/account/profile`), automatic routes
 [fr] - `app/exceptions/handler.ts` — toutes les erreurs au format JSON commun ; `config/cors.ts` — seulement `APP_BASE_URL`, avec les cookies

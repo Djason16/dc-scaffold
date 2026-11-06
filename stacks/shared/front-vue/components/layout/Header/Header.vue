@@ -2,10 +2,10 @@
     <!-- Top of every page: site name (link to the home page) and menu -->
     <header class="header">
         <div class="container">
-            <RouterLink to="/" class="header-logo">{{ site.name }}</RouterLink>
+            <RouterLink to="/" class="header-logo" :title="site.name">{{ site.name }}</RouterLink>
             <nav :aria-label="t('home')">
                 <ul class="header-nav">
-                    <li><RouterLink to="/">{{ t('home') }}</RouterLink></li>
+                    <li><RouterLink to="/" :title="t('home')">{{ t('home') }}</RouterLink></li>
                     <!-- Add a page: <li><RouterLink to="/about/">{{ t('about') }}</RouterLink></li> -->
                 </ul>
             </nav>

@@ -73,6 +73,10 @@
             "to": "app/Core"
         },
         {
+            "copy": "@shared/php-security",
+            "to": "app/Helper"
+        },
+        {
             "copy": "files"
         },
         {

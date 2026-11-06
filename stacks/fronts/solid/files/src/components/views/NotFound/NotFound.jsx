@@ -11,7 +11,7 @@ export default function NotFound() {
             <Seo pageKey="notFound" />
             <div class="container">
                 <PageHero eyebrow={t('notFoundEyebrow')} title={t('notFoundTitle')} text={t('notFoundText')}>
-                    <AppLink href="/" class="btn btn-primary">{t('backHome')}</AppLink>
+                    <AppLink href="/" class="btn btn-primary" title={t('backHome')}>{t('backHome')}</AppLink>
                 </PageHero>
             </div>
         </section>

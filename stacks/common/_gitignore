@@ -22,7 +22,8 @@ out/
 build/
 
 # User uploads
-uploads/
+**/uploads/*
+!**/uploads/.htaccess
 
 # Local data
 .data/
@@ -44,6 +45,7 @@ env/
 
 # Database files and backups
 /database/
+/backups/
 *.sql
 !example.sql
 !mysql/init/*.sql

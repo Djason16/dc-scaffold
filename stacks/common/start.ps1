@@ -1,5 +1,5 @@
 ﻿# Launcher for {{PROJECT_NAME}} ({{STACK_LABEL}})
-# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A
+# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A|K|O
 # Every option adapts to what the project contains (docker-compose.yml, backend/, frontend/).
 param([string]$Action)
 
@@ -10,6 +10,10 @@ $Shell = if (Test-Command 'pwsh') { 'pwsh' } else { 'powershell' }
 $ApiDir = Join-Path $Root 'backend'
 $AppDir = Join-Path $Root 'frontend'
 $HasDocker = Test-Path (Join-Path $Root 'docker-compose.yml')
+# Database and files sent from the site, kept by the backups (scripts/data.ps1)
+. (Join-Path $Root 'scripts\data.ps1')
+$Data = Get-ProjectData $Root
+$HasData = [bool]($Data.MySql -or $Data.Sqlite.Count -or $Data.Uploads)
 
 # ---------------------------------------------------------------------------
 # Project detection
@@ -129,6 +133,10 @@ if (-not $Action) {
         Write-MenuItem 'R' 'Rebuild' 'Rebuild Docker images (no cache)'
     }
     Write-MenuItem 'I' 'Install' 'Install / update dependencies (Composer / npm)'
+    if ($HasData) {
+        Write-MenuItem 'K' 'Backup' 'Database and files sent, into backups/'
+        Write-MenuItem 'O' 'Restore' 'Put back a backup of backups/'
+    }
     Write-Host ''
     if ($FrontGenerate) { Write-MenuItem 'G' 'Generate' 'Static site to upload (frontend/.output/public), with .env.production' }
     if ($FrontBuild -and $FrontServer) { Write-MenuItem 'B' 'Build' 'Site + API in one Node.js server (then npm start, see the steps below)' }
@@ -150,5 +158,7 @@ switch ($Action.ToUpper()) {
     'G' { if ($FrontGenerate) { Start-Window $AppDir 'Front generate (production)' 'npm run generate:prod' } }
     'B' { if ($FrontBuild) { Start-Window $AppDir 'Front build (production)' "npm run $FrontBuild" } }
     'A' { Start-Window $ApiDir 'API build (production)' 'npm run build' }
+    'K' { if ($HasData) { & (Join-Path $Root 'scripts\backup.ps1') } }
+    'O' { if ($HasData) { & (Join-Path $Root 'scripts\restore.ps1') } }
     default { Write-Fail 'Invalid choice.' }
 }
