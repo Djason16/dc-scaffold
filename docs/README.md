@@ -1,6 +1,6 @@
 # Documentation de DC Scaffold
 
-Version **1.2.1**. Cette documentation explique tout DC Scaffold, de l'installation à la mise en ligne d'un projet,
+Version **1.3.0**. Cette documentation explique tout DC Scaffold, de l'installation à la mise en ligne d'un projet,
 puis le fonctionnement interne pour ceux qui veulent le modifier.
 
 Pas besoin de tout lire : commence par la partie qui te concerne.

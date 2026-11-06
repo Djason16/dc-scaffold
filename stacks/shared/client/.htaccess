@@ -11,9 +11,26 @@ RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 {{HTACCESS_ROUTING}}
 
 #####################################
+# Security headers on every answer: no guessing of the file types, never shown in a frame of another site,
+# address of origin cut to the domain, HTTPS forced for a year (HSTS, only on an HTTPS answer)
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
+    Header always unset X-Powered-By
+</IfModule>
+
+#####################################
 # Cache rules
 <IfModule mod_headers.c>
-    <FilesMatch "\.(png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|otf|js|css|html)$">
+    # Images and fonts: kept a week by the browser (pages load faster on the next visit)
+    <FilesMatch "\.(png|jpg|jpeg|gif|webp|avif|ico|svg|woff|woff2|ttf|otf)$">
+        Header set Cache-Control "public, max-age=604800"
+    </FilesMatch>
+
+    # Pages, scripts and styles: always the latest version
+    <FilesMatch "\.(js|css|html)$">
         Header set Cache-Control "no-cache, no-store, must-revalidate"
         Header set Pragma "no-cache"
         Header set Expires "0"

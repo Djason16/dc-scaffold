@@ -4,14 +4,14 @@ frontend/
 [fr] ├── server/
 [fr] │   ├── controllers/          tes contrôleurs (routes créées automatiquement, sous /api)
 [fr] │   ├── api/                  index.get.ts (GET /api) + [...path].ts (routeur des contrôleurs, erreurs en JSON)
-[fr] │   ├── utils/                Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery (importés automatiquement)
+[fr] │   ├── utils/                Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery, SecurityHelper (importés automatiquement)
 [fr] │   └── middleware/           code lancé avant chaque requête (vide au départ)
 [fr] ├── modules/controllers.ts    trouve tout seul les fichiers de server/controllers
 [fr] └── pages/, components/...   le site
 [en] ├── server/
 [en] │   ├── controllers/          your controllers (routes built automatically, under /api)
 [en] │   ├── api/                  index.get.ts (GET /api) + [...path].ts (controller router, JSON errors)
-[en] │   ├── utils/                Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery (auto-imported)
+[en] │   ├── utils/                Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery, SecurityHelper (auto-imported)
 [en] │   └── middleware/           code run before every request (empty at first)
 [en] ├── modules/controllers.ts    finds the files of server/controllers by itself
 [en] └── pages/, components/...   the site

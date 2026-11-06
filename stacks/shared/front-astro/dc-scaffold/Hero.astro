@@ -18,13 +18,13 @@ const site = useSite()
 <PageHero title={t('heroTitle', { name: site.name })} text={t('heroText')} large>
 <!-- @end-one-language -->
     <span class="hero-badge" slot="eyebrow">
-        <img src="/dc-scaffold/icon.png" alt="" width="28" height="28" />
+        <img src="/dc-scaffold/icon.png" alt="DC Scaffold" title="DC Scaffold" width="28" height="28" />
         <span data-i18n="heroBadge">{t('heroBadge')}</span>
     </span>
     <div class="hero-by">
         <span data-i18n="heroBy">{t('heroBy')}</span>
-        <a class="hero-by-link" href="https://djason-chery.dev/" target="_blank" rel="noopener">
-            <img src="/dc-scaffold/logo-light.png" alt="Djason CHERY" width="114" height="32" />
+        <a class="hero-by-link" href="https://djason-chery.dev/" title="Djason CHERY" target="_blank" rel="noopener">
+            <img src="/dc-scaffold/logo-light.png" alt="Djason CHERY" title="Djason CHERY" width="114" height="32" />
         </a>
     </div>
 </PageHero>

@@ -9,4 +9,15 @@ RewriteRule ^ - [L]
 RewriteCond %{REQUEST_URI} !^/public/
 RewriteRule ^(.*)$ /public/$1 [L]
 
+# Security headers on every answer of the API, errors included: no guessing of the file types, never shown in a frame,
+# no address of origin sent, HTTPS forced for a year (HSTS, only on an HTTPS answer), version of PHP hidden
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "no-referrer"
+    Header always set Strict-Transport-Security "max-age=31536000" env=HTTPS
+    Header always unset X-Powered-By
+    Header unset X-Powered-By
+</IfModule>
+
 # No APP_ENV here: it comes from .env (development) or .env.production (online), nothing to change on the server

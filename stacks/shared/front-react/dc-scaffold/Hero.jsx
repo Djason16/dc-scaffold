@@ -9,7 +9,7 @@ export default function Hero() {
 
     const badge = (
         <span className="hero-badge">
-            <img src="/dc-scaffold/icon.png" alt="" width="28" height="28" />
+            <img src="/dc-scaffold/icon.png" alt="DC Scaffold" title="DC Scaffold" width="28" height="28" />
             {t('heroBadge')}
         </span>
     )
@@ -18,8 +18,8 @@ export default function Hero() {
         <PageHero eyebrow={badge} title={t('heroTitle', { name: site.name })} text={t('heroText')} large>
             <div className="hero-by">
                 {t('heroBy')}
-                <a className="hero-by-link" href="https://djason-chery.dev/" target="_blank" rel="noopener">
-                    <img src="/dc-scaffold/logo-light.png" alt="Djason CHERY" width="114" height="32" />
+                <a className="hero-by-link" href="https://djason-chery.dev/" title="Djason CHERY" target="_blank" rel="noopener">
+                    <img src="/dc-scaffold/logo-light.png" alt="Djason CHERY" title="Djason CHERY" width="114" height="32" />
                 </a>
             </div>
         </PageHero>

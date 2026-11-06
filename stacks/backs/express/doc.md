@@ -5,7 +5,7 @@ backend/
 [en] ├── server.js                 middlewares + automatic routes
 [fr] ├── controllers/              tes contrôleurs (routes créées automatiquement)
 [en] ├── controllers/              your controllers (routes built automatically)
-├── utils/                    Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery
+├── utils/                    Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery, SecurityHelper
 [fr] └── middleware/               cors.js, errors.js (toutes les erreurs au format JSON commun)
 [en] └── middleware/               cors.js, errors.js (every error in the shared JSON format)
 ```

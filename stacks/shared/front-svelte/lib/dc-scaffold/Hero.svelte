@@ -10,14 +10,14 @@
 <PageHero title={lang.getTranslation('heroTitle', { name: site.name })} text={lang.getTranslation('heroText')} large>
     {#snippet badge()}
         <span class="hero-badge">
-            <img src="/dc-scaffold/icon.png" alt="" width="28" height="28" />
+            <img src="/dc-scaffold/icon.png" alt="DC Scaffold" title="DC Scaffold" width="28" height="28" />
             {lang.getTranslation('heroBadge')}
         </span>
     {/snippet}
     <div class="hero-by">
         {lang.getTranslation('heroBy')}
-        <a class="hero-by-link" href="https://djason-chery.dev/" target="_blank" rel="noopener">
-            <img src="/dc-scaffold/logo-light.png" alt="Djason CHERY" width="114" height="32" />
+        <a class="hero-by-link" href="https://djason-chery.dev/" title="Djason CHERY" target="_blank" rel="noopener">
+            <img src="/dc-scaffold/logo-light.png" alt="Djason CHERY" title="Djason CHERY" width="114" height="32" />
         </a>
     </div>
 </PageHero>

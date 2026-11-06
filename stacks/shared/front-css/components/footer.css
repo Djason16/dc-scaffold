@@ -31,3 +31,10 @@
 .footer-link:hover {
     color: var(--text-color);
 }
+
+/* Phones and tablets: the footer keeps clear of the buttons floating at the bottom right */
+@media (max-width: 1024px) {
+    .footer .container {
+        padding-right: calc(2.75rem + var(--space-normal));
+    }
+}

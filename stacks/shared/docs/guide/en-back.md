@@ -41,6 +41,29 @@ Its methods become routes by themselves:
 - Answer: `{{BACK_SUCCESS}}`
 - Errors: `notFound`, `validationError`, `authError`, `forbidden`, `serverError` of `ResponseHelper`, all in the same format
 
+### Security
+
+Already in place, and checked by the tests of a site before it goes online:
+
+[docker] - **Security headers** on every answer, errors included (nosniff, X-Frame-Options, Referrer-Policy, HSTS over HTTPS), no `X-Powered-By`: `backend/.htaccess` and `expose_php = Off` in `backend/php.ini` (Slim and PHP: also `SecurityHelper::sendHeaders()` at the top of `public/index.php`, for any server)
+[node] - **Security headers** on every answer, errors included (nosniff, X-Frame-Options, Referrer-Policy, HSTS over HTTPS), no `X-Powered-By`: set by the server with `SecurityHelper.headers()`
+[inside] - **Security headers** on every answer of the API (nosniff, X-Frame-Options, Referrer-Policy, HSTS over HTTPS) with `SecurityHelper.headers()`
+[nitro-in-nuxt] - Also on every page, and `www.` sent to the address without `www.` (not every host does it): `server/middleware/security.ts` and `redirect-www.ts`
+[site-in-next] - Also on every page, and `www.` sent to the address without `www.` (not every host does it): `headers()` and `redirects()` of `next.config.mjs`
+[site-in-sveltekit] - Also on every page, and `www.` sent to the address without `www.` (not every host does it): `server.js`, started by `npm start`
+[site-in-qwik] - Also on every page, and `www.` sent to the address without `www.` (not every host does it): `src/entry.node-server.tsx`
+[site-in-astro] - The prerendered pages are served directly by the server of Astro: the `www.` redirect and the headers of the pages are set at the host (or in front of it, with Nginx)
+[docker] - **Limit of tries** (contact, failed login, forgotten password): `if (RateLimitHelper::tooMany('contact', 5, 600))` returns a 429 error; the visitor is the last address of `X-Forwarded-For` (the one of the proxy of the host)
+[node] - **Limit of tries** (contact, failed login, forgotten password): `SecurityHelper.tooMany('contact', SecurityHelper.ip(...), 5, 600)` then a 429 error; the visitor is the last address of `X-Forwarded-For`
+[inside] - **Limit of tries** (contact, failed login, forgotten password): `SecurityHelper.tooMany('contact', SecurityHelper.ip(...), 5, 600)` then a 429 error; the visitor is the last address of `X-Forwarded-For`
+[docker] - **Files sent**: check their real type with `FileTypeHelper::isImage($path)` (read in the content, the type given by the browser can be faked) and save them with `FileTypeHelper::extension($path)`; `uploads/.htaccess` stops any script from running there
+[node] - **Files sent**: check their real type with `SecurityHelper.fileType(buffer)` (read in the first bytes) and save them under a name chosen by the API, never the one sent
+[inside] - **Files sent**: check their real type with `SecurityHelper.fileType(buffer)` (read in the first bytes) and save them under a name chosen by the API, never the one sent
+[docker] - **Texts too long**: `LengthHelper::tooLong($data, ['name' => 100, 'message' => 5000])` gives a clear 400 error instead of a 500 error of the database
+[node] - **Texts too long**: `SecurityHelper.tooLong(data, { name: 100, message: 5000 })` gives a clear 400 error instead of a 500 error of the database
+[inside] - **Texts too long**: `SecurityHelper.tooLong(data, { name: 100, message: 5000 })` gives a clear 400 error instead of a 500 error of the database
+- **Forgotten password**: always send a link valid for one hour, never a new password (otherwise anyone who knows the e-mail locks the account)
+
 ### Database
 
 [mysql] - **MySQL** runs in Docker, database `{{DB_NAME}}`, user `root`, password in `{{BACK_ROOT}}/{{BACK_ENV_DEV}}`

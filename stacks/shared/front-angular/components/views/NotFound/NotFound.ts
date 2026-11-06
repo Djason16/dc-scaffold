@@ -13,7 +13,7 @@ import { useSeo } from '@/composables/useSeo'
             <div class="container">
                 <app-page-hero [eyebrow]="lang.getTranslation('notFoundEyebrow')" [title]="lang.getTranslation('notFoundTitle')"
                     [text]="lang.getTranslation('notFoundText')">
-                    <a routerLink="/" class="btn btn-primary">{{ lang.getTranslation('backHome') }}</a>
+                    <a routerLink="/" class="btn btn-primary" [title]="lang.getTranslation('backHome')">{{ lang.getTranslation('backHome') }}</a>
                 </app-page-hero>
             </div>
         </section>

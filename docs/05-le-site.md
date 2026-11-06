@@ -94,6 +94,17 @@ Le choix du visiteur est dans `stores/userPreferences.js`. Pour ajouter une cat�
 - **`sitemap.xml` et `robots.txt` sont créés automatiquement** avec le site de production, à partir de l'adresse
   `*_SITE_URL` de `.env.production`.
 - Chaque page porte `<meta name="generator" content="DC Scaffold">` ; une ligne à retirer dans `utils/seo.js` pour le cacher.
+- **Pages privées** (admin, compte...) : `privateRoutes` en haut de `nuxt.config.ts` (Nuxt) ou `PRIVATE_ROUTES` en haut de `scripts/sitemap.mjs` (les autres fronts). Elles sortent du `sitemap.xml` et `robots.txt` les interdit aux robots.
+- Un seul `<h1>` par page ; quand le titre visible n'en est pas un : `<h1 class="visually-hidden">`.
+
+## Accessibilité et sécurité du site
+
+Prêts pour la recette d'un site (les tests avant sa mise en ligne), dans tous les fronts :
+
+- **`assets/css/base/accessibility.css`** (ou le dossier CSS du front) : `.visually-hidden` (caché à l'écran, lu par Google et les lecteurs d'écran), contour visible au clavier (`:focus-visible`), zones à toucher de 24 px au moins sur écran tactile (`pointer: coarse`, rien ne change à la souris), `.text-long` (environ 80 caractères par ligne). Le pied de page laisse la place aux boutons flottants sur téléphone.
+- **Liens et images** des composants de base : chaque lien a un `title`, chaque image un `alt` et un `title` remplis.
+- **`.htaccess` du site** (envoyé avec un site statique) : HTTPS imposé, `www.` renvoyé vers l'adresse sans `www.`, en-têtes de sécurité (nosniff, X-Frame-Options, Referrer-Policy, HSTS), images et polices gardées une semaine par le navigateur.
+- **Site servi par Node.js** (API dans le site) : les mêmes en-têtes et la redirection de `www.` sont faits par le serveur du site (Nuxt, Next.js, SvelteKit, Qwik) ; avec Astro, l'hébergeur s'en charge pour les pages pré-rendues.
 
 ## Le cadre des pages (AppShell)
 

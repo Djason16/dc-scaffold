@@ -16,6 +16,7 @@ Les autres lettres du menu :
 - `S` : arrête Docker
 - `R` : reconstruit Docker (utile si quelque chose ne démarre plus)
 - `G` / `B` / `A` : préparent la version à mettre en ligne (selon le projet)
+- `K` / `O` : sauvegarde la base de données et les fichiers envoyés dans `backups/`, puis les remet (quand le projet en a)
 
 Pour écrire le code, ouvre le dossier dans VS Code : il propose les extensions conseillées pour ce projet, dont GitHub Copilot
 (l'assistant qui t'aide à coder, à connecter une fois avec ton compte GitHub).

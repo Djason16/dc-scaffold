@@ -2,6 +2,50 @@
 
 All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachangelog.com/), versions: [SemVer](https://semver.org/).
 
+## [1.3.0] - 2026-11-06
+
+Every new project is ready for the tests of a site before it goes online (the "recette": 39 checks of security,
+accessibility, SEO and speed). Until now each site had to add these things by hand.
+
+### Sites (every front)
+- New `base/accessibility.css`: `.visually-hidden` (an `<h1>` hidden on screen but read by search engines and screen readers),
+  keyboard focus always visible (`:focus-visible`), touch areas of 24 px at least on touch screens (`pointer: coarse`, nothing
+  changes with a mouse), `.text-long` (about 80 characters per line)
+- The footer keeps clear of the floating buttons on phones and tablets
+- Every link of the base components has a `title`, every image a filled `alt` and a `title` (logo, home link, 404 page, DC Scaffold design)
+- `.htaccess` of the site: security headers (nosniff, X-Frame-Options, Referrer-Policy, HSTS over HTTPS), no `X-Powered-By`,
+  images and fonts kept a week by the browser (pages, scripts and styles still never cached)
+- Private pages left out of `sitemap.xml` and forbidden in `robots.txt`: `privateRoutes` in `nuxt.config.ts` (Nuxt),
+  `PRIVATE_ROUTES` in `scripts/sitemap.mjs` (the other fronts)
+- Nuxt: the `vite.esbuild` option is gone (with Nuxt 4.6+, built with Rolldown, it gave hydration errors on the pages)
+
+### API (every back end)
+- Security headers on every answer, errors included, without `X-Powered-By`: `.htaccess` and `expose_php = Off` (PHP),
+  the server (Express, NestJS), a middleware (Nitro, AdonisJS), the shared handler (API inside the site)
+- Slim and PHP: `SecurityHelper::sendHeaders()` at the top of `public/index.php`, so the headers are there with any server
+  (Apache, Nginx, `php -S`)
+- PHP: `RateLimitHelper` (limit of tries: contact form, failed logins, forgotten password; the visitor is the last address of
+  `X-Forwarded-For`), `FileTypeHelper` (real type of a file sent, read in its content), `LengthHelper` (a text too long gets a
+  400 error instead of a 500 from the database), `uploads/.htaccess` (a file sent is never run as code, Slim and PHP)
+- JavaScript: `SecurityHelper` with the same tools (headers, limit of tries, real type of a file, length of the texts)
+- Express and NestJS trust one proxy (the host): `req.ip` and `req.secure` are those of the visitor
+
+### API inside the site (Node.js server)
+- `www.` is sent to the address without `www.` (301, path and parameters kept), not every host does it, and the security
+  headers are on every page: Nuxt (`server/middleware/`), Next.js (`headers()` and `redirects()` of `next.config.mjs`),
+  SvelteKit (new `server.js` in front of `build/handler.js`, started by `npm start`), Qwik (`src/entry.node-server.tsx`).
+  Astro serves its prerendered pages itself: the host does it there
+
+### Every project
+- `start.bat` then `K` (backup) and `O` (restore): the MySQL database of Docker, the SQLite files and the files sent
+  (`uploads/`) into `backups/<date-time>/` (never in Git), and back
+- `.gitignore`: `uploads/` keeps its `.htaccess`, `backups/` is ignored
+- README and guides of the project: new "Security" and "Accessibility" sections, private pages, `K` / `O`
+
+### Compatibility robot
+- Stops at once when a file of `shared/i18n/` has two keys that differ only by case: PowerShell cannot read such a file,
+  and every project created in that language would keep its English comments
+
 ## [1.2.1] - 2026-11-04
 
 ### Back ends

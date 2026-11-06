@@ -64,6 +64,13 @@
             "copy": "files"
         },
         {
+            "insert": {
+                "file": "start/kernel.ts",
+                "after": "server\\.use\\(\\[",
+                "text": "  () => import('#middleware/security_headers_middleware'),"
+            }
+        },
+        {
             "replace": {
                 "file": ".env.example",
                 "find": "(?m)^#-+\\r?\\n# CORS.*\\r?\\n#-+\\r?\\n# CORS_ORIGIN=.*\\r?\\n?",

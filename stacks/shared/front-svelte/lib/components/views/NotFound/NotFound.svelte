@@ -14,7 +14,7 @@
             title={lang.getTranslation('notFoundTitle')}
             text={lang.getTranslation('notFoundText')}
         >
-            <a href="/" class="btn btn-primary">{lang.getTranslation('backHome')}</a>
+            <a href="/" class="btn btn-primary" title={lang.getTranslation('backHome')}>{lang.getTranslation('backHome')}</a>
         </PageHero>
     </div>
 </section>

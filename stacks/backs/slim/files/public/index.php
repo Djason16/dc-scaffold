@@ -7,11 +7,16 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Core\RouteDiscovery;
 use App\Helper\ErrorHandler;
 use App\Helper\ResponseHelper;
+use App\Helper\SecurityHelper;
 
 use App\Middleware\SessionMiddleware;
 use App\Middleware\CorsMiddleware;
 
 require __DIR__ . '/../vendor/autoload.php';
+
+// Security headers on every answer, errors included (src/Helper/SecurityHelper.php)
+SecurityHelper::sendHeaders();
+
 require __DIR__ . '/../config/database.php';
 
 /*
