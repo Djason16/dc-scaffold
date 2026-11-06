@@ -7,6 +7,8 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 ### Stacks (published by the robot, no new version of the app needed)
 - `.gitignore`: only `backend/uploads/` and `frontend/uploads/` are ignored, no longer every folder named `uploads`
   (a route of the site in `server/routes/uploads/` was left out of Git, and missing once online)
+- Limits of tries (`RateLimitHelper.php`, `SecurityHelper.js`): counters untouched for a day are removed from time to time,
+  so `var/rate-limit/` (or the memory of a JavaScript API) never grows over the years
 
 ## [1.3.0] - 2026-11-06
 
