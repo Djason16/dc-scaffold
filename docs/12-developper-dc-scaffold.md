@@ -92,12 +92,18 @@ Résultat : `DCScaffold-Setup.exe` à la racine du dépôt.
 
 ## Publier une version
 
-1. Mets à jour `VERSION`, le badge de version du `README.md` et `CHANGELOG.md`.
+1. Mets à jour `VERSION`, `CHANGELOG.md` et le badge de version : `assets/readme/badges/version.svg`, un fichier du dépôt
+   (pas un lien vers shields.io : GitHub abandonne une image qui met plus de quelques secondes à arriver, et un badge
+   neuf de shields.io peut mettre 3 à 4 secondes). Pour le refaire, remplace `1.3.0` par la nouvelle version :
+   ```
+   curl -o assets/readme/badges/version.svg "https://img.shields.io/badge/VERSION-1.3.0-4084ff?style=for-the-badge&labelColor=09090b"
+   ```
+   L'`alt` du badge dans `README.md` (`Version 1.3.0`) change aussi.
 2. Recompile et teste le setup en local.
 3. Commite et pousse (le robot republie le catalogue avec `minApp` = cette version).
 4. Crée le tag et pousse-le :
    ```
-   git tag v1.2.1
+   git tag v1.3.0
    git push --tags
    ```
    Le workflow `build.yml` compile le setup et le publie dans *Releases* : les DC Scaffold installés le proposent en mise à jour.

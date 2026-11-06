@@ -60,7 +60,7 @@ Les journaux de chaque test sont dans les *artifacts* du run (`result-<kind>-<id
 ```json
 {
   "version": "2026.10.29.1",
-  "minApp": "1.2.1",
+  "minApp": "1.3.0",
   "hash": "...",
   "stacks": { "url": "https://github.com/<dépôt>/releases/download/catalog/stacks.zip", "sha256": "..." }
 }
