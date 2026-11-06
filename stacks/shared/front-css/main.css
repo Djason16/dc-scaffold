@@ -7,6 +7,9 @@
 /* Reset and page layout applied to the whole site */
 @import "base/global.css";
 
+/* Hidden titles, keyboard focus, long texts and touch areas (accessibility of the site) */
+@import "base/accessibility.css";
+
 /* Titles, paragraphs and links */
 @import "base/typography.css";
 

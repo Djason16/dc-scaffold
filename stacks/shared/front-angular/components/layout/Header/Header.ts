@@ -10,10 +10,10 @@ import { useSite } from '@/composables/useSite'
     imports: [RouterLink],
     template: `
         <div class="container">
-            <a routerLink="/" class="header-logo">{{ site.name }}</a>
+            <a routerLink="/" class="header-logo" [title]="site.name">{{ site.name }}</a>
             <nav [attr.aria-label]="lang.getTranslation('home')">
                 <ul class="header-nav">
-                    <li><a routerLink="/">{{ lang.getTranslation('home') }}</a></li>
+                    <li><a routerLink="/" [title]="lang.getTranslation('home')">{{ lang.getTranslation('home') }}</a></li>
                     <!-- Add a page: <li><a routerLink="/about">{{ lang.getTranslation('about') }}</a></li> -->
                 </ul>
             </nav>

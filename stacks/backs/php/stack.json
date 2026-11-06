@@ -20,6 +20,14 @@
             "to": "src/Core"
         },
         {
+            "copy": "@shared/php-security",
+            "to": "src/Helper"
+        },
+        {
+            "copy": "@shared/php-uploads",
+            "to": "uploads"
+        },
+        {
             "copy": "@shared/php-db/{{DB_DRIVER}}"
         },
         {

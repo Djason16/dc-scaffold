@@ -135,8 +135,23 @@ def http_status(url, tries=30):
 # 1. plan
 # ---------------------------------------------------------------------------
 
+def check_i18n():
+    """The comment texts (shared/i18n/*.json) are read by PowerShell, which refuses two keys that differ only by case:
+    the whole file would be skipped and every project created in that language would keep its English comments"""
+    for file in sorted((STACKS / "shared" / "i18n").glob("*.json")):
+        for section, texts in read_json(file).items():
+            if not isinstance(texts, dict):
+                continue
+            seen = {}
+            for key in texts:
+                if key.lower() in seen:
+                    raise SystemExit(f"{file.name} ({section}): two keys differ only by case: {seen[key.lower()]!r} / {key!r}")
+                seen[key.lower()] = key
+
+
 def plan():
     """One entry per stack: its packages, the validated version and the latest one"""
+    check_i18n()
     entries = []
     for kind in ("fronts", "backs"):
         for stack_file in sorted(STACKS.glob(f"{kind}/*/stack.json")):

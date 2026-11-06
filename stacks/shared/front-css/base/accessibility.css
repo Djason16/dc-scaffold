@@ -1,0 +1,38 @@
+/* Hidden on screen but read by screen readers and search engines: <h1 class="visually-hidden"> when the visible title is not an h1 */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Keyboard focus always visible (never outline: none without :focus-visible) */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Long texts: about 80 characters per line at most, easier to read */
+.text-long {
+    max-width: 75ch;
+}
+
+/* Touch screens only: links and buttons easier to touch (24 px at least), nothing changes with a mouse */
+@media (pointer: coarse) {
+
+    /* Buttons and boxes to tick */
+    :where(button, [role="button"], input[type="checkbox"], input[type="radio"], select) {
+        min-height: 24px;
+        min-width: 24px;
+    }
+
+    /* Links of the menu and of the footer: a taller touch area that does not move the text around */
+    :where(nav a, footer a, .footer-link) {
+        padding-block: 0.35em;
+    }
+}

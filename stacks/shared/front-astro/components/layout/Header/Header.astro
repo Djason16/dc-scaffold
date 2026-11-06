@@ -9,10 +9,10 @@ const site = useSite()
 <!-- Top of every page: site name (link to the home page) and menu -->
 <header class="header">
     <div class="container">
-        <a href="/" class="header-logo">{site.name}</a>
+        <a href="/" class="header-logo" title={site.name}>{site.name}</a>
         <nav aria-label={t('home')} data-i18n-attr="aria-label:home">
             <ul class="header-nav">
-                <li><a href="/" data-i18n="home">{t('home')}</a></li>
+                <li><a href="/" title={t('home')} data-i18n-attr="title:home" data-i18n="home">{t('home')}</a></li>
                 <!-- Add a page: <li><a href="/about/" data-i18n="about">{t('about')}</a></li> -->
             </ul>
         </nav>

@@ -10,10 +10,10 @@ export default function Header() {
     return (
         <header class="header">
             <div class="container">
-                <AppLink href="/" class="header-logo">{site.name}</AppLink>
+                <AppLink href="/" class="header-logo" title={site.name}>{site.name}</AppLink>
                 <nav aria-label={t('home')}>
                     <ul class="header-nav">
-                        <li><AppLink href="/">{t('home')}</AppLink></li>
+                        <li><AppLink href="/" title={t('home')}>{t('home')}</AppLink></li>
                         {/* Add a page: <li><AppLink href="/about/">{t('about')}</AppLink></li> */}
                     </ul>
                 </nav>

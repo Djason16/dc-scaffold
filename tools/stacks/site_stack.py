@@ -82,9 +82,10 @@ stack = {
             steps=[
                 # Node.js server instead of a static site: the pages stay prerendered, /api answers on each request
                 # sitemap.xml: a prerendered route (src/routes/sitemap.xml), the Node.js server only serves the files of the build
+                # server.js (inside/sveltekit/files): www. redirect and security headers in front of build/handler.js
                 {"npm": {"delete": ["devDependencies.@sveltejs/adapter-static", "scripts.postbuild"],
                          "set": {"devDependencies.@sveltejs/adapter-node": "^{{V_SVELTE_ADAPTER_NODE}}",
-                                 "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production build"}}},
+                                 "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production server.js"}}},
                 {"remove": ["scripts/sitemap.mjs"]},
                 {"replace": {"file": "vite.config.js", "find": "@sveltejs/adapter-static", "with": "@sveltejs/adapter-node"}},
                 {"replace": {"file": "vite.config.js", "find": r"adapter: adapter\(\{ fallback: '200.html' \}\)", "with": "adapter: adapter()"}},
@@ -121,6 +122,22 @@ stack = {
                              "with": "    // Node.js server (npm start): the pages and the API (app/api) together\n"}},
                 {"replace": {"file": "next.config.mjs", "find": r"trailingSlash: true,",
                              "with": "trailingSlash: true,\n    // /api/products and /api/products/ both reach the API, without a redirect\n    skipTrailingSlashRedirect: true,"}},
+                # Security headers on every page and answer, www. -> address without www. (the server of Next.js does both)
+                {"replace": {"file": "next.config.mjs", "find": r"(?m)^/\*\* @type",
+                             "with": "import { SecurityHelper } from './server/SecurityHelper.js'\n\n/** @type"}},
+                {"replace": {"file": "next.config.mjs", "find": r"images: \{ unoptimized: true \},",
+                             "with": "images: { unoptimized: true },\n"
+                                     "    // Security headers on every page and every answer of the API (server/SecurityHelper.js)\n"
+                                     "    async headers() {\n"
+                                     "        return [{ source: '/:path*', headers: Object.entries(SecurityHelper.headers(true)).map(([key, value]) => ({ key, value })) }]\n"
+                                     "    },\n"
+                                     "    // www.my-site.com -> my-site.com (path kept): not every host does it, the site does it itself\n"
+                                     "    async redirects() {\n"
+                                     "        return [\n"
+                                     "            { source: '/:path*', has: [{ type: 'host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n"
+                                     "            { source: '/:path*', has: [{ type: 'header', key: 'x-forwarded-host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n"
+                                     "        ]\n"
+                                     "    },"}},
                 {"npm": {"set": {"scripts.start": "next start",
                                  "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --to public"}}},
             ],

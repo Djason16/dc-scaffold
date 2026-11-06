@@ -10,8 +10,8 @@ backend/
 [en]     ├── Controllers/          Controller.php (base) + your controllers
 [fr]     ├── Core/                 attribut Route + RouteDiscovery
 [en]     ├── Core/                 Route attribute + RouteDiscovery
-[fr]     ├── Helper/               ResponseHelper, RequestHelper, DatabaseHelper (mysqli ou PDO), ErrorHandler
-[en]     ├── Helper/               ResponseHelper, RequestHelper, DatabaseHelper (mysqli or PDO), ErrorHandler
+[fr]     ├── Helper/               ResponseHelper, RequestHelper, DatabaseHelper (mysqli ou PDO), ErrorHandler, RateLimitHelper, FileTypeHelper, LengthHelper
+[en]     ├── Helper/               ResponseHelper, RequestHelper, DatabaseHelper (mysqli or PDO), ErrorHandler, RateLimitHelper, FileTypeHelper, LengthHelper
     └── Middleware/           SessionMiddleware, CorsMiddleware
 ```
 

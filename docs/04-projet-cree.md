@@ -46,12 +46,14 @@ Double-clique sur `start.bat` (ou `.\start.ps1` dans PowerShell). Le menu ne mon
 | `G` Générer | Nuxt sans API dans le site | Site statique dans `frontend/.output/public`, avec `.env.production` |
 | `B` Build | les autres fronts à compiler | Site statique à envoyer (avec `.env.production`) ; ou, avec l'API dans le site, **site + API dans un serveur Node.js** |
 | `A` Build API | API séparée qui se compile (Nitro, NestJS, AdonisJS) | `npm run build` dans `backend/` |
+| `K` Sauvegarder | avec une base ou des fichiers envoyés | Copie dans `backups/<date-heure>/` la base MySQL de Docker (`database.sql`), les fichiers SQLite et `uploads/` (`uploads.zip`) |
+| `O` Restaurer | avec une base ou des fichiers envoyés | Remet la dernière sauvegarde de `backups/` (ou celle donnée : `scripts/restore.ps1 2026-11-06_21-30`), après confirmation |
 
 **Un seul choix de production est proposé**, celui qui convient au projet : `G` ou `B`, jamais les deux.
 
 Sous le menu, **« En ligne »** rappelle les étapes de mise en ligne de ce projet (détail : [8. Mettre en ligne](08-mise-en-ligne.md)).
 
-En ligne de commande : `.\start.ps1 -Action D` (ou `S`, `R`, `I`, `G`, `B`, `A`).
+En ligne de commande : `.\start.ps1 -Action D` (ou `S`, `R`, `I`, `G`, `B`, `A`, `K`, `O`). Le dossier `backups/` n'est jamais envoyé sur Git.
 
 ## Les adresses en développement
 

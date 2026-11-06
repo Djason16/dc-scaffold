@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs'
 import { controllers } from './controllers.js'
 import { ResponseHelper } from './ResponseHelper.js'
 import { RouteDiscovery } from './RouteDiscovery.js'
+import { SecurityHelper } from './SecurityHelper.js'
 
 // Settings of the API (DB_*): .env in development, .env.production online (read by "npm start")
 if (!process.env.DB_CONNECTION && existsSync('.env')) process.loadEnvFile('.env')
@@ -19,6 +20,21 @@ const routes = RouteDiscovery.scan(controllers)
  * @returns {Promise<Response>}
  */
 export async function handleApi(request) {
+    // Security headers on every answer of the API, errors included (SecurityHelper.js); a copy when its headers are locked
+    const isHttps = new URL(request.url).protocol === 'https:' || request.headers.get('x-forwarded-proto') === 'https'
+    const headers = Object.entries(SecurityHelper.headers(isHttps))
+    let response = await answer(request)
+    try {
+        for (const [name, value] of headers) response.headers.set(name, value)
+    } catch {
+        response = new Response(response.body, response)
+        for (const [name, value] of headers) response.headers.set(name, value)
+    }
+    return response
+}
+
+/** @param {Request} request @returns {Promise<Response>} */
+async function answer(request) {
     const { pathname } = new URL(request.url)
     const path = pathname.replace(/^\/api/, '').replace(/\/+$/, '') || '/'
 

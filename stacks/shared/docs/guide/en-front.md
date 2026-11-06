@@ -87,6 +87,18 @@ The cookie name and how long it is kept (180 days) are at the top of `{{FRONT_AC
 [one-language] - Title, description and sharing image of each page: `{{FRONT_SEO}}` (`SEO_PAGES`)
 - Default sharing image: `{{FRONT_PUBLIC}}/og-image.jpg` (1200 × 630 px)
 - `sitemap.xml` and `robots.txt` are created automatically with the production site
+- Private pages (admin, account...): add them to `privateRoutes` (top of `nuxt.config.ts` with Nuxt) or to `PRIVATE_ROUTES` (top of `scripts/sitemap.mjs`): they leave the sitemap.xml and `robots.txt` forbids them to crawlers
+- One `<h1>` per page; when the visible title is not one, add `<h1 class="visually-hidden">Title</h1>` (hidden on screen, read by Google and screen readers)
+
+### Accessibility
+
+Already in place in `{{FRONT_CSS}}/base/accessibility.css`, and checked by the tests of a site before it goes online:
+
+- **Keyboard focus visible** on links, buttons and fields; never write `outline: none` without `:focus-visible`
+- **Touch areas**: on touch screens, buttons and the links of the menu and of the footer are at least 24 px high, nothing changes with a mouse
+- **Long texts**: the `text-long` class keeps a line to about 80 characters
+- **Every link has a `title`** and **every image a filled `alt` and `title`** (never `alt=""`): they describe the destination or the image
+- **Images**: compress them before adding them to the site (WebP, 300 KB at most for a large image)
 
 ### Name and address of the site
 

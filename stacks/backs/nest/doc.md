@@ -14,7 +14,7 @@ backend/src/
 [en] ├── errors.filter.ts          every error in the shared JSON format
 [fr] ├── controllers/              tes contrôleurs (routes créées automatiquement)
 [en] ├── controllers/              your controllers (routes built automatically)
-└── utils/                    Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery
+└── utils/                    Controller, ResponseHelper, RequestHelper, DatabaseHelper, RouteDiscovery, SecurityHelper
 ```
 
 `backend/src/controllers/ProductsController.ts`

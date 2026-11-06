@@ -12,7 +12,7 @@ export default component$(() => {
         <section class="section">
             <div class="container">
                 <PageHero eyebrow={t(lang, 'notFoundEyebrow')} title={t(lang, 'notFoundTitle')} text={t(lang, 'notFoundText')}>
-                    <AppLink href="/" class="btn btn-primary">{t(lang, 'backHome')}</AppLink>
+                    <AppLink href="/" class="btn btn-primary" title={t(lang, 'backHome')}>{t(lang, 'backHome')}</AppLink>
                 </PageHero>
             </div>
         </section>

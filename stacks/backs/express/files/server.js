@@ -4,14 +4,24 @@ import { cors } from './middleware/cors.js'
 import { errorHandler } from './middleware/errors.js'
 import { ResponseHelper } from './utils/ResponseHelper.js'
 import { RouteDiscovery } from './utils/RouteDiscovery.js'
+import { SecurityHelper } from './utils/SecurityHelper.js'
 
 const app = express()
+// No "X-Powered-By: Express" header (the server used is not shown to everyone)
+app.disable('x-powered-by')
+// One proxy in front (the host): req.ip = last entry of X-Forwarded-For, req.secure = HTTPS of the visitor
+app.set('trust proxy', 1)
 
 /*
 |--------------------------------------------------------------------------
 | Middlewares
 |--------------------------------------------------------------------------
 */
+// Security headers on every answer, errors included (utils/SecurityHelper.js)
+app.use((req, res, next) => {
+    res.set(SecurityHelper.headers(req.secure))
+    next()
+})
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors)

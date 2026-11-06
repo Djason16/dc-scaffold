@@ -46,6 +46,6 @@ The GitHub workflow fills it: pushing a `v*` tag builds the installer and publis
 which every installed DC Scaffold then offers as an update (the repository must be public).
 
 ```
-git tag v1.2.1
+git tag v1.3.0
 git push --tags
 ```

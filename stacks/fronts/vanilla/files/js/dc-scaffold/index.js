@@ -11,7 +11,7 @@ if (home) home.innerHTML = `
         <div class="container">
             <div class="page-hero page-hero-large">
                 <span class="hero-badge">
-                    <img src="/dc-scaffold/icon.png" alt="" width="28" height="28">
+                    <img src="/dc-scaffold/icon.png" alt="DC Scaffold" title="DC Scaffold" width="28" height="28">
                     <span data-i18n="heroBadge"></span>
                 </span>
                 <h1 data-i18n="heroTitle">{{PROJECT_NAME}}</h1>
@@ -19,8 +19,8 @@ if (home) home.innerHTML = `
                 <div class="page-hero-actions">
                     <div class="hero-by">
                         <span data-i18n="heroBy"></span>
-                        <a class="hero-by-link" href="https://djason-chery.dev/" target="_blank" rel="noopener">
-                            <img src="/dc-scaffold/logo-light.png" alt="Djason CHERY" width="114" height="32">
+                        <a class="hero-by-link" href="https://djason-chery.dev/" title="Djason CHERY" target="_blank" rel="noopener">
+                            <img src="/dc-scaffold/logo-light.png" alt="Djason CHERY" title="Djason CHERY" width="114" height="32">
                         </a>
                     </div>
                 </div>

@@ -41,6 +41,29 @@ Ses méthodes deviennent des routes toutes seules :
 - Répondre : `{{BACK_SUCCESS}}`
 - Erreurs : `notFound`, `validationError`, `authError`, `forbidden`, `serverError` de `ResponseHelper`, toutes au même format
 
+### Sécurité
+
+Déjà en place, et vérifié par la recette d'un site avant sa mise en ligne :
+
+[docker] - **En-têtes de sécurité** sur chaque réponse, erreurs comprises (nosniff, X-Frame-Options, Referrer-Policy, HSTS en HTTPS), sans `X-Powered-By` : `backend/.htaccess` et `expose_php = Off` dans `backend/php.ini` (Slim et PHP : aussi `SecurityHelper::sendHeaders()` au début de `public/index.php`, pour tout serveur)
+[node] - **En-têtes de sécurité** sur chaque réponse, erreurs comprises (nosniff, X-Frame-Options, Referrer-Policy, HSTS en HTTPS), sans `X-Powered-By` : posés par le serveur avec `SecurityHelper.headers()`
+[inside] - **En-têtes de sécurité** sur chaque réponse de l'API (nosniff, X-Frame-Options, Referrer-Policy, HSTS en HTTPS) avec `SecurityHelper.headers()`
+[nitro-in-nuxt] - Aussi sur chaque page, et `www.` renvoyé vers l'adresse sans `www.` (tous les hébergeurs ne le font pas) : `server/middleware/security.ts` et `redirect-www.ts`
+[site-in-next] - Aussi sur chaque page, et `www.` renvoyé vers l'adresse sans `www.` (tous les hébergeurs ne le font pas) : `headers()` et `redirects()` de `next.config.mjs`
+[site-in-sveltekit] - Aussi sur chaque page, et `www.` renvoyé vers l'adresse sans `www.` (tous les hébergeurs ne le font pas) : `server.js`, lancé par `npm start`
+[site-in-qwik] - Aussi sur chaque page, et `www.` renvoyé vers l'adresse sans `www.` (tous les hébergeurs ne le font pas) : `src/entry.node-server.tsx`
+[site-in-astro] - Les pages pré-rendues sont servies directement par le serveur d'Astro : la redirection de `www.` et les en-têtes des pages se règlent chez l'hébergeur (ou devant, avec Nginx)
+[docker] - **Limite d'essais** (contact, connexion ratée, mot de passe oublié) : `if (RateLimitHelper::tooMany('contact', 5, 600))` renvoie une erreur 429 ; le visiteur est la dernière adresse de `X-Forwarded-For` (celle du proxy de l'hébergeur)
+[node] - **Limite d'essais** (contact, connexion ratée, mot de passe oublié) : `SecurityHelper.tooMany('contact', SecurityHelper.ip(...), 5, 600)` puis une erreur 429 ; le visiteur est la dernière adresse de `X-Forwarded-For`
+[inside] - **Limite d'essais** (contact, connexion ratée, mot de passe oublié) : `SecurityHelper.tooMany('contact', SecurityHelper.ip(...), 5, 600)` puis une erreur 429 ; le visiteur est la dernière adresse de `X-Forwarded-For`
+[docker] - **Fichiers envoyés** : vérifie leur vrai type avec `FileTypeHelper::isImage($path)` (lu dans le contenu, le type donné par le navigateur peut être truqué) et enregistre-les avec `FileTypeHelper::extension($path)` ; `uploads/.htaccess` empêche d'y lancer un script
+[node] - **Fichiers envoyés** : vérifie leur vrai type avec `SecurityHelper.fileType(buffer)` (lu dans les premiers octets) et enregistre-les sous un nom choisi par l'API, jamais celui envoyé
+[inside] - **Fichiers envoyés** : vérifie leur vrai type avec `SecurityHelper.fileType(buffer)` (lu dans les premiers octets) et enregistre-les sous un nom choisi par l'API, jamais celui envoyé
+[docker] - **Textes trop longs** : `LengthHelper::tooLong($data, ['name' => 100, 'message' => 5000])` donne une erreur 400 claire au lieu d'une erreur 500 de la base
+[node] - **Textes trop longs** : `SecurityHelper.tooLong(data, { name: 100, message: 5000 })` donne une erreur 400 claire au lieu d'une erreur 500 de la base
+[inside] - **Textes trop longs** : `SecurityHelper.tooLong(data, { name: 100, message: 5000 })` donne une erreur 400 claire au lieu d'une erreur 500 de la base
+- **Mot de passe oublié** : envoie toujours un lien valable une heure, jamais un nouveau mot de passe (sinon n'importe qui connaissant l'e-mail bloque le compte)
+
 ### Base de données
 
 [mysql] - **MySQL** tourne dans Docker, base `{{DB_NAME}}`, utilisateur `root`, mot de passe dans `{{BACK_ROOT}}/{{BACK_ENV_DEV}}`
