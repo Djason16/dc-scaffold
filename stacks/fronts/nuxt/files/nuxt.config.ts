@@ -25,7 +25,8 @@ export default defineNuxtConfig({
     trailingSlash: TRAILING_SLASH_ENABLED,
   },
   robots: { disallow: privateRoutes.map((route) => `${route}/`) },
-  sitemap: { exclude: privateRoutes.flatMap((route) => [route, `${route}/**`]) },
+  // sitemap.xml: every page with the images of its <main> (found by itself) and the date of the build
+  sitemap: { autoLastmod: true, exclude: privateRoutes.flatMap((route) => [route, `${route}/**`]) },
 
   // Public values read with useRuntimeConfig().public, filled from the NUXT_PUBLIC_* variables
   runtimeConfig: {

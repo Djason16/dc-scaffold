@@ -19,4 +19,20 @@ export const RequestHelper = {
     missing(data: Record<string, unknown>, requiredFields: string[]) {
         return requiredFields.filter((field) => data[field] === undefined || data[field] === null || data[field] === '')
     },
+
+    /**
+     * Form with files (multipart/form-data): text fields as strings, files by field name.
+     *   const { fields, files } = await RequestHelper.multipart(event)   // files.photo = { filename, type, size, data }
+     */
+    async multipart(event: H3Event) {
+        const parts = (await readMultipartFormData(event).catch(() => null)) ?? []
+        const fields: Record<string, string> = {}
+        const files: Record<string, { filename: string, type: string, size: number, data: Buffer }> = {}
+        for (const part of parts) {
+            if (!part.name) continue
+            if (part.filename) files[part.name] = { filename: part.filename, type: part.type ?? '', size: part.data.length, data: part.data }
+            else fields[part.name] = part.data.toString('utf-8')
+        }
+        return { fields, files }
+    },
 }

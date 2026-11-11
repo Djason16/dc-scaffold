@@ -16,6 +16,7 @@ The other letters of the menu:
 - `S`: stops Docker
 - `R`: rebuilds Docker (useful when something no longer starts)
 - `G` / `B` / `A`: prepare the version to put online (depending on the project)
+- `Q`: prepares the qualif, the site shown to the client before it goes online (Nuxt sites, see "Qualif" below)
 - `K` / `O`: back up the database and the files sent into `backups/`, then put them back (when the project has some)
 
 To write the code, open the folder in VS Code: it suggests the extensions recommended for this project, including GitHub Copilot
@@ -33,9 +34,11 @@ This file tells where each part of the project is and how to change it. Technica
 
 {{DEPLOY_STEPS}}
 
+{{QUALIF_SECTION}}
+
 ## Environment files
 
-`.env` and `.env.production` stay on your computer (they hold the passwords); only the `.env.example` files go to Git
+`.env`, `.env.production` and `.env.preprod` (qualif) stay on your computer (they hold the passwords); only the `.env.example` files go to Git
 (GitHub for example).
 
 ## Small glossary

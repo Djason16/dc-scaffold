@@ -5,6 +5,8 @@ const nextConfig = {
     output: 'export',
     trailingSlash: true,
     images: { unoptimized: true },
+    // Qualif: the site is served from a folder of its address (scripts/qualif.mjs); nothing at the root (dev, production)
+    ...(process.env.QUALIF_BASE_PATH ? { basePath: process.env.QUALIF_BASE_PATH } : {}),
 }
 
 export default nextConfig

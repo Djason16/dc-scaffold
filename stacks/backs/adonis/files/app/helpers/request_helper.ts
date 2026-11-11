@@ -15,4 +15,9 @@ export const RequestHelper = {
     /** Names of the required fields that are missing or empty. */
     missing: (data: Record<string, unknown>, requiredFields: string[]) =>
         requiredFields.filter((field) => data[field] === undefined || data[field] === null || data[field] === ''),
+    /**
+     * Form with files (multipart/form-data): the fields, and the files by field name (read by AdonisJS itself).
+     *   const { fields, files } = RequestHelper.multipart(request)   // files.photo.move(...), files.photo.size
+     */
+    multipart: (request: Request) => ({ fields: request.all(), files: request.allFiles() }),
 }

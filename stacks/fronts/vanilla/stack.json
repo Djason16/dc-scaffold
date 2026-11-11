@@ -44,6 +44,12 @@
             "copy": "files"
         },
         {
+            "copy": "@shared/front-qualif"
+        },
+        {
+            "copy": "@shared/front-scripts"
+        },
+        {
             "copy": "files-api",
             "when": "api"
         }

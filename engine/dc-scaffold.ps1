@@ -1468,6 +1468,24 @@ if ($BackInside) {
 }
 $deployList = for ($i = 0; $i -lt $deploySteps.Count; $i++) { "$($i + 1). $($deploySteps[$i])" }
 $Tokens['DEPLOY_STEPS'] = ((@($deployList) + $(if ($deployNote) { @('', $deployNote) } else { @() })) -join "`n").Trim()
+
+# "Qualif" of the README: the site shown to the client before it goes online (every front, with its API)
+$qualifSteps = @()
+if ($HasFront -and $FrontStack.deploy) {
+    # The variable of the address of the site: Nuxt, else the one of scripts/qualif.json of the front
+    $qualifFile = Join-Path $FrontStack.path 'files\scripts\qualif.json'
+    $siteKey = if ($Front -eq 'nuxt') { 'NUXT_PUBLIC_SITE_URL' } elseif (Test-Path $qualifFile) { (Get-Content $qualifFile -Raw | ConvertFrom-Json).siteUrl } else { 'SITE_URL' }
+    $separateApi = $HasBack -and -not $BackInside
+    $qualifSteps += T 'qualif_env' $Slug $siteKey
+    if ($separateApi) { $qualifSteps += T 'qualif_api_env' $Slug $(if ($FrontStack.api.source -match '\.') { 'API_URL' } else { $FrontStack.api.source }) }
+    if ($BackInside) { $qualifSteps += T 'qualif_inside_db' }
+    $qualifSteps += T 'qualif_build'
+    $qualifSteps += if ($BackInside) { T 'qualif_upload_server' $Slug } elseif ($separateApi) { T 'qualif_upload_api' $Slug } else { T 'qualif_upload' $Slug }
+}
+$Tokens['QUALIF_SECTION'] = if ($qualifSteps) {
+    $qualifList = for ($i = 0; $i -lt $qualifSteps.Count; $i++) { "$($i + 1). $($qualifSteps[$i])" }
+    "## $(T 'qualif_title')`n`n$(T 'qualif_intro' $Slug)`n`n$($qualifList -join "`n")`n"
+} else { '' }
 # start.bat: the same steps, without the Markdown
 $Tokens['DEPLOY_TITLE'] = (T 'deploy_title').Replace("'", "''")
 $Tokens['DEPLOY_LINES'] = (@($deployList) | ForEach-Object { "    Write-Host '   $(($_ -replace '`', '').Replace("'", "''"))' -ForegroundColor DarkGray" }) -join "`n"

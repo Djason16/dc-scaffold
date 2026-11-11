@@ -4,6 +4,43 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-11
+
+Every site can now be shown to its client before it goes online: the qualif, a third environment between dev and
+production, for every front and every back end. Sitemaps list the images and the date of every page.
+
+### Qualif (every front, every back end)
+- New third environment between dev and production: the **qualif**, the site shown to the client before it goes online,
+  in a folder of one shared address (`https://qualifs.example.com/my-site/`). `start.bat` then `Q` builds it with
+  `.env.preprod` (the same lines as `.env.production`, only the addresses change) into `qualif/`, ready to upload
+- The code stays the one of production: the folder is read in the address and given to the front as its base (Vite, Astro,
+  Next, SvelteKit, Angular, Qwik, the router), the paths still written from the root are moved into it after the build,
+  the `.htaccess` follows, and nothing is ever indexed (`X-Robots-Tag`, `robots.txt`)
+- Node.js servers of the site (Next, SvelteKit, Astro, Qwik): a start module moves the links of the pages into the folder
+  as they are sent; Nuxt + Nitro: `server/plugins/qualif.ts`
+- Separate API in its own folder (`my-site-api/`) with its own database, its code unchanged: a small entry file for PHP
+  (Slim, Laravel, Symfony, PHP), a start module for Node.js (Express, NestJS, AdonisJS, Nitro); settings, `composer.json`
+  and the tools are never served
+- Docs: "La qualif" in `docs/08-mise-en-ligne.md` (what it is, the folder on the hosting, the steps for each site)
+
+### Sitemaps (every front)
+- Every page of `sitemap.xml` now has its date and its images: the ones of its `<main>` in the built page, else the files
+  of `public/` its page file shows; a page with `noindex` stays out, addresses are escaped
+- Nuxt: `autoLastmod`; Nuxt rendered on each visit (with Nitro) visits its own pages to find their images
+  (`server/routes/__sitemap__/pages.get.ts`), a product or an article added later shows up by itself
+- Node.js servers of the site: Astro, Next and Qwik read their pages folder too; SvelteKit's `sitemap.xml` route gives the
+  images of each page
+- Site without build (HTML / CSS / JS): `start.bat` then `B` writes its `sitemap.xml` and `robots.txt` (new
+  `.env.production` with the address of the site); the `.htaccess` of the static sites never serves `.env*` files
+
+### API (every back end)
+- `ResponseHelper.tooManyRequests` (429 with `Retry-After`), `RequestHelper.multipart` (form with files: `{ fields, files }`,
+  no extra package, Express included) and `Controller.changed` (`{ id }` when a row changed, else 404), taken from the sites
+- Symfony: `.env` now says `APP_ENV=prod` (dev stays in dev with `.env.local`): online it was running in dev and never read
+  `.env.prod.local`
+- Laravel: online, `.env.production` goes up renamed `.env` (Laravel only reads it), never the `.env` of dev
+- CORS: the origin of the site is its domain alone, never with a folder
+
 ### Stacks (published by the robot, no new version of the app needed)
 - `.gitignore`: only `backend/uploads/` and `frontend/uploads/` are ignored, no longer every folder named `uploads`
   (a route of the site in `server/routes/uploads/` was left out of Git, and missing once online)

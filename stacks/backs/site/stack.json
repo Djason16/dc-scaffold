@@ -101,6 +101,20 @@
                 },
                 {
                     "env": {
+                        "file": ".env.preprod",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
                         "file": ".env.example",
                         "values": {
                             "DB_CONNECTION": "sqlite",
@@ -229,6 +243,20 @@
                 },
                 {
                     "env": {
+                        "file": ".env.preprod",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
                         "file": ".env.example",
                         "values": {
                             "DB_CONNECTION": "sqlite",
@@ -256,7 +284,7 @@
                         "set": {
                             "dependencies.@astrojs/node": "^{{V_ASTRO_NODE}}",
                             "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production dist/server/entry.mjs",
-                            "scripts.postbuild": "node scripts/sitemap.mjs dist/client"
+                            "scripts.postbuild": "node scripts/sitemap.mjs dist/client --pages src/pages"
                         }
                     }
                 },
@@ -356,6 +384,20 @@
                 },
                 {
                     "env": {
+                        "file": ".env.preprod",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
                         "file": ".env.example",
                         "values": {
                             "DB_CONNECTION": "sqlite",
@@ -410,7 +452,7 @@
                     "npm": {
                         "set": {
                             "scripts.start": "next start",
-                            "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --to public"
+                            "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --pages pages --to public"
                         }
                     }
                 }
@@ -482,6 +524,20 @@
                 },
                 {
                     "env": {
+                        "file": ".env.preprod",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
                         "file": ".env.example",
                         "values": {
                             "DB_CONNECTION": "sqlite",
@@ -513,6 +569,7 @@
                     "npm": {
                         "set": {
                             "scripts[build.server]": "qwik check-client src dist && vite build -c adapters/node-server/vite.config.ts",
+                            "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/routes",
                             "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production server/entry.node-server.js"
                         }
                     }

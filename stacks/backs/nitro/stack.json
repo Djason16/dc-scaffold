@@ -145,7 +145,14 @@
                     "replace": {
                         "file": "nuxt.config.ts",
                         "find": "(?m)^//[^\\n]*\\n//[^\\n]*\\n(?=export default defineNuxtConfig)",
-                        "with": "// Site + API (server/): \"nuxt build\" (start.bat then B) builds both into .output, \"npm start\" runs them.\n// Every page is rendered on each visit (always the latest data of the API), @nuxtjs/sitemap lists them automatically.\n"
+                        "with": "// Site + API (server/): \"nuxt build\" (start.bat then B) builds both into .output, \"npm start\" runs them.\n// Every page is rendered on each visit (always the latest data of the API); sitemap.xml lists them with their images\n// (server/routes/__sitemap__/pages.get.ts).\n"
+                    }
+                },
+                {
+                    "replace": {
+                        "file": "nuxt.config.ts",
+                        "find": "sitemap: \\{ autoLastmod: true,",
+                        "with": "sitemap: { autoLastmod: true, sources: ['/__sitemap__/pages'],"
                     }
                 },
                 {

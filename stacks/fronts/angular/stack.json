@@ -90,6 +90,16 @@
             "copy": "files"
         },
         {
+            "copy": "@shared/front-qualif"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.build:qualif": "node scripts/qualif.mjs"
+                }
+            }
+        },
+        {
             "npm": {
                 "set": {
                     "scripts.predev": "node scripts/design.mjs",

@@ -39,7 +39,8 @@ Its methods become routes by themselves:
 - What the front sends: `{{BACK_BODY}}`
 - Required fields: `{{BACK_MISSING}}` gives the list of the missing ones
 - Answer: `{{BACK_SUCCESS}}`
-- Errors: `notFound`, `validationError`, `authError`, `forbidden`, `serverError` of `ResponseHelper`, all in the same format
+- Errors: `notFound`, `validationError`, `authError`, `forbidden`, `tooManyRequests` (429), `serverError` of `ResponseHelper`, all in the same format
+- Form with files: `RequestHelper.multipart` (`{ fields, files }`); update or delete by id: `this.changed(rows, id)` (`{ id }` or 404)
 
 ### Security
 
@@ -95,8 +96,8 @@ Already in place, and checked by the tests of a site before it goes online:
 [node] - **Development**: `start.bat` then `D` (or `npm run dev` in `backend/`), on http://localhost:{{API_PORT}}, restarts on every change
 [slim] - **Online**: upload `backend/` (with `vendor/` and `.env.production`, without the `.env`) to a PHP host, the site points to `backend/public/`. Without `.env`, the API reads `.env.production` (`config/env.php`): nothing to set on the server
 [php] - **Online**: upload `backend/` (with `.env.production`, without the `.env`) to a PHP host, the site points to `backend/public/` (no Composer needed). Without `.env`, the API reads `.env.production` (`config/env.php`): nothing to set on the server
-[laravel] - **Online**: upload `backend/` (with `vendor/`), the site points to `backend/public/`
-[symfony] - **Online**: upload `backend/` (with `vendor/`), the site points to `backend/public/`, `APP_ENV=prod` in `backend/.env.prod.local`
+[laravel] - **Online**: upload `backend/` (with `vendor/`, **without the `.env`** of dev) and `.env.production` renamed `.env` (Laravel only reads it), the site points to `backend/public/`
+[symfony] - **Online**: upload `backend/` (with `vendor/`, **without `.env.local`**, the settings of dev), the site points to `backend/public/`: online, `.env` starts the `prod` mode, which reads `backend/.env.prod.local`
 [nitro] - **Online**: `start.bat` then `A` (build in `backend/.output`), then `npm start` on the server (Node.js 22.13+)
 [inside] - **Online**: the site and the API are one Node.js (22.13+) server: one upload, one address, the steps are in "Going online" below. A site with an API cannot be purely static
 [express] - **Online**: upload `backend/`, then `npm install --omit=dev` and `npm start` on the server (Node.js 22.13+)

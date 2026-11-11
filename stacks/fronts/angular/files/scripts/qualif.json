@@ -1,0 +1,6 @@
+{
+    "siteUrl": "SITE_URL",
+    "build": "npm run build -- --base-href {base}",
+    "output": "dist",
+    "public": "public"
+}

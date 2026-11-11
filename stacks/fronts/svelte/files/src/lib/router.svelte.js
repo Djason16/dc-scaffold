@@ -34,7 +34,14 @@ const find = (pathname) => {
     return { component: null, params: {} }
 }
 
-let current = $state(find(location.pathname))
+// Base of the site (vite.config.js): "/" at the root of its address, "/my-site/" in a qualif
+const BASE = import.meta.env.BASE_URL
+/** @param {string} pathname */
+const withBase = (pathname) => (BASE !== '/' && !pathname.startsWith(BASE) ? BASE.replace(/\/$/, '') + pathname : pathname)
+/** @param {string} pathname */
+const withoutBase = (pathname) => (BASE !== '/' && pathname.startsWith(BASE) ? `/${pathname.slice(BASE.length)}` : pathname)
+
+let current = $state(find(withoutBase(location.pathname)))
 let currentUrl = new URL(location.href)
 /** @type {Set<(navigation: Navigation) => void>} */
 const before = new Set()
@@ -49,6 +56,7 @@ const after = new Set()
  */
 export const goto = (target, { replace = false } = {}) => {
     const url = new URL(target, location.href)
+    url.pathname = withBase(url.pathname)
     for (const guard of guards) {
         const redirect = guard(url)
         if (redirect) {
@@ -61,7 +69,7 @@ export const goto = (target, { replace = false } = {}) => {
     history[replace ? 'replaceState' : 'pushState']({}, '', url)
     if (url.pathname !== currentUrl.pathname) window.scrollTo(0, 0)
     currentUrl = url
-    current = find(url.pathname)
+    current = find(withoutBase(url.pathname))
     after.forEach((callback) => callback(navigation))
 }
 

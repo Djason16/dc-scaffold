@@ -16,6 +16,7 @@ Les autres lettres du menu :
 - `S` : arrête Docker
 - `R` : reconstruit Docker (utile si quelque chose ne démarre plus)
 - `G` / `B` / `A` : préparent la version à mettre en ligne (selon le projet)
+- `Q` : prépare la qualif, le site montré au client avant la mise en ligne (sites Nuxt, voir « Qualif » plus bas)
 - `K` / `O` : sauvegarde la base de données et les fichiers envoyés dans `backups/`, puis les remet (quand le projet en a)
 
 Pour écrire le code, ouvre le dossier dans VS Code : il propose les extensions conseillées pour ce projet, dont GitHub Copilot
@@ -33,9 +34,11 @@ Ce fichier explique où se trouve chaque chose et comment la changer. Les mots t
 
 {{DEPLOY_STEPS}}
 
+{{QUALIF_SECTION}}
+
 ## Fichiers d'environnement
 
-Les `.env` et `.env.production` restent sur ton ordinateur (ils contiennent les mots de passe) ; seuls les `.env.example`
+Les `.env`, `.env.production` et `.env.preprod` (qualif) restent sur ton ordinateur (ils contiennent les mots de passe) ; seuls les `.env.example`
 vont sur Git (GitHub par exemple).
 
 ## Petit lexique

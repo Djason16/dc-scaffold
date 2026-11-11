@@ -142,5 +142,14 @@
     "deploy_inside_env": "Online settings in `{0}`: the database of the server",
     "deploy_inside_note": "The site and the API are one server: one upload, one address (the API answers under `/api`).",
     "deploy_api_alone": "API: {0}",
-    "back_only_inside": "\"{0}\" is only possible with a front that has its own server: choose {1}."
+    "back_only_inside": "\"{0}\" is only possible with a front that has its own server: choose {1}.",
+    "qualif_title": "Qualif (before going online)",
+    "qualif_intro": "The **qualif** (pre-production) is the site shown to the client before it goes online, on your own hosting, in a folder protected by a password, for example `https://qualifs.example.com/{0}/`. Same code as the production: only the settings change, and nothing is indexed by search engines.",
+    "qualif_env": "**Settings of the site**: `frontend/.env.preprod` has the same lines as `.env.production`, with the qualif address (`{1}=https://qualifs.example.com/{0}`). The folder of the site is read in this address: nothing else to set.",
+    "qualif_api_env": "**Settings of the API**: the `.env.preprod` of the API, the same lines as its `.env.production` with its own database (never the production one) and the qualif addresses (`https://qualifs.example.com/{0}-api` for the API; the origin of the site, `APP_BASE_URL`, is the domain only: `https://qualifs.example.com`). For the site, the address of the API goes in `frontend/.env.preprod` (`{1}`).",
+    "qualif_inside_db": "**Settings of the API**, in the same `frontend/.env.preprod`: the database of the qualif, never the production one.",
+    "qualif_build": "**Prepare**: `start.bat` then `Q`. Everything is built in `qualif/`, at the root of the project.",
+    "qualif_upload": "**Upload**: `qualif/{0}/` into the qualif folder of your hosting.",
+    "qualif_upload_api": "**Upload**: the content of `qualif/` into the qualif folder of your hosting (`{0}/` for the site, `{0}-api/` for the API; a Node.js API: `npm install --omit=dev` then `npm start` in its folder), then create the qualif database and import the tables.",
+    "qualif_upload_server": "**Upload**: `qualif/{0}/` to a Node.js 22.13+ hosting whose application answers at the qualif address, then `npm install --omit=dev` and `npm start`. Create the qualif database too and import the tables."
 }

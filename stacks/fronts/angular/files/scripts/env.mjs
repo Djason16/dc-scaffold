@@ -3,7 +3,8 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 
 const production = process.argv.includes('--production')
-const file = production ? '.env.production' : '.env'
+// A qualif gives its own settings file (scripts/qualif.mjs: QUALIF_ENV_FILE=.env.preprod)
+const file = process.env.QUALIF_ENV_FILE || (production ? '.env.production' : '.env')
 
 // NAME=value lines (quotes around the value are removed)
 const values = {}

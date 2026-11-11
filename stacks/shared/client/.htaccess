@@ -1,5 +1,10 @@
 RewriteEngine On
 
+# Settings files (.env*) are never served: a site without build is uploaded as it is
+<FilesMatch "^\.env">
+    Require all denied
+</FilesMatch>
+
 # Force HTTPS for all requests
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

@@ -86,7 +86,7 @@ Le nom du cookie et sa durée (180 jours) sont en haut de `{{FRONT_ACTIONS}}`.
 [two-languages] - Titre, description et image de partage de chaque page : `{{FRONT_SEO}}` et `{{FRONT_TRANSLATIONS}}/common/seo.js`
 [one-language] - Titre, description et image de partage de chaque page : `{{FRONT_SEO}}` (`SEO_PAGES`)
 - Image de partage par défaut : `{{FRONT_PUBLIC}}/og-image.jpg` (1200 × 630 px)
-- `sitemap.xml` et `robots.txt` sont créés automatiquement avec le site de production
+- `sitemap.xml` et `robots.txt` sont créés automatiquement avec le site de production : chaque page avec sa date et ses images
 - Pages privées (admin, compte...) : ajoute-les à `privateRoutes` (en haut de `nuxt.config.ts` avec Nuxt) ou à `PRIVATE_ROUTES` (en haut de `scripts/sitemap.mjs`) : elles sortent du sitemap.xml et `robots.txt` les interdit aux robots
 - Un seul `<h1>` par page ; si le titre visible n'en est pas un, ajoute `<h1 class="visually-hidden">Titre</h1>` (caché à l'écran, lu par Google et les lecteurs d'écran)
 

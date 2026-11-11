@@ -142,5 +142,14 @@
     "deploy_inside_env": "Réglages en ligne dans `{0}` : la base de données du serveur",
     "deploy_inside_note": "Le site et l'API sont un seul serveur : un seul envoi, une seule adresse (l'API répond sous `/api`).",
     "deploy_api_alone": "API : {0}",
-    "back_only_inside": "« {0} » n'est possible qu'avec un front qui a son propre serveur : choisis {1}."
+    "back_only_inside": "« {0} » n'est possible qu'avec un front qui a son propre serveur : choisis {1}.",
+    "qualif_title": "Qualif (avant la mise en ligne)",
+    "qualif_intro": "La **qualif** (pré-production) est le site montré au client avant sa mise en ligne, sur ton hébergement, dans un dossier protégé par mot de passe, par exemple `https://qualifs.example.com/{0}/`. Même code que la production : seuls les réglages changent, et rien n'est indexé par les moteurs de recherche.",
+    "qualif_env": "**Réglages du site** : `frontend/.env.preprod` a les mêmes lignes que `.env.production`, avec l'adresse de qualif (`{1}=https://qualifs.example.com/{0}`). Le dossier du site est lu dans cette adresse : rien d'autre à régler.",
+    "qualif_api_env": "**Réglages de l'API** : le `.env.preprod` de l'API, les mêmes lignes que son `.env.production` avec une base de données à part (jamais celle de production) et les adresses de qualif (`https://qualifs.example.com/{0}-api` pour l'API ; l'origine du site, `APP_BASE_URL`, est le domaine seul : `https://qualifs.example.com`). Pour le site, l'adresse de l'API va dans `frontend/.env.preprod` (`{1}`).",
+    "qualif_inside_db": "**Réglages de l'API**, dans le même `frontend/.env.preprod` : la base de données de la qualif, jamais celle de production.",
+    "qualif_build": "**Préparer** : `start.bat` puis `Q`. Tout est construit dans `qualif/`, à la racine du projet.",
+    "qualif_upload": "**Envoyer** : `qualif/{0}/` dans le dossier de qualif de l'hébergement.",
+    "qualif_upload_api": "**Envoyer** : le contenu de `qualif/` dans le dossier de qualif de l'hébergement (`{0}/` pour le site, `{0}-api/` pour l'API ; une API Node.js : `npm install --omit=dev` puis `npm start` dans son dossier), puis créer la base de la qualif et y importer les tables.",
+    "qualif_upload_server": "**Envoyer** : `qualif/{0}/` sur un hébergement Node.js 22.13+ dont l'application répond à l'adresse de qualif, puis `npm install --omit=dev` et `npm start`. Créer aussi la base de la qualif et y importer les tables."
 }

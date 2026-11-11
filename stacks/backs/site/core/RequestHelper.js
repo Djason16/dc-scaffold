@@ -36,4 +36,21 @@ export const RequestHelper = {
     missing(data, requiredFields) {
         return requiredFields.filter((field) => data[field] === undefined || data[field] === null || data[field] === '')
     },
+    /**
+     * Form with files (multipart/form-data): text fields as strings, files by field name.
+     *   const { fields, files } = await RequestHelper.multipart(request)   // files.photo = { filename, type, size, data }
+     * @param {Request} request
+     */
+    async multipart(request) {
+        const form = await request.formData().catch(() => new FormData())
+        /** @type {Record<string, string>} */
+        const fields = {}
+        /** @type {Record<string, { filename: string, type: string, size: number, data: Buffer }>} */
+        const files = {}
+        for (const [name, value] of form) {
+            if (typeof value === 'string') fields[name] = value
+            else files[name] = { filename: value.name, type: value.type, size: value.size, data: Buffer.from(await value.arrayBuffer()) }
+        }
+        return { fields, files }
+    },
 }

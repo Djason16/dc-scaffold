@@ -183,6 +183,44 @@
         },
         {
             "env": {
+                "file": ".env.preprod",
+                "from": ".env.example",
+                "values": {
+                    "NODE_ENV": "production",
+                    "PORT": "3333",
+                    "HOST": "0.0.0.0",
+                    "APP_KEY": "{{NEW_SECRET}}",
+                    "APP_URL": "https://qualifs.example.com/{{SLUG}}-api",
+                    "APP_NAME": "\"{{PROJECT_NAME}}\"",
+                    "APP_BASE_URL": "https://qualifs.example.com"
+                }
+            }
+        },
+        {
+            "env": {
+                "file": ".env.preprod",
+                "values": {
+                    "DB_CONNECTION": "mysql",
+                    "DB_HOST": "localhost",
+                    "DB_PORT": "3306",
+                    "DB_USER": "",
+                    "DB_PASSWORD": "",
+                    "DB_DATABASE": ""
+                }
+            },
+            "when": "db"
+        },
+        {
+            "env": {
+                "file": ".env.preprod",
+                "values": {
+                    "DB_CONNECTION": "sqlite"
+                }
+            },
+            "when": "noDb"
+        },
+        {
+            "env": {
                 "file": ".env.example",
                 "values": {
                     "PORT": "{{API_PORT}}",

@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 import { RequestHelper } from '#helpers/request_helper'
+import { ResponseHelper } from '#helpers/response_helper'
 
 // MySQL gives [rows, fields] or [{ insertId, affectedRows }], SQLite gives rows or { lastInsertRowid, changes }
 const rows = (result: any): Record<string, any>[] => (Array.isArray(result) ? (Array.isArray(result[0]) ? result[0] : result) : [])
@@ -42,4 +43,8 @@ export class Controller {
         const result = info(await db.rawQuery(sql, params as any[]))
         return Number(result.affectedRows ?? result.changes ?? 0)
     }
+
+    // Answer of an update or a delete by id: { id } when a row changed, else 404
+    changed = (response: HttpContext['response'], changed: number | boolean, id: number | string, notFound?: string) =>
+        changed ? ResponseHelper.success(response, { id }) : ResponseHelper.notFound(response, notFound)
 }

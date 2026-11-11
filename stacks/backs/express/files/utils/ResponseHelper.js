@@ -22,4 +22,9 @@ export const ResponseHelper = {
     forbidden: (res, message = 'Access denied') => ResponseHelper.error(res, message, 403, 'FORBIDDEN'),
     notFound: (res, message = 'Resource not found') => ResponseHelper.error(res, message, 404, 'NOT_FOUND'),
     serverError: (res, message = 'Internal server error') => ResponseHelper.error(res, message, 500, 'SERVER_ERROR'),
+    // Limit of tries reached (429): "Retry-After" tells the browser when to try again (in seconds)
+    tooManyRequests(res, message = 'Too many attempts', retryAfter = 0) {
+        if (retryAfter) res.set('Retry-After', String(retryAfter))
+        return ResponseHelper.error(res, message, 429, 'TOO_MANY_REQUESTS', retryAfter ? { retryAfter } : {})
+    },
 }
