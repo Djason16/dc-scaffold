@@ -6,8 +6,8 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 
 ## [1.4.1] - 2026-11-11
 
-Same content as 1.4.0, whose setup could not be published: the build machine of GitHub (Ubuntu 26.04) never got
-the packages it needs. The setup is now built on Ubuntu 24.04.
+Same content as 1.4.0, whose setup could not be published: the build machines of GitHub never got the packages they
+need (NSIS, mingw). This setup was built with Docker (`installer/build-docker.ps1`, the same build) and published by hand.
 
 ## [1.4.0] - 2026-11-11
 
