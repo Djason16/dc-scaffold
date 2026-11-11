@@ -34,8 +34,10 @@ if (!existsSync(envFile)) throw new Error('qualif: .env.preprod not found (a cop
 const env = Object.fromEntries(readFileSync(envFile, 'utf8').split(/\r?\n/)
     .map((line) => line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/)).filter(Boolean)
     .map(([, key, value]) => [key, value.replace(/^(['"])(.*)\1$/, '$2')]))
-if (!env.NUXT_PUBLIC_SITE_URL) throw new Error('qualif: NUXT_PUBLIC_SITE_URL is missing in .env.preprod.')
-const folder = new URL(env.NUXT_PUBLIC_SITE_URL).pathname.replace(/^\/+|\/+$/g, '')
+// (NUXT_PUBLIC_FRONTEND_DOMAIN in the older projects)
+const siteUrl = env.NUXT_PUBLIC_SITE_URL || env.NUXT_PUBLIC_FRONTEND_DOMAIN
+if (!siteUrl) throw new Error('qualif: NUXT_PUBLIC_SITE_URL is missing in .env.preprod.')
+const folder = new URL(siteUrl).pathname.replace(/^\/+|\/+$/g, '')
 const base = folder ? `/${folder}/` : '/'
 
 // 1. Nuxt, with the folder as the base of the site

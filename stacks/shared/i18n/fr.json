@@ -984,7 +984,9 @@
         "sitemap.xml: the prerender gives the pages with their folder and @nuxtjs/sitemap adds it again (\"/my-site/my-site/\"):": "sitemap.xml : le pré-rendu donne les pages avec leur dossier et @nuxtjs/sitemap le rajoute (\"/mon-site/mon-site/\") :",
         "each address back to a single folder, each page once": "chaque adresse ramenée à un seul dossier, chaque page une seule fois",
         "Every page is rendered on each visit (always the latest data of the API); sitemap.xml lists them with their images": "Chaque page est rendue à chaque visite (toujours les dernières données de l'API) ; sitemap.xml les liste avec leurs images",
-        "(server/routes/__sitemap__/pages.get.ts).": "(server/routes/__sitemap__/pages.get.ts)."
+        "(server/routes/__sitemap__/pages.get.ts).": "(server/routes/__sitemap__/pages.get.ts).",
+        "(NUXT_PUBLIC_FRONTEND_DOMAIN in the older projects)": "(NUXT_PUBLIC_FRONTEND_DOMAIN dans les projets plus anciens)",
+        "The prerendered pages give their images (those of their <main>); the private pages stay out": "Les pages pré-rendues donnent leurs images (celles de leur <main>) ; les pages privées restent dehors"
     },
     "strings": {
         "The composer.lock file does not match, running composer update...": "Le composer.lock ne correspond pas, lancement de composer update...",
