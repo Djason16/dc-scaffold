@@ -15,7 +15,8 @@ const sendError = (event: H3Event, error: any) => {
 
 // /api/products -> ProductsController
 export default defineEventHandler(async (event) => {
-    const path = getRequestURL(event).pathname.replace(/^\/api/, '').replace(/\/+$/, '') || '/'
+    // Everything up to /api goes away, the folder of a qualif too (/my-site/api/products -> /products)
+    const path = getRequestURL(event).pathname.replace(/^.*?\/api(?=\/|$)/, '').replace(/\/+$/, '') || '/'
     const { route, args, pathExists } = RouteDiscovery.match(routes, event.method, path)
 
     if (!route) {

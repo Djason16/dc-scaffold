@@ -13,7 +13,8 @@
  */
 import { spawnSync } from 'node:child_process'
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { createHash } from 'node:crypto'
+import { join, relative, sep } from 'node:path'
 import { brotliCompressSync, gzipSync } from 'node:zlib'
 
 const ROOT = process.cwd()
@@ -59,14 +60,59 @@ const walk = (dir) => readdirSync(dir).flatMap((name) => {
     const path = join(dir, name)
     return statSync(path).isDirectory() ? walk(path) : [path]
 })
+// Nuxt already passes the images of the templates (<img src="/images/...">) to publicAssetsURL(), which adds the folder
+// when the page runs: those calls are left as they are (otherwise "/my-site/my-site/images/...")
+const scripts = walk(OUTPUT).filter((path) => /\.m?js$/.test(path))
+const assetsUrlNames = new Map(scripts.map((path) => [path, new Set(['__publicAssetsURL'])]))
+for (const path of scripts) {
+    const local = readFileSync(path, 'utf8').match(/__publicAssetsURL=([\w$]+)/)?.[1]
+    if (!local) continue
+    assetsUrlNames.get(path).add(local)
+    const code = readFileSync(path, 'utf8')
+    const exported = [...code.matchAll(/export\s*\{([^}]*)\}/g)].flatMap(([, list]) => list.split(','))
+        .map((item) => item.trim().split(/\s+as\s+/)).find(([name]) => name === local)?.at(-1) ?? local
+    const chunk = path.split(sep).at(-1)
+    for (const other of scripts) {
+        for (const [, list] of readFileSync(other, 'utf8').matchAll(new RegExp(`import\\s*\\{([^}]*)\\}\\s*from\\s*["'\`][^"'\`]*/${escape(chunk)}["'\`]`, 'g'))) {
+            for (const [name, alias = name] of list.split(',').map((item) => item.trim().split(/\s+as\s+/))) {
+                if (name === exported) assetsUrlNames.get(other).add(alias)
+            }
+        }
+    }
+}
 let changedPaths = 0
+const rewritten = []
 for (const file of walk(OUTPUT).filter((path) => TEXT_FILES.test(path))) {
     const text = readFileSync(file, 'utf8')
-    const moved = text.replace(pattern, (match, before, entry) => {
+    const names = assetsUrlNames.get(file)
+    const moved = text.replace(pattern, (match, before, entry, offset) => {
+        const callee = names && text.slice(Math.max(0, offset - 80), offset).match(/(?<![\w$.])([\w$.]+)\($/)?.[1]
+        if (callee && names.has(callee.replace(/^globalThis\./, ''))) return match
         changedPaths++
         return `${before}${base}${entry}`
     })
-    if (moved !== text) writeWithCopies(file, moved)
+    if (moved !== text) {
+        writeWithCopies(file, moved)
+        rewritten.push(file)
+    }
+}
+
+// With the API inside, Nitro serves these files with the size and etag written in its manifest at build time:
+// they change with the new text (otherwise the browser gets a cut script)
+if (command === 'build' && rewritten.length) {
+    const serverDir = join(ROOT, '.output', 'server')
+    const manifest = walk(serverDir).find((path) => path.endsWith('.mjs') && readFileSync(path, 'utf8').includes('"path": "../public/'))
+    if (manifest) {
+        let code = readFileSync(manifest, 'utf8')
+        for (const file of rewritten.flatMap((path) => [path, `${path}.gz`, `${path}.br`]).filter((path) => existsSync(path))) {
+            const data = readFileSync(file)
+            const key = `/${relative(OUTPUT, file).split(sep).join('/')}`
+            const etag = `"${data.length.toString(16)}-${createHash('sha1').update(data).digest('base64').slice(0, 27)}"`
+            code = code.replace(new RegExp(`("${escape(key)}": \\{[^}]*?"etag": )"(?:[^"\\\\]|\\\\.)*"`), `$1${JSON.stringify(etag)}`)
+                .replace(new RegExp(`("${escape(key)}": \\{[^}]*?"size": )\\d+`), `$1${data.length}`)
+        }
+        writeFileSync(manifest, code)
+    }
 }
 
 // 3. Static site: the qualif .htaccess (the production one, its root addresses moved into the folder, never indexed)
@@ -97,7 +143,7 @@ if (base !== '/' && existsSync(sitemapFile)) {
     writeWithCopies(sitemapFile, sitemap)
 }
 
-// 4. Into qualif/<folder>/: the static site, or the Node.js server (its build, package.json, .env.preprod as .env.production)
+// 4. Into qualif/<folder>/: the static site, or the Node.js server (its build, package.json, server.cjs, .env.preprod as .env.production)
 const target = join(ROOT, '..', 'qualif', folder)
 rmSync(target, { recursive: true, force: true })
 mkdirSync(target, { recursive: true })
@@ -106,6 +152,8 @@ if (command === 'generate') {
 } else {
     cpSync(join(ROOT, '.output'), join(target, '.output'), { recursive: true })
     cpSync(join(ROOT, 'package.json'), join(target, 'package.json'))
+    // The start file for the hosts that load a file (cPanel "Setup Node.js App": server.cjs)
+    if (existsSync(join(ROOT, 'server.cjs'))) cpSync(join(ROOT, 'server.cjs'), join(target, 'server.cjs'))
     writeFileSync(join(target, '.env.production'), readFileSync(envFile))
 }
 

@@ -54,7 +54,7 @@
                 }
             ],
             "api": {
-                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'",
                 "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products.",
                 "imports": "import { dev } from '$app/env'"
@@ -138,6 +138,9 @@
                     "copy": "inside/sveltekit/files"
                 },
                 {
+                    "copy": "@shared/node-start"
+                },
+                {
                     "npm": {
                         "delete": [
                             "devDependencies.@sveltejs/adapter-static",
@@ -197,7 +200,7 @@
                 }
             ],
             "api": {
-                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'",
                 "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products."
             },
@@ -280,6 +283,9 @@
                     "copy": "inside/astro/files"
                 },
                 {
+                    "copy": "@shared/node-start"
+                },
+                {
                     "npm": {
                         "set": {
                             "dependencies.@astrojs/node": "^{{V_ASTRO_NODE}}",
@@ -338,7 +344,7 @@
             },
             "versions": [],
             "api": {
-                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'",
                 "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products."
             },
@@ -421,6 +427,9 @@
                     "copy": "inside/next/files"
                 },
                 {
+                    "copy": "@shared/node-start"
+                },
+                {
                     "replace": {
                         "file": "next.config.mjs",
                         "find": "(?m)^ *//[^\\n]*\\n *//[^\\n]*\\n *output: 'export',\\n",
@@ -478,7 +487,7 @@
             },
             "versions": [],
             "api": {
-                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'",
                 "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products."
             },
@@ -559,6 +568,9 @@
                 },
                 {
                     "copy": "inside/qwik/files"
+                },
+                {
+                    "copy": "@shared/node-start"
                 },
                 {
                     "remove": [

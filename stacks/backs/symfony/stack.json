@@ -238,7 +238,7 @@
         "deploy": "symfony"
     },
     "online": {
-        "fr": "envoie `backend/` (avec `vendor/`) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur `backend/public/`, `APP_ENV=prod` dans `backend/.env.prod.local`",
-        "en": "upload `backend/` (with `vendor/`) to a PHP {{PHP_VERSION}}+ host; the address of the API points to `backend/public/`, `APP_ENV=prod` in `backend/.env.prod.local`"
+        "fr": "envoie `backend/` (avec `vendor/`) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur le dossier `backend/` envoyé (pas sur `public/` : son `.htaccess` fait le tri), `APP_ENV=prod` dans `backend/.env.prod.local`",
+        "en": "upload `backend/` (with `vendor/`) to a PHP {{PHP_VERSION}}+ host; the address of the API points to the uploaded `backend/` folder (not to `public/`: its `.htaccess` sorts the requests), `APP_ENV=prod` in `backend/.env.prod.local`"
     }
 }

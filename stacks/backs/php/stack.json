@@ -90,7 +90,7 @@
         "deploy": "php"
     },
     "online": {
-        "fr": "envoie `backend/` (avec `.env.production`, **sans le `.env`**) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur `backend/public/` (sans Composer). Rien à régler sur le serveur : sans `.env`, l'API lit `.env.production`",
-        "en": "upload `backend/` (with `.env.production`, **without the `.env`**) to a PHP {{PHP_VERSION}}+ host; the address of the API points to `backend/public/` (no Composer). Nothing to set on the server: without `.env`, the API reads `.env.production`"
+        "fr": "envoie `backend/` (avec `.env.production`, **sans le `.env`**) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur le dossier `backend/` envoyé (pas sur `public/` : son `.htaccess` fait le tri) (sans Composer). Rien à régler sur le serveur : sans `.env`, l'API lit `.env.production`",
+        "en": "upload `backend/` (with `.env.production`, **without the `.env`**) to a PHP {{PHP_VERSION}}+ host; the address of the API points to the uploaded `backend/` folder (not to `public/`: its `.htaccess` sorts the requests) (no Composer). Nothing to set on the server: without `.env`, the API reads `.env.production`"
     }
 }

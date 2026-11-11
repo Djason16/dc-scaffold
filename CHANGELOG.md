@@ -4,6 +4,39 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+## [1.4.2] - 2026-11-11
+
+The qualif of the sites with their API inside (Nuxt + Nitro, Next, SvelteKit, Astro, Qwik): the API and the files sent
+answer from the folder of the qualif. Dev and production do not change.
+
+### Qualif
+- The API inside the site is called from the folder of the qualif (`/my-site/api/...`), on the server and in the browser:
+  Nuxt from `app.baseURL`, the other fronts from `QUALIF_BASE_PATH` (server) and the folder given by the page (browser).
+  Before, the calls went to the root of the qualif address: the pages that read the API (product page...) failed
+- The router of the API finds its routes behind the folder (`server/api/[...path].ts` of Nuxt, `core/handler.js`)
+- Nuxt + Nitro: the scripts moved into the folder keep the right size in the manifest of Nitro (before, the browser got a
+  cut script and the whole site stopped working in the qualif)
+- Next: the start module of the qualif reads the folder in `.env.production` (`next start` reads it after)
+- Nuxt: the images written in the templates (`<img src="/images/...">`) are not moved twice into the folder: Nuxt
+  already adds it with `publicAssetsURL()` (before, an image shown after the page loads, like the cookies banner, was
+  looked for in `/my-site/my-site/images/...`)
+- `server.cjs` in every project with a Node.js server (site + API inside, Nitro, Express, NestJS, AdonisJS): the start
+  file for the hosts that load a file instead of running `npm start` (cPanel "Setup Node.js App", o2switch). It runs the
+  `start` command of `package.json` (its `--env-file` and `--import`), gives the qualif folder back to the site when the
+  host removes it, and writes `.startup.log`. `Q` puts it in `qualif/`; AdonisJS copies it into `build/`
+- Nuxt + Nitro: the sitemap of the qualif no longer gives the folder twice in its addresses (`/my-site/my-site/`)
+
+### Docs
+- PHP APIs (Slim, Laravel, Symfony, PHP): online, the address of the API points to the uploaded `backend/` folder, not to
+  `public/`. Its `.htaccess` sends every request to `public/index.php` and serves `/uploads/`: with `public/` as the root, the files
+  sent from the admin page did not show
+- The addresses written from the root that come with the data (photos sent from the admin, `/uploads/...`) are moved
+  into the folder in the browser too, also when the site shows them again (Nuxt: `plugins/qualif.client.js`)
+- Node.js servers of the site: the start module of the qualif is a file of the project (`scripts/qualif-html.mjs`),
+  no longer written by the qualif script
+- A qualif keeps its own secrets (session, admin of the start) and generic data (example products, texts, accounts and
+  photos): never the ones of production (docs, message of `start.bat` then `Q`)
+
 ## [1.4.1] - 2026-11-11
 
 Same content as 1.4.0, whose setup could not be published: the build machines of GitHub never got the packages they

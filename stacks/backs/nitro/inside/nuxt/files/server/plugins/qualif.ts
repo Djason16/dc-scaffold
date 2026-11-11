@@ -16,4 +16,10 @@ export default defineNitroPlugin((nitroApp) => {
             .replace(attribute, (match, before: string, path: string) => (outside(path) ? `${before}${prefix}${path}"` : match))
             .replace(cssUrl, (match, before: string, quote: string, path: string) => (outside(path) ? `${before}${prefix}${path}` : match))
     })
+
+    // sitemap.xml: @nuxtjs/sitemap adds the folder again to the addresses of the pages, which already have it
+    // ("/my-site/my-site/" becomes "/my-site/")
+    nitroApp.hooks.hook('sitemap:output', (ctx) => {
+        while (ctx.sitemap.includes(`${prefix}${prefix}/`)) ctx.sitemap = ctx.sitemap.replaceAll(`${prefix}${prefix}/`, `${prefix}/`)
+    })
 })

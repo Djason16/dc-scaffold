@@ -82,6 +82,9 @@
             "copy": "files"
         },
         {
+            "copy": "@shared/node-start"
+        },
+        {
             "replace": {
                 "file": "tsconfig.json",
                 "find": "\"compilerOptions\": \\{",

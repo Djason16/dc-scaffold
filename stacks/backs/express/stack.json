@@ -30,6 +30,9 @@
             "copy": "files"
         },
         {
+            "copy": "@shared/node-start"
+        },
+        {
             "copy": "@shared/js-core",
             "to": "utils"
         },

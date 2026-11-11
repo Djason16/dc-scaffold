@@ -20,7 +20,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const settings = JSON.parse(readFileSync(join(ROOT, 'scripts', 'qualif.json'), 'utf8'))
 const TEXT_FILES = /\.(html|js|mjs|css|json|xml|webmanifest|txt|svg)$/
 // Never copied into a qualif: the modules, the settings of dev and production, the local data
-const SKIP = new Set(['node_modules', '.env', '.env.production', '.env.preprod', '.env.example', '.git', 'database', 'data', 'qualif'])
+const SKIP = new Set(['node_modules', '.env', '.env.production', '.env.preprod', '.env.example', '.git', 'database', 'data', 'qualif', '.startup.log'])
 
 // 1. The folder of the site, from the address of .env.preprod: "https://qualifs.example.com/my-site" -> "/my-site/"
 const envFile = join(ROOT, '.env.preprod')
@@ -125,62 +125,10 @@ if (base !== '/') {
             + '<IfModule mod_headers.c>\n    Header always set X-Robots-Tag "noindex, nofollow"\n</IfModule>\n\n' + rules)
     }
 }
-// Node.js server: a start module of the qualif moves into the folder the links of the pages it sends ("/contact/")
+// Node.js server: scripts/qualif-html.mjs (copied with the site) is loaded first by its npm start: the links of the
+// pages and the address of the API move into the folder, nothing is indexed
 if (settings.server && base !== '/') {
-    const prefix = base.replace(/\/$/, '')
-    writeFileSync(join(target, 'qualif-html.mjs'), `// Qualif: the site is served from ${base}: the links of its pages written from the root move into it (scripts/qualif.mjs)
-import http from 'node:http'
-const PREFIX = '${prefix}'
-const attribute = /(\\s(?:href|src|action|poster|data-src)=["'])(\\/(?!\\/)[^"']*)/g
-const move = (html) => html.replace(attribute, (match, before, path) => path === PREFIX || path.startsWith(PREFIX + '/') ? match : before + PREFIX + path)
-const wrap = (response) => {
-    const { writeHead, write, end } = response
-    let chunks
-    // Only the pages (HTML, not compressed): they are kept until the end, then sent with their links moved
-    const decide = () => {
-        if (chunks !== undefined) return
-        const isPage = /text\\/html/.test(String(response.getHeader('content-type') ?? '')) && !response.getHeader('content-encoding')
-        chunks = isPage ? [] : null
-        if (isPage) response.removeHeader('content-length')
-    }
-    response.writeHead = function (status, message, headers) {
-        if (typeof message !== 'string') [headers, message] = [message, undefined]
-        if (headers && !Array.isArray(headers)) {
-            for (const [name, value] of Object.entries(headers)) if (value !== undefined) response.setHeader(name, value)
-            headers = undefined
-        }
-        decide()
-        return message ? writeHead.call(this, status, message, headers) : writeHead.call(this, status, headers)
-    }
-    response.write = function (chunk, encoding, callback) {
-        decide()
-        if (!chunks) return write.call(this, chunk, encoding, callback)
-        chunks.push(Buffer.from(chunk, typeof encoding === 'string' ? encoding : undefined))
-        if (typeof (callback ?? encoding) === 'function') (callback ?? encoding)()
-        return true
-    }
-    response.end = function (chunk, encoding, callback) {
-        decide()
-        if (!chunks) return end.call(this, chunk, encoding, callback)
-        if (typeof chunk === 'function') [chunk, callback] = [undefined, chunk]
-        if (typeof encoding === 'function') [encoding, callback] = [undefined, encoding]
-        if (chunk) chunks.push(Buffer.from(chunk, typeof encoding === 'string' ? encoding : undefined))
-        return end.call(this, move(Buffer.concat(chunks).toString('utf8')), callback)
-    }
-}
-const emit = http.Server.prototype.emit
-http.Server.prototype.emit = function (event, request, response, ...rest) {
-    if (event === 'request') {
-        // Pages sent without compression, so their links can be read
-        delete request.headers['accept-encoding']
-        // Never indexed
-        response.setHeader('X-Robots-Tag', 'noindex, nofollow')
-        wrap(response)
-    }
-    return emit.call(this, event, request, response, ...rest)
-}
-`)
-    // npm start loads it first: "node server.js" -> "node --import ./qualif-html.mjs server.js", "next start" -> through node
+    // "node server.js" -> "node --import ./scripts/qualif-html.mjs server.js", "next start" -> through node
     const packageFile = join(target, 'package.json')
     const pkg = JSON.parse(readFileSync(packageFile, 'utf8'))
     const start = pkg.scripts?.start ?? ''
@@ -195,8 +143,8 @@ http.Server.prototype.emit = function (event, request, response, ...rest) {
         return `node_modules/.bin/${name}`
     }
     pkg.scripts.start = start.startsWith('node ')
-        ? start.replace(/^node /, 'node --import ./qualif-html.mjs ')
-        : start.replace(/^(\S+)/, (name) => `node --import ./qualif-html.mjs ${binFile(name)}`)
+        ? start.replace(/^node /, 'node --import ./scripts/qualif-html.mjs ')
+        : start.replace(/^(\S+)/, (name) => `node --import ./scripts/qualif-html.mjs ${binFile(name)}`)
     writeFileSync(packageFile, `${JSON.stringify(pkg, null, 2)}\n`)
 }
 

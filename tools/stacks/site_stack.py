@@ -7,7 +7,8 @@ STACK = Path(__file__).resolve().parents[2] / "stacks" / "backs" / "site" / "sta
 DB_SQLITE = {"DB_CONNECTION": "sqlite", "DB_HOST": "", "DB_NAME": "", "DB_USER": "", "DB_PASS": "", "DB_PORT": ""}
 
 # Address of the API for api.js: same site; on the server (first display of a page) the full local address
-SERVER_BASE = "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'"
+# The folder of a qualif (QUALIF_BASE_PATH on the server, Reflect.get(globalThis, '__QUALIF_BASE__') in the browser), empty in dev and online
+SERVER_BASE = "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'"
 
 
 def common(dir):
@@ -32,7 +33,7 @@ def inside(front, label, dir, entry, steps, online, versions=(), api=None):
         "versions": list(versions),
         "api": {"base": SERVER_BASE, "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products.", **(api or {})},
-        "steps": common(dir) + [{"copy": f"inside/{front}/files"}] + steps,
+        "steps": common(dir) + [{"copy": f"inside/{front}/files"}, {"copy": "@shared/node-start"}] + steps,
         "guide": {"entry": entry},
         "online": online,
         "doc": f"inside/{front}/doc.md",

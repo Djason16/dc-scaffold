@@ -64,6 +64,9 @@
             "copy": "files"
         },
         {
+            "copy": "@shared/node-start"
+        },
+        {
             "insert": {
                 "file": "start/kernel.ts",
                 "after": "server\\.use\\(\\[",
@@ -102,6 +105,7 @@
             "npm": {
                 "set": {
                     "name": "{{SLUG}}-backend",
+                    "scripts.build": "node ace build && node -e \"require('node:fs').copyFileSync('server.cjs', 'build/server.cjs')\"",
                     "imports.#core/*": "./app/core/*.js",
                     "imports.#helpers/*": "./app/helpers/*.js",
                     "dependencies.mysql2": "^3.24.0"

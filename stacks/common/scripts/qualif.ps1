@@ -65,7 +65,7 @@ if (($isPhp -or $isNode) -and (Test-Path $apiEnv)) {
     $isAdonis = Test-Path (Join-Path $ApiDir 'adonisrc.ts')
     $from = if ($isAdonis) { Join-Path $ApiDir 'build' } else { $ApiDir }
     # Everything but the settings of dev and production, the local sessions, data and files sent, and the dev tools
-    $skip = @('.env', '.env.local', '.env.dev', '.env.test', '.env.production', '.env.prod.local', '.env.preprod', '.env.example', 'Dockerfile', 'node_modules', 'sessions', 'var', 'uploads', 'storage', 'tests')
+    $skip = @('.env', '.env.local', '.env.dev', '.env.test', '.env.production', '.env.prod.local', '.env.preprod', '.env.example', 'Dockerfile', 'node_modules', 'sessions', 'var', 'uploads', 'storage', 'tests', '.startup.log')
     # Symfony reads its .env first (default values), then .env.prod.local
     $isSymfony = Test-Path (Join-Path $ApiDir 'bin\console')
     if ($isSymfony) { $skip = $skip | Where-Object { $_ -ne '.env' } }
@@ -134,5 +134,5 @@ if (($isPhp -or $isNode) -and (Test-Path $apiEnv)) {
 
 Write-Host ''
 Write-Info 'Upload the content of qualif/ into the qualif folder of the host (one folder per site), then:'
-Write-Info '- API: create the qualif database (.env.preprod), import the tables, copy uploads/ if needed'
+Write-Info '- API: create the qualif database (.env.preprod), import the tables with generic data, never the data of production'
 Write-Info '- Node.js server (site or API): npm install --omit=dev then npm start in its folder'

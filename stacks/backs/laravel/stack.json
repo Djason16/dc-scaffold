@@ -236,7 +236,7 @@
         "deploy": "laravel"
     },
     "online": {
-        "fr": "envoie `backend/` (avec `vendor/`) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur `backend/public/`",
-        "en": "upload `backend/` (with `vendor/`) to a PHP {{PHP_VERSION}}+ host; the address of the API points to `backend/public/`"
+        "fr": "envoie `backend/` (avec `vendor/`) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur le dossier `backend/` envoyé (pas sur `public/` : son `.htaccess` fait le tri)",
+        "en": "upload `backend/` (with `vendor/`) to a PHP {{PHP_VERSION}}+ host; the address of the API points to the uploaded `backend/` folder (not to `public/`: its `.htaccess` sorts the requests)"
     }
 }
