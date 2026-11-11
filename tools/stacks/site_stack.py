@@ -16,7 +16,7 @@ def common(dir):
         {"copy": "core", "to": dir},
         {"copy": "@shared/js-core", "to": dir},
         {"copy": "env"},
-        *({"env": {"file": f, "values": DB_SQLITE}, "when": "noDb"} for f in (".env", ".env.production", ".env.example")),
+        *({"env": {"file": f, "values": DB_SQLITE}, "when": "noDb"} for f in (".env", ".env.production", ".env.preprod", ".env.example")),
         {"npm": {"set": {"dependencies.mysql2": "^3.24.0"}}},
     ]
 
@@ -99,7 +99,7 @@ stack = {
                 # Node.js adapter: the pages stay prerendered (dist/client), /api answers on each request (dist/server)
                 {"npm": {"set": {"dependencies.@astrojs/node": "^{{V_ASTRO_NODE}}",
                                  "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production dist/server/entry.mjs",
-                                 "scripts.postbuild": "node scripts/sitemap.mjs dist/client"}}},
+                                 "scripts.postbuild": "node scripts/sitemap.mjs dist/client --pages src/pages"}}},
                 {"replace": {"file": "astro.config.mjs", "find": r"import \{ defineConfig \} from 'astro/config'",
                              "with": "import node from '@astrojs/node'\nimport { defineConfig } from 'astro/config'"}},
                 # The comment above defineConfig (already in the language of the project): replaced by its position
@@ -139,7 +139,7 @@ stack = {
                                      "        ]\n"
                                      "    },"}},
                 {"npm": {"set": {"scripts.start": "next start",
-                                 "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --to public"}}},
+                                 "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --pages pages --to public"}}},
             ],
             online=online("pages et API compilées dans `frontend/.next`", "pages and API built into `frontend/.next`"),
         ),
@@ -149,6 +149,7 @@ stack = {
                 # Node.js server adapter instead of the static one: the pages stay prerendered in dist/
                 {"remove": ["adapters/static"]},
                 {"npm": {"set": {"scripts[build.server]": "qwik check-client src dist && vite build -c adapters/node-server/vite.config.ts",
+                                 "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/routes",
                                  "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production server/entry.node-server.js"}}},
             ],
             online=online("pages et API compilées dans `frontend/dist` et `frontend/server`",

@@ -15,6 +15,7 @@ const pages = Object.entries(sources)
     }))
     .filter(({ route }) => !/[[_]/.test(route))
 
+/** @param {string} text */
 const escape = (text) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 
 export function GET() {

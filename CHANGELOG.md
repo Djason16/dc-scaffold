@@ -4,6 +4,11 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-11-11
+
+Same content as 1.4.0, whose setup could not be published: the build machine of GitHub (Ubuntu 26.04) never got
+the packages it needs. The setup is now built on Ubuntu 24.04.
+
 ## [1.4.0] - 2026-11-11
 
 Every site can now be shown to its client before it goes online: the qualif, a third environment between dev and
