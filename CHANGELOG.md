@@ -4,6 +4,18 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+## [1.4.3] - 2026-11-13
+
+Search engines: no folder listing, and the private pages really closed in robots.txt.
+
+### SEO
+- Every `.htaccess` written for a site, an API or its public folder starts with `Options -Indexes`: a folder without
+  index page answers 403 instead of listing its files (« Index of / » on a domain whose site is not uploaded yet, the
+  `/_nuxt/` folder of the Nuxt sites crawled by Google with its sort links `?ND`, `?SA`...)
+- robots.txt: the private pages are written without slash at the end (`Disallow: /admin`), which also closes
+  `/admin?...` and `/admin`; with `Disallow: /admin/`, Google kept crawling the pages with parameters (profiles...)
+  (Nuxt `nuxt.config.ts` and `scripts/sitemap.mjs` of the other fronts)
+
 ## [1.4.2] - 2026-11-11
 
 The qualif of the sites with their API inside (Nuxt + Nitro, Next, SvelteKit, Astro, Qwik): the API and the files sent

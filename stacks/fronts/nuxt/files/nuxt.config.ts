@@ -24,7 +24,8 @@ export default defineNuxtConfig({
     name: process.env.NUXT_PUBLIC_SITE_NAME,
     trailingSlash: TRAILING_SLASH_ENABLED,
   },
-  robots: { disallow: privateRoutes.map((route) => `${route}/`) },
+  // « /admin » without slash at the end: also closes /admin?... (with the slash, Google still crawled the pages with parameters)
+  robots: { disallow: privateRoutes.map((route) => route.replace(/\/+$/, '')) },
   // sitemap.xml: every page with the images of its <main> (found by itself) and the date of the build
   sitemap: { autoLastmod: true, exclude: privateRoutes.flatMap((route) => [route, `${route}/**`]) },
 

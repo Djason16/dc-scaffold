@@ -1,3 +1,6 @@
+# A folder without index page is never listed (« Index of / »: every file of the site shown to anyone, and to Google)
+Options -Indexes
+
 RewriteEngine On
 
 # Settings files (.env*) are never served: a site without build is uploaded as it is

@@ -9,7 +9,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 
-// Private pages (admin, account...): left out of sitemap.xml and forbidden to crawlers in robots.txt, e.g. ['/admin/', '/account/']
+// Private pages (admin, account...): left out of sitemap.xml and forbidden to crawlers in robots.txt, e.g. ['/admin', '/account']
 const PRIVATE_ROUTES = []
 
 const [buildDir, ...options] = process.argv.slice(2)
@@ -100,6 +100,7 @@ const urls = routes.map((route) => {
 writeFileSync(join(toDir, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n'
     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n'
     + `${urls.join('\n')}\n</urlset>\n`)
-const disallow = PRIVATE_ROUTES.map((path) => `Disallow: ${path}\n`).join('')
+// « /admin » without slash at the end: also closes /admin?... (with the slash, Google still crawled the pages with parameters)
+const disallow = PRIVATE_ROUTES.map((path) => `Disallow: ${path.replace(/\/+$/, '') || '/'}\n`).join('')
 writeFileSync(join(toDir, 'robots.txt'), `User-agent: *\nAllow: /\n${disallow}\nSitemap: ${siteUrl}/sitemap.xml\n`)
 console.log(`sitemap: ${routes.length} page(s), ${imageCount} image(s) -> ${toDir}/sitemap.xml, robots.txt`)
