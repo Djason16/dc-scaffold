@@ -5,6 +5,7 @@
         "fr": "Pages instantanées, presque sans JavaScript, en TypeScript",
         "en": "Instant pages, almost no JavaScript, in TypeScript"
     },
+    "script": "ts",
     "requires": [
         "node"
     ],
@@ -31,8 +32,9 @@
         }
     ],
     "publicDir": "public",
+    "hashedDir": "build",
     "api": {
-        "file": "src/utils/api.js",
+        "file": "src/utils/api.ts",
         "imports": "",
         "base": "import.meta.env.PUBLIC_API_URL",
         "source": "PUBLIC_API_URL",

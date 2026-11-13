@@ -43,6 +43,11 @@ const TEXTS = {
         mysqlText: 'Les données dans MySQL, installé tout seul dans Docker, avec phpMyAdmin pour les voir',
         mysqlFixed: 'Ce serveur utilise toujours MySQL, installé tout seul dans Docker, avec phpMyAdmin',
         driverLabel: 'Accès PHP',
+        scriptLabel: 'Langage du code',
+        scriptTs: 'Le code est vérifié pendant que tu écris (types), le choix des projets professionnels',
+        scriptJs: 'Plus simple à lire au début, sans types',
+        scriptFixed: 'Toujours ce langage avec ce framework',
+        summaryScript: 'Code',
         driverMysqli: 'La façon dont PHP parle à MySQL. mysqli : la plus simple, déjà incluse dans PHP',
         driverPdo: "La façon dont PHP parle à MySQL. PDO : marche aussi avec d'autres bases de données",
         languagesLabel: 'Langues',
@@ -152,6 +157,11 @@ const TEXTS = {
         mysqlText: 'The data in MySQL, installed for you in Docker, with phpMyAdmin to see it',
         mysqlFixed: 'This server always uses MySQL, installed for you in Docker, with phpMyAdmin',
         driverLabel: 'PHP access',
+        scriptLabel: 'Code language',
+        scriptTs: 'The code is checked while you write (types), the choice of professional projects',
+        scriptJs: 'Simpler to read at first, no types',
+        scriptFixed: 'Always this language with this framework',
+        summaryScript: 'Code',
         driverMysqli: 'How PHP talks to MySQL. mysqli: the simplest, already part of PHP',
         driverPdo: 'How PHP talks to MySQL. PDO: also works with other databases',
         languagesLabel: 'Languages',
@@ -248,6 +258,7 @@ const state = {
     database: 'mysql',
     driver: '',
     languages: '',
+    script: 'ts',
     git: true,
     editor: true,
     useLatest: false,
@@ -449,7 +460,13 @@ function options() {
     const drivers = (back?.drivers ?? []).filter(Boolean)
     // Back end the front already contains (Nitro inside Nuxt): one folder, one server, the API under /api
     const inside = hasFront && hasBack ? back?.inside?.[state.front] ?? null : null
-    return { front, back, hasFront, hasBack, databaseKind, hasDatabase, drivers, nodeBack: back?.runtime === 'node', inside }
+    // Language of the code: chosen when one side lets you ("script" of stack.json: "ts" or "js" = always that one)
+    const nodeBack = back?.runtime === 'node'
+    const frontFixed = hasFront ? front?.script ?? '' : ''
+    const backFixed = hasBack && nodeBack && !inside ? back?.script ?? '' : ''
+    const scriptChoice = (hasFront && !frontFixed) || (hasBack && nodeBack && !inside && !backFixed)
+    const scriptShown = scriptChoice ? state.script : frontFixed || backFixed
+    return { front, back, hasFront, hasBack, databaseKind, hasDatabase, drivers, nodeBack, inside, scriptChoice, scriptShown }
 }
 
 function languageValue(code) {
@@ -470,6 +487,11 @@ function renderOptions() {
     }
     const driver = o.hasDatabase && o.drivers.length > 1 ? segmented('driver', t('driverLabel'),
         o.drivers.map((name) => ({ value: name, label: name === 'pdo' ? 'PDO' : name, text: t(name === 'pdo' ? 'driverPdo' : 'driverMysqli') })), state.driver) : ''
+    const scriptNames = { ts: 'TypeScript', js: 'JavaScript' }
+    const script = o.scriptChoice ? segmented('script', t('scriptLabel'), [
+        { value: 'ts', label: 'TypeScript', text: t('scriptTs') },
+        { value: 'js', label: 'JavaScript', text: t('scriptJs') },
+    ], state.script) : o.scriptShown ? fixedOption(t('scriptLabel'), scriptNames[o.scriptShown], t('scriptFixed')) : ''
     const languages = o.hasFront ? segmented('languages', t('languagesLabel'), [
         { value: languageValue('fr'), label: t('langFr'), text: t('langFrText') },
         { value: languageValue('en'), label: t('langEn'), text: t('langEnText') },
@@ -480,7 +502,7 @@ function renderOptions() {
         ${head(3, t('optionsTitle'), t('optionsText'))}
         <div class="options">
             <div class="option-list">
-                ${database}${driver}${languages}
+                ${script}${database}${driver}${languages}
                 <div class="switches">
                     ${switchRow('git', t('gitTitle'), t('gitText'))}
                     ${switchRow('editor', t('editorTitle'), t('editorText'))}
@@ -524,6 +546,7 @@ function renderSummary(o) {
         [t('summaryBack'), o.inside?.label ? localized(o.inside.label) : labelOf(o.back)],
         database && [t('summaryDatabase'), database],
         o.hasFront && [t('summaryLanguages'), languages[state.languages]],
+        o.scriptShown && [t('summaryScript'), o.scriptShown === 'js' ? 'JavaScript' : 'TypeScript'],
     ].filter(Boolean)
     return `<aside class="summary">
         <h3>${t('summary')}</h3>
@@ -636,6 +659,7 @@ function payload() {
         database: o.databaseKind === 'optional' ? state.database : '',
         driver: o.hasDatabase && o.drivers.length > 1 ? state.driver : '',
         languages: o.hasFront ? state.languages : '',
+        script: o.scriptChoice ? state.script : '',
         appPort: o.hasFront ? state.ports.app : 0,
         apiPort: o.hasBack && !o.inside ? state.ports.api : 0,
         pmaPort: o.hasDatabase ? state.ports.pma : 0,

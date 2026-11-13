@@ -24,15 +24,42 @@
         }
     ],
     "publicDir": "public",
+    "hashedDir": "_next/static",
+    "hashedInRoot": true,
     "api": {
-        "file": "utils/api.js",
+        "file": "utils/api.ts",
         "imports": "",
         "base": "process.env.NEXT_PUBLIC_API_URL",
         "source": "NEXT_PUBLIC_API_URL",
         "isDev": "process.env.NODE_ENV === 'development'",
-        "usage": "import { api } from '@/utils/api.js'"
+        "usage": "import { api } from '@/utils/api'"
     },
     "steps": [
+        {
+            "run": [
+                "npm",
+                "create",
+                "next-app@latest",
+                "{{DIR}}",
+                "--",
+                "--ts",
+                "--no-app",
+                "--eslint",
+                "--no-tailwind",
+                "--no-src-dir",
+                "--no-react-compiler",
+                "--import-alias",
+                "@/*",
+                "--use-npm",
+                "--skip-install",
+                "--disable-git",
+                "--no-agents-md",
+                "--no-agent-feedback",
+                "--yes"
+            ],
+            "in": "root",
+            "when": "ts"
+        },
         {
             "run": [
                 "npm",
@@ -55,7 +82,8 @@
                 "--no-agent-feedback",
                 "--yes"
             ],
-            "in": "root"
+            "in": "root",
+            "when": "js"
         },
         {
             "check": "package.json"
@@ -64,8 +92,11 @@
             "remove": [
                 "next.config.*",
                 "pages/_app.js",
+                "pages/_app.tsx",
                 "pages/_document.js",
+                "pages/_document.tsx",
                 "pages/index.js",
+                "pages/index.tsx",
                 "pages/api",
                 "styles",
                 "public/file.svg",
@@ -135,16 +166,16 @@
         "css": "assets/css",
         "pages": "pages/",
         "storeLib": "Zustand",
-        "lang": "plugins/lang.jsx",
-        "storeFile": "stores/userPreferences.js",
-        "layoutFile": "components/layout/AppShell/AppShell.jsx",
+        "lang": "plugins/lang.tsx",
+        "storeFile": "stores/userPreferences.ts",
+        "layoutFile": "components/layout/AppShell/AppShell.tsx",
         "env": "`NEXT_PUBLIC_SITE_NAME` / `NEXT_PUBLIC_SITE_URL`",
         "public": "frontend/public",
-        "page": "pages/about.jsx",
-        "pageCopy": "pages/index.jsx",
+        "page": "pages/about.tsx",
+        "pageCopy": "pages/index.tsx",
         "textUsage": "`{lang.getTranslation('introTitle')}`",
-        "header": "components/layout/Header/Header.jsx",
-        "footer": "components/layout/Footer/Footer.jsx"
+        "header": "components/layout/Header/Header.tsx",
+        "footer": "components/layout/Footer/Footer.tsx"
     },
     "deploy": {
         "key": "B",

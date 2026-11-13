@@ -3,7 +3,7 @@ import { FloatingButton } from '@/components/ui/Button/FloatingButton'
 import { useLang } from '@/composables/useLang'
 import { UserPreferencesStore } from '@/stores/userPreferences'
 
-// One button per language of plugins/translations/translations.js (nothing when the site has one language)
+// One button per language of plugins/translations/translations.ts (nothing when the site has one language)
 @Component({
     selector: 'app-change-language-button',
     imports: [FloatingButton],
@@ -12,7 +12,7 @@ import { UserPreferencesStore } from '@/stores/userPreferences'
             <div class="language-switcher">
                 @for (code of lang.availableLanguages; track code) {
                     <button appFloatingButton [class.active]="lang.current() === code"
-                        [attr.aria-label]="lang.getTranslation('switchToLang', { lang: lang.getTranslation(code) })"
+                        [attr.aria-label]="code.toUpperCase() + ', ' + lang.getTranslation('switchToLang', { lang: lang.getTranslation(code) })"
                         (click)="switchLanguage(code)">{{ code.toUpperCase() }}</button>
                 }
             </div>

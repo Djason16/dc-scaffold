@@ -4,7 +4,7 @@ import type { Request, Response } from 'express'
 import { ResponseHelper } from './utils/ResponseHelper.js'
 import { RouteDiscovery } from './utils/RouteDiscovery.js'
 
-// Every controller of controllers/ (compiled into dist/controllers), read once at startup (see utils/RouteDiscovery.js)
+// Every controller of controllers/ (compiled into dist/controllers), read once at startup (see utils/RouteDiscovery.ts)
 const folder = new URL('./controllers/', import.meta.url)
 const files = existsSync(folder) ? readdirSync(folder).filter((file) => file.endsWith('Controller.js')) : []
 const routes = RouteDiscovery.scan(await Promise.all(files.map(async (file) => ({

@@ -5,11 +5,11 @@ import { defineNitroConfig } from 'nitropack/config'
 const controllersDir = fileURLToPath(new URL('./controllers', import.meta.url))
 if (!existsSync(controllersDir)) mkdirSync(controllersDir)
 
-// "#controllers" = every *Controller.ts file, so routes never have to be declared by hand
+// "#controllers" = every *Controller.ts (or .js) file, so routes never have to be declared by hand
 const controllersModule = () => {
-    const files = readdirSync(controllersDir).filter((file) => /Controller\.ts$/.test(file) && file !== 'Controller.ts')
+    const files = readdirSync(controllersDir).filter((file) => /Controller\.[jt]s$/.test(file) && !/^Controller\.[jt]s$/.test(file))
     const imports = files.map((file, i) => `import c${i} from '${controllersDir.replace(/\\/g, '/')}/${file}'`)
-    const entries = files.map((file, i) => `{ name: '${file.replace(/\.ts$/, '')}', controller: c${i} }`)
+    const entries = files.map((file, i) => `{ name: '${file.replace(/\.[jt]s$/, '')}', controller: c${i} }`)
     return `${imports.join('\n')}\nexport default [${entries.join(', ')}]`
 }
 

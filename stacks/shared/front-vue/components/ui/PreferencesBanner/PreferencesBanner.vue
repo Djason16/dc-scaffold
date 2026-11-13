@@ -1,11 +1,11 @@
 <template>
-    <!-- Cookie banner, shown until the visitor chooses (texts in plugins/translations/common/preferences.js) -->
+    <!-- Cookie banner, shown until the visitor chooses (texts in plugins/translations/common/preferences.ts) -->
     <div v-if="mounted && !userPreferences.hasUserMadeChoice" class="preferences-banner" role="dialog"
         :aria-label="t('prefsTitle')">
         <h2>{{ t('prefsTitle') }}</h2>
         <p>{{ t('prefsText') }}</p>
 
-        <!-- One checkbox per category of stores/userPreferences.js -->
+        <!-- One checkbox per category of stores/userPreferences.ts -->
         <div v-if="customizing" class="preferences-banner-categories">
             <label v-for="(category, name) in userPreferences.categories" :key="name">
                 <input v-model="choices[name]" type="checkbox" :disabled="category.required">
@@ -27,10 +27,10 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
-import { useLang } from '@/composables/useLang.js'
-import { useUserPreferencesStore } from '@/stores/userPreferences.js'
+import { useLang } from '@/composables/useLang'
+import { useUserPreferencesStore } from '@/stores/userPreferences'
 
 const { getTranslation: t } = useLang()
 const userPreferences = useUserPreferencesStore()

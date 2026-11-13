@@ -1,7 +1,8 @@
 <template>
     <!-- Frame of every page (and of the error page): loader, header, page, footer, floating buttons, cookie banner -->
+    <!-- The loader covers the page, which is already there under it (search engines, speed) -->
     <Loader v-if="showLoader" />
-    <div v-show="!showLoader" class="app-shell">
+    <div class="app-shell">
         <Header />
         <main>
             <slot />
@@ -20,7 +21,7 @@
     </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Footer from '@/components/layout/Footer/Footer.vue'
@@ -31,14 +32,16 @@ import ChangeLanguageButton from '@/components/ui/Button/ChangeLanguageButton.vu
 // @end-two-languages
 import Loader from '@/components/ui/Loader/Loader.vue'
 import PreferencesBanner from '@/components/ui/PreferencesBanner/PreferencesBanner.vue'
-import { useLang } from '@/composables/useLang.js'
-import { design } from '@/design.js'
-import { useUserPreferencesStore } from '@/stores/userPreferences.js'
+import { useLang } from '@/composables/useLang'
+import { design } from '@/design'
+import { useUserPreferencesStore } from '@/stores/userPreferences'
 
 // Loader with the DC Scaffold design only (dc-scaffold.config.js): true = always, false = never
 const LOADER_ENABLED = design
 // Minimum time of the loader on a page change, so it does not just flash (milliseconds)
 const LOADER_PAGE_TIME = 400
+// Longest wait of the loader on the first opening, even if the fonts are not there yet (milliseconds)
+const LOADER_FIRST_MAX_TIME = 2000
 
 const lang = useLang()
 const router = useRouter()
@@ -72,8 +75,8 @@ onMounted(async () => {
     if (userPreferences.preferences.functional) lang.restore()
     // @end-two-languages
 
-    // Fonts of utils/fonts.css loaded: the text will not change size, the loader can go
-    await document.fonts.ready
+    // Fonts of utils/fonts.css loaded (the text will not change size), or 2 seconds at most: the loader goes
+    await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, LOADER_FIRST_MAX_TIME))])
     showLoader.value = false
     ready = true
 })

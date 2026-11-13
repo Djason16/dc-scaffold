@@ -38,6 +38,18 @@ Le script `scripts/design.mjs` lit ce réglage avant chaque `npm run dev` et cha
 développement après l'avoir changé (HTML/CSS/JS le lit directement dans le navigateur). Quand ton design est prêt, tu
 peux supprimer le dossier `dc-scaffold/` et `public/dc-scaffold/`.
 
+### Basculer ou repartir de zéro : `start.bat` puis `P`
+
+Le plus simple, sans ouvrir de fichier : `start.bat` puis **P** (Design). Trois choix :
+
+| Choix | Effet |
+| ----- | ----- |
+| **1. Design de DC Scaffold** | `design: true` : le thème, la police, le chargement et la page d'accueil de DC Scaffold |
+| **2. Site vierge** | `design: false` : un style simple pour faire ton design ; celui de DC Scaffold reste de côté (le choix 1 le remet) |
+| **3. Repartir de zéro** | Retire le design de DC Scaffold du projet **pour de bon** (après confirmation) : le dossier `dc-scaffold/`, son logo, l'interrupteur et `scripts/design.mjs`. Le site reste vierge et fonctionne ; les deux fichiers `design` deviennent des fichiers du site |
+
+Relance le site (`start.bat` puis `D`) pour voir le changement.
+
 ## Couleurs, polices, tailles
 
 - **Tout le style global** : `assets/css/utils/variables.css`. Change une valeur (par exemple `--accent-color`), tout le site suit.
@@ -62,6 +74,7 @@ peux supprimer le dossier `dc-scaffold/` et `public/dc-scaffold/`.
 - les langues sont dans `LANGUAGES` du même fichier, la première est celle par défaut ;
 - un texte introuvable affiche sa clé : facile à repérer ;
 - les boutons de langue sont en bas à droite ; la langue choisie n'est gardée que si le visiteur accepte les cookies fonctionnels.
+- **Beaucoup de textes** (plus d'environ 100 Ko, ou 3 langues et plus) : toutes les langues arrivent avec le site. Il vaut alors mieux un fichier de textes par langue, téléchargé quand la langue est choisie (exemple : Battle Arena, `frontend/modules/translations.ts`, 190 Ko de moins pour 5 langues). Inutile pour un site de deux langues aux textes courts.
 
 **Une langue** : pas de système de traduction. Les textes sont écrits directement dans les composants
 (par exemple `components/views/Index/` pour l'accueil). Pour passer à deux langues, recrée le projet avec deux langues.
@@ -105,7 +118,7 @@ Prêts pour la recette d'un site (les tests avant sa mise en ligne), dans tous l
 
 - **`assets/css/base/accessibility.css`** (ou le dossier CSS du front) : `.visually-hidden` (caché à l'écran, lu par Google et les lecteurs d'écran), contour visible au clavier (`:focus-visible`), zones à toucher de 24 px au moins sur écran tactile (`pointer: coarse`, rien ne change à la souris), `.text-long` (environ 80 caractères par ligne). Le pied de page laisse la place aux boutons flottants sur téléphone.
 - **Liens et images** des composants de base : chaque lien a un `title`, chaque image un `alt` et un `title` remplis.
-- **`.htaccess` du site** (envoyé avec un site statique) : HTTPS imposé, `www.` renvoyé vers l'adresse sans `www.`, en-têtes de sécurité (nosniff, X-Frame-Options, Referrer-Policy, HSTS), images et polices gardées une semaine par le navigateur.
+- **`.htaccess` du site** (envoyé avec un site statique) : HTTPS imposé, `www.` renvoyé vers l'adresse sans `www.`, en-têtes de sécurité (nosniff, X-Frame-Options, Referrer-Policy, HSTS), images et polices gardées 30 jours par le navigateur, pages, scripts et styles vérifiés à chaque visite (`no-cache` : toujours la dernière version, le bouton retour reste instantané). Les fichiers du build dont le nom porte un hash (`_nuxt/`, `assets/`...) sont gardés un an grâce au `.htaccess` de leur dossier : une nouvelle version change leur nom.
 - **Site servi par Node.js** (API dans le site) : les mêmes en-têtes et la redirection de `www.` sont faits par le serveur du site (Nuxt, Next.js, SvelteKit, Qwik) ; avec Astro, l'hébergeur s'en charge pour les pages pré-rendues.
 
 ## Le cadre des pages (AppShell)
@@ -113,8 +126,32 @@ Prêts pour la recette d'un site (les tests avant sa mise en ligne), dans tous l
 `components/layout/AppShell/` entoure chaque page (et la 404) : écran de chargement, en-tête, pied de page, boutons
 flottants (retour en haut, langues), bandeau cookies.
 
+- **Écran de chargement** : un seul, le même à l'ouverture et à chaque changement de page : « Chargement » en petites
+  capitales sur une fine ligne qui se remplit. Il se pose au-dessus de la page, qui est déjà là dessous (moteurs de
+  recherche, vitesse), attend les polices 2 s au plus à l'ouverture et part tout seul sans JavaScript. Styles : `loader.css`.
 - `LOADER_ENABLED` : `true` pour toujours avoir l'écran de chargement, `false` pour jamais (par défaut : avec le design).
 - `LOADER_PAGE_TIME` : durée minimale du chargement entre deux pages (400 ms).
+- `LOADER_FIRST_MAX_TIME` : attente la plus longue de l'écran de chargement à l'ouverture (2000 ms).
+
+## Vitesse : viser 100 sur Lighthouse
+
+Chaque site se vérifie avec Lighthouse (Chrome, F12 > Lighthouse, ou PageSpeed Insights) sur **téléphone et
+ordinateur**, dans les quatre catégories (Performance, Accessibilité, Bonnes pratiques, SEO), après chaque changement.
+Le modèle part à 100 ; ce qui fait le plus souvent baisser le score :
+
+- **Images** : en WebP, à la taille où elles sont affichées (une copie plus petite pour les téléphones avec `srcset`),
+  `width` et `height` écrits (rien ne bouge à leur arrivée), `loading="lazy"` seulement sous le haut de la page.
+- **Polices** : en `.woff2`, `font-display: swap`, et un `<link rel="preload">` pour celles du haut de la page (titre,
+  texte, italique) : sinon le texte change de taille quand elles arrivent.
+- **Icônes** : seulement celles du site (une bibliothèque complète d'icônes pèse des dizaines de Ko de CSS inutile).
+- **Animations d'apparition** : jamais sur ce qui est visible à l'ouverture (le texte principal attendrait l'animation).
+- **Images ou données écrites dans la page** (base64, gros objets JSON) : servies à part, la page reste légère.
+- **Bibliothèques lourdes** (éditeur, compression d'images...) : importées au moment où elles servent (`import()`).
+- **Accessibilité** : un nom lisible pour chaque bouton et lien à icône, le texte visible au début de ce nom, des
+  contrastes suffisants, les rôles ARIA seulement sur les balises qui les acceptent.
+
+L'écran de chargement de l'ouverture coûte quelques points sur téléphone (le haut de la page attend les polices) :
+c'est voulu, un écran de chargement léger rend mieux que pas de chargement du tout.
 
 ## Appeler l'API
 

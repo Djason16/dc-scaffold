@@ -4,7 +4,7 @@ import { LANGUAGES, translate } from './translations/translations.js'
 /*
  * Languages of the site, for every component:
  *   protected lang = useLang()   then in the template   {{ lang.getTranslation('heroTitle', { name: 'Site' }) }}
- * Texts: plugins/translations/. Languages of the site: plugins/translations/translations.js.
+ * Texts: plugins/translations/. Languages of the site: plugins/translations/translations.ts.
  */
 // @two-languages
 const STORAGE_KEY = 'selectedLanguage'

@@ -4,7 +4,7 @@ import '../assets/css/main.css'
 import '../assets/css/design.css'
 import AppShell from '../components/layout/AppShell/AppShell.astro'
 import Seo from '../components/ui/Seo/Seo.astro'
-import { lang } from '../plugins/lang.js'
+import { lang } from '../plugins/lang'
 
 // Root of every page: <head>, then the page inside the app shell (components/layout/AppShell)
 const { pageKey = 'index' } = Astro.props
@@ -23,11 +23,11 @@ const { pageKey = 'index' } = Astro.props
         </AppShell>
 
         <script>
-            import { useSite } from '../composables/useSite.js'
-            import { startApp } from '../plugins/app.js'
+            import { useSite } from '../composables/useSite'
+            import { startApp } from '../plugins/app'
             // @two-languages
             // Texts of the DC Scaffold design while it is on (dc-scaffold.config.js), for the language buttons
-            import '../design-texts.js'
+            import '../design-texts'
             // @end-two-languages
 
             // @two-languages

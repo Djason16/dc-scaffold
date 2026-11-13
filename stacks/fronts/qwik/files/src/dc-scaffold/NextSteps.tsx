@@ -2,7 +2,7 @@ import { component$ } from '@builder.io/qwik'
 import { useLang } from '~/composables/useLang'
 import { t } from '~/plugins/lang'
 
-// "What next?" section of DC Scaffold: three cards (texts in dc-scaffold/texts/nextSteps.js)
+// "What next?" section of DC Scaffold: three cards (texts in dc-scaffold/texts/nextSteps.ts)
 export default component$(() => {
     const lang = useLang()
 

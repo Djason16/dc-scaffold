@@ -57,11 +57,18 @@
             "registry": "npm",
             "stable": "26",
             "token": "V_TYPES_NODE"
+        },
+        {
+            "package": "vue-tsc",
+            "registry": "npm",
+            "stable": "3",
+            "token": "V_VUE_TSC"
         }
     ],
     "publicDir": "public",
+    "hashedDir": "_nuxt",
     "api": {
-        "file": "utils/api.js",
+        "file": "utils/api.ts",
         "imports": "import { useRuntimeConfig } from '#imports'",
         "base": "useRuntimeConfig().public.backendDomain",
         "source": "NUXT_PUBLIC_BACKEND_DOMAIN",
@@ -164,6 +171,16 @@
             }
         },
         {
+            "npm": {
+                "set": {
+                    "devDependencies.typescript": "~6.0.3",
+                    "devDependencies.vue-tsc": "^{{V_VUE_TSC}}",
+                    "scripts.typecheck": "nuxt typecheck"
+                }
+            },
+            "when": "ts"
+        },
+        {
             "copy": "files-api",
             "when": "separateApi"
         }
@@ -173,8 +190,8 @@
         "css": "assets/css",
         "pages": "pages/",
         "storeLib": "Pinia",
-        "lang": "plugins/lang.js",
-        "storeFile": "stores/userPreferences.js",
+        "lang": "plugins/lang.ts",
+        "storeFile": "stores/userPreferences.ts",
         "layoutFile": "components/layout/AppShell/AppShell.vue",
         "env": "`NUXT_PUBLIC_SITE_NAME` / `NUXT_PUBLIC_SITE_URL`",
         "public": "frontend/public",

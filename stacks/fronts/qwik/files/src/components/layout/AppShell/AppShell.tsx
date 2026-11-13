@@ -19,6 +19,8 @@ import { useUserPreferences, withActions } from '~/stores/userPreferences'
 const LOADER_ENABLED: boolean = design
 // Minimum time of the loader on a page change, so it does not just flash (milliseconds)
 const LOADER_PAGE_TIME = 400
+// Longest wait of the loader on the first opening, even if the fonts are not there yet (milliseconds)
+const LOADER_FIRST_MAX_TIME = 2000
 
 // Frame of every page (and of the 404 page): loader, header, page, footer, floating buttons, cookie banner
 export default component$(() => {
@@ -54,16 +56,17 @@ export default component$(() => {
         if (userPreferences.preferences.functional) restoreLang(lang)
         // @end-two-languages
 
-        // Fonts of utils/fonts.css loaded: the text will not change size, the loader can go
-        await document.fonts.ready
+        // Fonts of utils/fonts.css loaded (the text will not change size), or 2 seconds at most: the loader goes
+        await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, LOADER_FIRST_MAX_TIME))])
         showLoader.value = false
         ready.value = true
     }, { strategy: 'document-ready' })
 
     return (
         <>
+            {/* The loader covers the page, which is already there under it (search engines, speed) */}
             {showLoader.value && <Loader />}
-            <div class="app-shell" style={{ display: showLoader.value ? 'none' : undefined }}>
+            <div class="app-shell">
                 <Header />
                 <main>
                     <Slot />

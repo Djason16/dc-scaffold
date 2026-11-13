@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
     import { afterNavigate, beforeNavigate } from '$app/navigation'
     import Footer from '#lib/components/layout/Footer/Footer.svelte'
@@ -17,6 +17,8 @@
     const LOADER_ENABLED = design
     // Minimum time of the loader on a page change, so it does not just flash (milliseconds)
     const LOADER_PAGE_TIME = 400
+    // Longest wait of the loader on the first opening, even if the fonts are not there yet (milliseconds)
+    const LOADER_FIRST_MAX_TIME = 2000
 
     let { children } = $props()
     let showLoader = $state(LOADER_ENABLED)
@@ -44,18 +46,19 @@
         if (userPreferences.preferences.functional) lang.restore()
         // @end-two-languages
 
-        // Fonts of utils/fonts.css loaded: the text will not change size, the loader can go
-        await document.fonts.ready
+        // Fonts of utils/fonts.css loaded (the text will not change size), or 2 seconds at most: the loader goes
+        await Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, LOADER_FIRST_MAX_TIME))])
         showLoader = false
         ready = true
     })
 </script>
 
 <!-- Frame of every page (and of the error page): loader, header, page, footer, floating buttons, cookie banner -->
+<!-- The loader covers the page, which is already there under it (search engines, speed) -->
 {#if showLoader}
     <Loader />
 {/if}
-<div class="app-shell" style:display={showLoader ? 'none' : null}>
+<div class="app-shell">
     <Header />
     <main>
         {@render children()}

@@ -38,14 +38,14 @@ and "What next?" home page. One setting turns it off or on again, in `{{FRONT_DE
 [two-languages] ```
 [two-languages]
 [two-languages] To show it: {{FRONT_TEXT_USAGE}}. A missing text shows its key, easy to spot on the page.
-[two-languages] New text file: create it, then add it to `{{FRONT_TRANSLATIONS}}/translations.js` (`TRANSLATIONS`).
+[two-languages] New text file: create it, then add it to `{{FRONT_TRANSLATIONS}}/translations.ts` (`TRANSLATIONS`).
 [one-language] The site is in one language: the texts are written straight into the components and pages,
 [one-language] with no translation system. To change a text, open the component that shows it (for example `{{FRONT_VIEWS}}/Index/`
 [one-language] for the home page) and edit it.
 
 ### Languages
 
-[two-languages] The languages of the site are in `{{FRONT_TRANSLATIONS}}/translations.js` (`LANGUAGES`), the first one is the default.
+[two-languages] The languages of the site are in `{{FRONT_TRANSLATIONS}}/translations.ts` (`LANGUAGES`), the first one is the default.
 
 [two-languages] The site is in two languages: the language buttons are at the bottom right (`ChangeLanguageButton`, in the AppShell).
 [two-languages] Every text file has a block per language. The language chosen by the visitor is kept for the next visit
@@ -78,12 +78,12 @@ The cookie name and how long it is kept (180 days) are at the top of `{{FRONT_AC
   `{{FRONT_PAGE_HERO}}`. The home page and the 404 page already use it: the whole site keeps the same look
 - put its sections in `{{FRONT_VIEWS}}/About/` (one section = one component)
 [two-languages] - add the page to `SEO_PAGES` in `{{FRONT_SEO}}`, then its title and description
-[two-languages]    in `{{FRONT_TRANSLATIONS}}/common/seo.js` (`seoAboutTitle`, `seoAboutDescription`)
+[two-languages]    in `{{FRONT_TRANSLATIONS}}/common/seo.ts` (`seoAboutTitle`, `seoAboutDescription`)
 [one-language] - add the page to `SEO_PAGES` in `{{FRONT_SEO}}`, with its title and description
 
 ### SEO
 
-[two-languages] - Title, description and sharing image of each page: `{{FRONT_SEO}}` and `{{FRONT_TRANSLATIONS}}/common/seo.js`
+[two-languages] - Title, description and sharing image of each page: `{{FRONT_SEO}}` and `{{FRONT_TRANSLATIONS}}/common/seo.ts`
 [one-language] - Title, description and sharing image of each page: `{{FRONT_SEO}}` (`SEO_PAGES`)
 - Default sharing image: `{{FRONT_PUBLIC}}/og-image.jpg` (1200 × 630 px)
 - `sitemap.xml` and `robots.txt` are created automatically with the production site: every page with its date and its images

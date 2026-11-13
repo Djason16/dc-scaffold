@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import { useSite } from '#lib/composables/useSite.js'
     import { lang } from '#lib/plugins/lang.svelte.js'
 

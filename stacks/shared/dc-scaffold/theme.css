@@ -131,7 +131,7 @@ h3 {
     letter-spacing: 0.06em;
 }
 
-/* Loader: sharp square with a gradient border, turning on a soft glow of the three colors */
+/* Loader: "Loading" over a thin line in the gradient of the three colors, on a soft glow of the three colors */
 .loader {
     overflow: hidden;
 }
@@ -149,18 +149,15 @@ h3 {
     animation: loader-glow 2.4s ease-in-out infinite alternate;
 }
 
-.loader-spinner {
+.loader-label,
+.loader-line {
     position: relative;
-    width: 3rem;
-    height: 3rem;
-    padding: 3px;
-    border: none;
-    border-radius: 0;
-    background: conic-gradient(from 0turn, transparent 0 20%, var(--gradient-start), var(--gradient-middle), var(--gradient-end));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
-    animation: loader-spin 1s cubic-bezier(0.6, 0.1, 0.4, 0.9) infinite;
+}
+
+.loader-line {
+    width: 9rem;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gradient-start), var(--gradient-middle), var(--gradient-end));
 }
 
 @keyframes loader-glow {

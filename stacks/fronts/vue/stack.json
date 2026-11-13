@@ -27,13 +27,14 @@
         }
     ],
     "publicDir": "public",
+    "hashedDir": "assets",
     "api": {
-        "file": "src/utils/api.js",
+        "file": "src/utils/api.ts",
         "imports": "",
         "base": "import.meta.env.VITE_API_URL",
         "source": "VITE_API_URL",
         "isDev": "import.meta.env.DEV",
-        "usage": "import { api } from '@/utils/api.js'"
+        "usage": "import { api } from '@/utils/api'"
     },
     "steps": [
         {
@@ -44,9 +45,24 @@
                 "{{DIR}}",
                 "--",
                 "--bare",
+                "--router",
+                "--ts"
+            ],
+            "in": "root",
+            "when": "ts"
+        },
+        {
+            "run": [
+                "npm",
+                "create",
+                "vue@latest",
+                "{{DIR}}",
+                "--",
+                "--bare",
                 "--router"
             ],
-            "in": "root"
+            "in": "root",
+            "when": "js"
         },
         {
             "check": "package.json"
@@ -123,8 +139,8 @@
         "css": "src/assets/css",
         "pages": "src/pages/",
         "storeLib": "Pinia",
-        "lang": "plugins/lang.js",
-        "storeFile": "stores/userPreferences.js",
+        "lang": "plugins/lang.ts",
+        "storeFile": "stores/userPreferences.ts",
         "layoutFile": "components/layout/AppShell/AppShell.vue",
         "env": "`VITE_SITE_NAME` / `VITE_SITE_URL`",
         "public": "frontend/public",

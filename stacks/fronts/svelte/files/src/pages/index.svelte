@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import SectionLayout from '#lib/components/ui/SectionLayout/SectionLayout.svelte'
     import Seo from '#lib/components/ui/Seo/Seo.svelte'
     import Intro from '#lib/components/views/Index/Intro.svelte'
@@ -10,10 +10,10 @@
 </script>
 
 <!-- @two-languages -->
-<!-- Title, description, Open Graph... updated when the language changes (utils/seo.js) -->
+<!-- Title, description, Open Graph... updated when the language changes (utils/seo.ts) -->
 <!-- @end-two-languages -->
 <!-- @one-language -->
-<!-- Title, description, Open Graph... of the page (utils/seo.js) -->
+<!-- Title, description, Open Graph... of the page (utils/seo.ts) -->
 <!-- @end-one-language -->
 <Seo pageKey="index" />
 

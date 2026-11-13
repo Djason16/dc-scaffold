@@ -25,6 +25,10 @@ param(
     [string]$Driver,
     [ValidateSet('fr', 'en', 'fr,en', 'en,fr')]
     [string]$Languages,
+    # Language of the code: TypeScript (types checked by the editor) or JavaScript. A stack written for one of them only
+    # ("script" of its stack.json: Angular, Qwik, Nest, AdonisJS in TypeScript, Vanilla in JavaScript) keeps it.
+    [ValidateSet('ts', 'js')]
+    [string]$Script,
     [int]$AppPort,
     [int]$ApiPort = 8000,
     [int]$PmaPort = 8081,
@@ -281,7 +285,7 @@ function Select-TranslationBlocks([string]$Text, [string]$RelativePath) {
 function Get-InlineTexts {
     $texts = New-Object 'System.Collections.Generic.Dictionary[string,string]' ([StringComparer]::Ordinal)
     $folders = (Join-Path $StacksDir 'shared\front-core\plugins\translations'), (Join-Path $StacksDir 'shared\dc-scaffold\texts')
-    foreach ($file in Get-ChildItem -LiteralPath $folders -Recurse -File -Filter '*.js') {
+    foreach ($file in Get-ChildItem -LiteralPath $folders -Recurse -File -Include '*.ts', '*.js') {
         $text = Select-LanguageBlocks ([IO.File]::ReadAllText($file.FullName) -replace "`r`n", "`n") ''
         $block = [regex]::Match($text, "(?ms)^    $($SiteLanguages[0]):\s*\{\n(.*?)^    \},?")
         if (-not $block.Success) { continue }
@@ -455,7 +459,7 @@ function Write-DesignFiles {
         $Tokens['DESIGN_CSS'] = "@import `"$(& $relative $Tokens['DESIGN_CSS'] "$($Tokens['DESIGN_FOLDER'])/theme.css")`";`n"
     }
     if ($Tokens['DESIGN_TEXTS_JS']) {
-        $files[$Tokens['DESIGN_TEXTS_JS']] = "import '$(& $relative $Tokens['DESIGN_TEXTS_JS'] "$($Tokens['DESIGN_FOLDER'])/texts/index.js")'`n"
+        $files[$Tokens['DESIGN_TEXTS_JS']] = "import '$(& $relative $Tokens['DESIGN_TEXTS_JS'] "$($Tokens['DESIGN_FOLDER'])/texts/index")'`n"
     }
     foreach ($file in $files.Keys) {
         $comment = if ($file.EndsWith('.css')) { '/* {0} */' } else { '// {0}' }
@@ -566,8 +570,12 @@ function Invoke-StackSteps($Stack, [string]$Dir) {
     $target = Join-Path $Root $Dir
     $Tokens['DIR'] = $Dir
     # separateApi: an API in backend/, insideApi: an API inside the front (Nitro inside Nuxt)
+    # ts / js: language of the code of this side (frontend/ or backend/)
+    $sideTs = $(if ($Dir -eq 'backend') { $BackScript } else { $FrontScript }) -eq 'ts'
+    # {{SCRIPT_EXT}} in the files named by the steps: "vite.config.{{SCRIPT_EXT}}" (the creation tool writes one or the other)
+    $Tokens['SCRIPT_EXT'] = if ($sideTs) { 'ts' } else { 'js' }
     $conditions = @{ api = $HasBack; noApi = -not $HasBack; front = $HasFront; noFront = -not $HasFront; db = $HasDatabase; noDb = -not $HasDatabase
-        separateApi = $HasBack -and -not $BackInside; insideApi = $BackInside; noInsideApi = -not $BackInside }
+        separateApi = $HasBack -and -not $BackInside; insideApi = $BackInside; noInsideApi = -not $BackInside; ts = $sideTs; js = -not $sideTs }
 
     foreach ($step in @($Stack.steps)) {
         if ($step.when -and -not $conditions[$step.when]) { continue }
@@ -590,7 +598,7 @@ function Invoke-StackSteps($Stack, [string]$Dir) {
                 if (-not $ok -and -not $step.optional) { return $false }
             }
             'check' {
-                if (-not (Test-Path (Join-Path $target $step.check))) { return $false }
+                if (-not (Test-Path (Join-Path $target (Expand-Tokens $step.check)))) { return $false }
             }
             'flatten' {
                 $nested = Join-Path $target $step.flatten
@@ -619,20 +627,22 @@ function Invoke-StackSteps($Stack, [string]$Dir) {
             'replace' {
                 # Comments of the inserted text in the language of the project, like the copied files
                 $with = Expand-Tokens (Convert-Comments $step.replace.with $step.replace.file)
-                Edit-TextFile (Join-Path $target $step.replace.file) $step.replace.find { $with }
+                Edit-TextFile (Join-Path $target (Expand-Tokens $step.replace.file)) $step.replace.find { $with }
             }
             'insert' {
                 # Keeps the original line break + indentation for what follows
                 $text = Expand-Tokens (Convert-Comments $step.insert.text $step.insert.file)
-                Edit-TextFile (Join-Path $target $step.insert.file) "(?<head>$($step.insert.after))(?<space>\s*)" {
+                Edit-TextFile (Join-Path $target (Expand-Tokens $step.insert.file)) "(?<head>$($step.insert.after))(?<space>\s*)" {
                     param($match) $match.Groups['head'].Value + "`n" + $text + "`n" + $match.Groups['space'].Value
                 }
             }
             'npm' {
-                $set = @($step.npm.set.PSObject.Properties | Where-Object { $_ } | ForEach-Object { "$($_.Name)=$(Expand-Tokens $_.Value)" })
-                $delete = @($step.npm.delete | Where-Object { $_ })
-                if ($delete.Count) { Invoke-In $target { & $Npm pkg delete @delete } | Out-Null }
-                if ($set.Count) { Invoke-In $target { & $Npm pkg set @set } | Out-Null }
+                # package.json changed by engine/package-json.mjs: any value is kept as written (quotes, spaces, &&)
+                $set = [ordered]@{}
+                foreach ($entry in @($step.npm.set.PSObject.Properties | Where-Object { $_ })) { $set[$entry.Name] = Expand-Tokens $entry.Value }
+                $env:DCS_PKG = @{ set = $set; delete = @($step.npm.delete | Where-Object { $_ }) } | ConvertTo-Json -Compress -Depth 4
+                & node (Join-Path $PSScriptRoot 'package-json.mjs') $target
+                Remove-Item Env:\DCS_PKG -ErrorAction SilentlyContinue
             }
             'env' {
                 $file = Join-Path $target $step.env.file
@@ -1154,6 +1164,24 @@ if ($HasDatabase -and $drivers.Count -gt 1 -and $Interactive -and -not $PSBoundP
 
 if (-not $HasFront -and -not $HasBack) { Write-Fail (T 'need_one_side'); exit 1 }
 
+# Language of the code: asked when one of the two sides lets you choose ("script" of stack.json: "ts" or "js" = fixed)
+$frontFixed = if ($HasFront) { [string]$FrontStack.script } else { '' }
+$backFixed = if ($HasBack -and $NodeBack -and -not $BackInside) { [string]$BackStack.script } else { '' }
+$scriptChoice = ($HasFront -and -not $frontFixed) -or ($HasBack -and $NodeBack -and -not $BackInside -and -not $backFixed)
+if (-not $Script) {
+    $Script = 'ts'
+    if ($Interactive -and $scriptChoice) {
+        Write-Info (T 'script_title')
+        Write-MenuItem '1' 'TypeScript' (T 'script_ts')
+        Write-MenuItem '2' 'JavaScript' (T 'script_js')
+        if ((Read-Default (T 'ask_choice') '1') -eq '2') { $Script = 'js' }
+        Write-Host ''
+    }
+}
+$FrontScript = if ($frontFixed) { $frontFixed } else { $Script }
+# The API inside the front is written in the language of the front
+$BackScript = if ($BackInside) { $FrontScript } elseif ($backFixed) { $backFixed } else { $Script }
+
 # Languages of the site: one, or two with the language buttons
 if ($HasFront -and -not $Languages) {
     $Languages = $Lang
@@ -1353,7 +1381,7 @@ if ($HasFront -and $FrontStack.layout) {
     $Tokens['FRONT_STORE_LIB'] = $layout.storeLib
     # How to read a choice of the visitor in the code of this front (Angular: a signal)
     $Tokens['FRONT_PREFS_USAGE'] = $(if ($layout.prefsUsage) { $layout.prefsUsage } else { 'userPreferences.preferences.maps' })
-    $Tokens['FRONT_ACTIONS'] = Get-FrontPath 'stores/actions/userPreferencesActions.js'
+    $Tokens['FRONT_ACTIONS'] = Get-FrontPath 'stores/actions/userPreferencesActions.ts'
     $Tokens['FRONT_PAGE'] = Get-FrontPath $layout.page
     $Tokens['FRONT_PAGE_COPY'] = Get-FrontPath $layout.pageCopy
     $Tokens['FRONT_VIEWS'] = Get-FrontPath 'components/views'
@@ -1363,7 +1391,7 @@ if ($HasFront -and $FrontStack.layout) {
     # Design of DC Scaffold (frontend/dc-scaffold.config.js): its folder, and the two files scripts/design.mjs writes
     $srcDir = "$($layout.src)".TrimEnd('/')
     $Tokens['DESIGN_FOLDER'] = (@($srcDir, 'dc-scaffold') | Where-Object { $_ }) -join '/'
-    $Tokens['DESIGN_JS'] = (@($srcDir, 'design.js') | Where-Object { $_ }) -join '/'
+    $Tokens['DESIGN_JS'] = (@($srcDir, 'design.ts') | Where-Object { $_ }) -join '/'
     $Tokens['DESIGN_CSS'] = "$($layout.css)/design.css"
     $Tokens['DESIGN_CSS_DIR'] = $layout.css
     $Tokens['FRONT_DESIGN_CONFIG'] = 'frontend/dc-scaffold.config.js'
@@ -1371,15 +1399,15 @@ if ($HasFront -and $FrontStack.layout) {
     $Tokens['FRONT_HOME_SECTIONS'] = $(if ($layout.homeSections) { Get-FrontPath $layout.homeSections } else { "$($Tokens['FRONT_VIEWS'])/Index/" })
     $Tokens['FRONT_DESIGN_FOLDER'] = "frontend/$($Tokens['DESIGN_FOLDER'])"
     $Tokens['FRONT_DESIGN_RESTART'] = $(if ($layout.designRuntime) { $Strings.guide_design_reload } else { $Strings.guide_design_restart })
-    $Tokens['DESIGN_INDEX_EXT'] = $(if ($null -ne $layout.designIndexExt) { $layout.designIndexExt } else { '.js' })
+    $Tokens['DESIGN_INDEX_EXT'] = $(if ($null -ne $layout.designIndexExt) { $layout.designIndexExt } else { '' })
     # Astro in two languages: the texts of the design for the script of the browser
-    $Tokens['DESIGN_TEXTS_JS'] = $(if ($layout.designClientTexts -and $SiteLanguages.Count -gt 1) { (@($srcDir, 'design-texts.js') | Where-Object { $_ }) -join '/' } else { '' })
+    $Tokens['DESIGN_TEXTS_JS'] = $(if ($layout.designClientTexts -and $SiteLanguages.Count -gt 1) { (@($srcDir, 'design-texts.ts') | Where-Object { $_ }) -join '/' } else { '' })
     $Tokens['DESIGN_NOTE'] = $Strings.design_generated
     $Tokens['DESIGN_LOG_ON'] = $Strings.design_log_on
     $Tokens['DESIGN_LOG_OFF'] = $Strings.design_log_off
     $Tokens['DESIGN_TEXTS_CODE'] = ''
     if ($Tokens['DESIGN_TEXTS_JS']) {
-        $Tokens['DESIGN_TEXTS_CODE'] = "// $($Strings.design_texts_comment)`nfiles['$($Tokens['DESIGN_TEXTS_JS'])'] = design ? ``import '`${path('$($Tokens['DESIGN_TEXTS_JS'])', '$($Tokens['DESIGN_FOLDER'])/texts/index.js')}'\n`` : ''`n"
+        $Tokens['DESIGN_TEXTS_CODE'] = "// $($Strings.design_texts_comment)`nfiles['$($Tokens['DESIGN_TEXTS_JS'])'] = design ? ``import '`${path('$($Tokens['DESIGN_TEXTS_JS'])', '$($Tokens['DESIGN_FOLDER'])/texts/index')}'\n`` : ''`n"
     }
     # Generated files: not in Git (written again by every "npm run dev" / build). HTML / CSS / JS reads the switch in the browser.
     if (-not $layout.designRuntime) {
@@ -1388,7 +1416,7 @@ if ($HasFront -and $FrontStack.layout) {
     }
     # Reusable top of page (components/ui/PageHero), or the page that shows it when the front has no components
     $Tokens['FRONT_PAGE_HERO'] = Get-FrontPath $(if ($layout.pageHero) { $layout.pageHero } else { 'components/ui/PageHero/' })
-    $Tokens['FRONT_SEO'] = Get-FrontPath 'utils/seo.js'
+    $Tokens['FRONT_SEO'] = Get-FrontPath 'utils/seo.ts'
     $Tokens['FRONT_MIDDLEWARE'] = Get-FrontPath 'middleware/'
     $Tokens['FRONT_LAYOUT'] = Get-FrontPath $layout.layoutFile
     $Tokens['FRONT_HEADER'] = Get-FrontPath $layout.header
@@ -1583,10 +1611,15 @@ if ($HasFront) {
             Remove-Item -LiteralPath (Join-Path $Root "frontend/$($Tokens['DESIGN_FOLDER'])/texts") -Recurse -Force -ErrorAction SilentlyContinue
         }
         if ($FrontStack.layout -and -not $FrontStack.layout.designRuntime) { Write-DesignFiles }
-        if ($HasBack -and $api.file) { Write-ProjectFile "frontend/$($api.file)" (Read-StackFile (Join-Path $StacksDir 'shared\client\api.js')) }
+        if ($HasBack -and $api.file) { Write-ProjectFile "frontend/$($api.file)" (Read-StackFile (Join-Path $StacksDir 'shared\client\api.ts')) }
         if ($null -ne $FrontStack.publicDir) {
             $publicDir = (@('frontend', $FrontStack.publicDir) | Where-Object { $_ }) -join '/'
-            Write-ProjectFile "$publicDir/.htaccess" (Read-StackFile (Join-Path $StacksDir 'shared\client\.htaccess'))
+            # Folder of the files of the build with a hash in their name (_nuxt/, assets/...): kept a year by the browser.
+            # Its own .htaccess, or (hashedInRoot: Next.js refuses a public/_next folder) a rule at the end of the root one
+            $rootHtaccess = Read-StackFile (Join-Path $StacksDir 'shared\client\.htaccess')
+            if ($FrontStack.hashedDir -and $FrontStack.hashedInRoot) { $rootHtaccess += Read-StackFile (Join-Path $StacksDir 'shared\client\hashed-root.htaccess') }
+            Write-ProjectFile "$publicDir/.htaccess" $rootHtaccess
+            if ($FrontStack.hashedDir -and -not $FrontStack.hashedInRoot) { Write-ProjectFile "$publicDir/$($FrontStack.hashedDir)/.htaccess" (Read-StackFile (Join-Path $StacksDir 'shared\client\hashed.htaccess')) }
             # DC Scaffold logo of the welcome page (public/dc-scaffold/, delete it with the welcome sections)
             if ($FrontStack.layout) { Copy-Binary (Join-Path $StacksDir 'shared\front-public') $publicDir }
         }
@@ -1596,6 +1629,23 @@ if ($HasFront) {
 }
 
 Remove-Item Env:\npm_config_yes -ErrorAction SilentlyContinue
+
+# JavaScript: the models are written in TypeScript, their types are taken out (engine/to-js.mjs: comments and layout kept)
+$toJs = @(if ($HasFront -and $FrontScript -eq 'js') { Join-Path $Root 'frontend' }
+    if ($HasBack -and -not $BackInside -and $NodeBack -and $BackScript -eq 'js') { Join-Path $Root 'backend' })
+if ($toJs.Count) {
+    Write-Info (T 'to_js')
+    # The types are found by the parser of TypeScript (ts-blank-space, JSX included), installed once next to the settings
+    $tools = Join-Path $SettingsDir 'tools'
+    if (-not (Test-Path (Join-Path $tools 'node_modules\ts-blank-space'))) {
+        New-Item -ItemType Directory -Path $tools -Force | Out-Null
+        Invoke-In $tools { & $Npm install --no-audit --no-fund --loglevel=error --prefix $tools ts-blank-space@0.9 typescript@6.0 } | Out-Null
+    }
+    $env:DCS_TOOLS = $tools
+    # The README of the project names the files too
+    & node --no-warnings (Join-Path $PSScriptRoot 'to-js.mjs') @toJs (Join-Path $Root 'README.md') (Join-Path $Root '.gitignore')
+    if ($LASTEXITCODE -ne 0) { Stop-Creation (T 'to_js_failed') }
+}
 
 # ===========================================================================
 # 7. Dependencies (same code as "start.bat > I")

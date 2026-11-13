@@ -3,10 +3,10 @@
     <PageHero :title="t('introTitle', { name: site.name })" large />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import PageHero from '@/components/ui/PageHero/PageHero.vue'
-import { useLang } from '@/composables/useLang.js'
-import { useSite } from '@/composables/useSite.js'
+import { useLang } from '@/composables/useLang'
+import { useSite } from '@/composables/useSite'
 
 const { getTranslation: t } = useLang()
 const site = useSite()

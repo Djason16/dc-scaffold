@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
 import controllers from '#controllers'
 
-// Every controller route, resolved once at startup (see server/utils/RouteDiscovery.js)
+// Every controller route, resolved once at startup (see server/utils/RouteDiscovery.ts)
 const routes = RouteDiscovery.scan(controllers)
 
 // Every error of the API in the shared JSON format (the pages of the site keep the error page of Nuxt)

@@ -27,7 +27,7 @@ export const ResponseHelper = {
     serverError: (event: H3Event, message = 'Internal server error') => ResponseHelper.error(event, message, 500, 'SERVER_ERROR'),
     // Limit of tries reached (429): "Retry-After" tells the browser when to try again (in seconds)
     tooManyRequests: (event: H3Event, message = 'Too many attempts', retryAfter = 0) => {
-        if (retryAfter) setResponseHeader(event, 'Retry-After', String(retryAfter))
+        if (retryAfter) setResponseHeader(event, 'Retry-After', retryAfter)
         return ResponseHelper.error(event, message, 429, 'TOO_MANY_REQUESTS', retryAfter ? { retryAfter } : {})
     },
 }

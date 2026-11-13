@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import FloatingButton from '#lib/components/ui/Button/FloatingButton.svelte'
     import { lang } from '#lib/plugins/lang.svelte.js'
 

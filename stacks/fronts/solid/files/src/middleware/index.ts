@@ -1,0 +1,6 @@
+// Route guards run before every page, in order (the role of Nuxt's middleware/ folder), from src/App.tsx.
+// A guard receives the URL and returns nothing to continue, or a path to redirect:
+//   const auth = (url) => (url.pathname.startsWith('/admin') && !isLoggedIn() ? '/login' : undefined)
+//   export default [auth]
+const guards: ((url: URL) => string | undefined)[] = []
+export default guards

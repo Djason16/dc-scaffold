@@ -5,6 +5,7 @@
         "fr": "TypeScript (Node.js), tout est prévu comme dans Laravel",
         "en": "TypeScript (Node.js), everything included like Laravel"
     },
+    "script": "ts",
     "requires": [
         "node",
         "docker"
@@ -57,7 +58,7 @@
         },
         {
             "remove": [
-                "app/core/DatabaseHelper.js"
+                "app/core/DatabaseHelper.ts"
             ]
         },
         {

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/readme/badges/version.svg" alt="Version 1.4.3">
+  <img src="assets/readme/badges/version.svg" alt="Version 1.5.0">
   <img src="assets/readme/badges/windows.svg" alt="Windows 10 | 11">
   <img src="assets/readme/badges/license.svg" alt="License">
 </p>
@@ -68,7 +68,8 @@ Lequel choisir : [Choisir front et back end](docs/03-choisir-front-et-back.md).
 - **La même architecture partout** : mêmes helpers, même format JSON, **routes automatiques**
   (`getAll()` dans `ProductsController` → `GET /products`), mêmes dossiers dans chaque front
 - **Un site prêt** : AppShell, bandeau cookies, page 404, SEO, `sitemap.xml`, une ou deux langues, design de DC Scaffold
-  ou page blanche
+  ou page blanche (et `start.bat` puis `P` pour basculer ou repartir de zéro)
+- **TypeScript ou JavaScript** au choix, pour tous les fronts et back ends Node.js : le même code, avec ou sans types
 - **Tout s'installe selon tes choix** (via winget, après accord), Docker seulement si le projet en a besoin
 - **Versions testées chaque semaine** par un robot ; les stacks à jour arrivent tout seuls, sans réinstaller
 - **Un README par projet**, dans ta langue, avec ses chemins, ses commandes et ses étapes de mise en ligne ; le code est
@@ -138,6 +139,8 @@ Two ways to place the API, picked for the chosen pair:
 - **The same architecture everywhere**: same helpers, same JSON format, **automatic routes**
   (`getAll()` in `ProductsController` → `GET /products`), same folders in every front
 - **A ready site**: AppShell, cookie banner, 404 page, SEO, `sitemap.xml`, one or two languages, DC Scaffold design or blank page
+  (and `start.bat` then `P` to switch or start from zero)
+- **TypeScript or JavaScript**, your choice, for every front and Node.js back end: the same code, with or without types
 - **Everything installed for your choices** (through winget, after asking), Docker only when the project needs it
 - **Versions tested every week** by a robot; updated stacks arrive by themselves, without reinstalling
 - **One README per project**, in your language, with its paths, commands and going-online steps; code commented in French or English

@@ -5,6 +5,6 @@
     </AppShell>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import AppShell from '@/components/layout/AppShell/AppShell.vue'
 </script>

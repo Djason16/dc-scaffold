@@ -5,7 +5,7 @@ import { LANGUAGES, translate } from './translations/translations.js'
  * Languages of the site, for every component (given by src/root.tsx).
  *   const lang = useLang()   then   t(lang, 'heroTitle', { name: 'Site' })
  * (lang is the store of the language, not a function: Qwik can send it from the built page to the browser)
- * Texts: plugins/translations/. Languages of the site: plugins/translations/translations.js.
+ * Texts: plugins/translations/. Languages of the site: plugins/translations/translations.ts.
  */
 // @two-languages
 const STORAGE_KEY = 'selectedLanguage'

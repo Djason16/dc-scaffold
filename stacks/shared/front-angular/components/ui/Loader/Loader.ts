@@ -1,12 +1,13 @@
 import { Component } from '@angular/core'
 import { useLang } from '@/composables/useLang'
 
-// Full screen shown while the page gets ready (AppShell)
+// The loading screen of the site (AppShell), on the first opening and on every page change: "Loading" over a thin line
 @Component({
     selector: 'app-loader',
     template: `
-        <div class="loader" role="status" [attr.aria-label]="lang.getTranslation('loading')">
-            <span class="loader-spinner"></span>
+        <div class="loader" role="status" aria-live="polite">
+            <p class="loader-label">{{ lang.getTranslation('loading') }}</p>
+            <span class="loader-line" aria-hidden="true"></span>
         </div>
     `,
 })

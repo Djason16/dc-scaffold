@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
     import { lang } from '#lib/plugins/lang.svelte.js'
 
 </script>
 
-<!-- "What next?" section of DC Scaffold: three cards (texts in dc-scaffold/texts/nextSteps.js) -->
+<!-- "What next?" section of DC Scaffold: three cards (texts in dc-scaffold/texts/nextSteps.ts) -->
 <div class="next-steps">
     <div class="next-steps-header">
         <h2>{lang.getTranslation('nextStepsTitle')}</h2>

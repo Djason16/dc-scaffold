@@ -1,12 +1,13 @@
 <template>
-    <!-- Full screen shown while the page gets ready (AppShell) -->
-    <div class="loader" role="status" :aria-label="t('loading')">
-        <span class="loader-spinner" />
+    <!-- The loading screen of the site (AppShell), on the first opening and on every page change: "Loading" over a thin line -->
+    <div class="loader" role="status" aria-live="polite">
+        <p class="loader-label">{{ t('loading') }}</p>
+        <span class="loader-line" aria-hidden="true" />
     </div>
 </template>
 
-<script setup>
-import { useLang } from '@/composables/useLang.js'
+<script setup lang="ts">
+import { useLang } from '@/composables/useLang'
 
 const { getTranslation: t } = useLang()
 </script>

@@ -1,5 +1,5 @@
 <template>
-    <!-- "What next?" section of DC Scaffold: three cards (texts in dc-scaffold/texts/nextSteps.js) -->
+    <!-- "What next?" section of DC Scaffold: three cards (texts in dc-scaffold/texts/nextSteps.ts) -->
     <div class="next-steps">
         <div class="next-steps-header">
             <h2>{{ t('nextStepsTitle') }}</h2>
@@ -25,8 +25,8 @@
     </div>
 </template>
 
-<script setup>
-import { useLang } from '@/composables/useLang.js'
+<script setup lang="ts">
+import { useLang } from '@/composables/useLang'
 
 const { getTranslation: t } = useLang()
 </script>

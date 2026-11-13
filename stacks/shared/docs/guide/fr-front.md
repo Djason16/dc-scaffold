@@ -38,14 +38,14 @@ et page d'accueil « Et maintenant ? ». Un seul réglage le coupe ou le remet, 
 [two-languages] ```
 [two-languages]
 [two-languages] Pour l'afficher : {{FRONT_TEXT_USAGE}}. Un texte introuvable affiche sa clé, facile à repérer sur la page.
-[two-languages] Nouveau fichier de textes : crée-le, puis ajoute-le dans `{{FRONT_TRANSLATIONS}}/translations.js` (`TRANSLATIONS`).
+[two-languages] Nouveau fichier de textes : crée-le, puis ajoute-le dans `{{FRONT_TRANSLATIONS}}/translations.ts` (`TRANSLATIONS`).
 [one-language] Le site est en une seule langue : les textes sont écrits directement dans les composants et les pages,
 [one-language] sans système de traduction. Pour changer un texte, ouvre le composant qui l'affiche (par exemple `{{FRONT_VIEWS}}/Index/`
 [one-language] pour la page d'accueil) et modifie-le.
 
 ### Langues
 
-[two-languages] Les langues du site sont dans `{{FRONT_TRANSLATIONS}}/translations.js` (`LANGUAGES`), la première est celle par défaut.
+[two-languages] Les langues du site sont dans `{{FRONT_TRANSLATIONS}}/translations.ts` (`LANGUAGES`), la première est celle par défaut.
 
 [two-languages] Le site est en deux langues : les boutons de langue sont en bas à droite (`ChangeLanguageButton`, dans l'AppShell).
 [two-languages] Chaque fichier de textes a un bloc par langue. La langue choisie par le visiteur n'est gardée pour sa prochaine visite
@@ -78,12 +78,12 @@ Le nom du cookie et sa durée (180 jours) sont en haut de `{{FRONT_ACTIONS}}`.
   `{{FRONT_PAGE_HERO}}`. La page d'accueil et la page 404 l'utilisent déjà : tout le site garde le même style
 - mets ses sections dans `{{FRONT_VIEWS}}/About/` (une section = un composant)
 [two-languages] - ajoute la page dans `SEO_PAGES` de `{{FRONT_SEO}}`, puis son titre et sa description
-[two-languages]    dans `{{FRONT_TRANSLATIONS}}/common/seo.js` (`seoAboutTitle`, `seoAboutDescription`)
+[two-languages]    dans `{{FRONT_TRANSLATIONS}}/common/seo.ts` (`seoAboutTitle`, `seoAboutDescription`)
 [one-language] - ajoute la page dans `SEO_PAGES` de `{{FRONT_SEO}}`, avec son titre et sa description
 
 ### SEO
 
-[two-languages] - Titre, description et image de partage de chaque page : `{{FRONT_SEO}}` et `{{FRONT_TRANSLATIONS}}/common/seo.js`
+[two-languages] - Titre, description et image de partage de chaque page : `{{FRONT_SEO}}` et `{{FRONT_TRANSLATIONS}}/common/seo.ts`
 [one-language] - Titre, description et image de partage de chaque page : `{{FRONT_SEO}}` (`SEO_PAGES`)
 - Image de partage par défaut : `{{FRONT_PUBLIC}}/og-image.jpg` (1200 × 630 px)
 - `sitemap.xml` et `robots.txt` sont créés automatiquement avec le site de production : chaque page avec sa date et ses images

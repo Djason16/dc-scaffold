@@ -1,12 +1,11 @@
-<script>
+<script lang="ts">
     import { onMount } from 'svelte'
     import { lang } from '#lib/plugins/lang.svelte.js'
     import { userPreferences } from '#lib/stores/userPreferences.svelte.js'
 
-    const t = (/** @type {string} */ key) => lang.getTranslation(key)
+    const t = (key: string) => lang.getTranslation(key)
     let customizing = $state(false)
-    /** @type {Record<string, boolean>} */
-    let choices = $state({ ...userPreferences.preferences })
+    let choices: Record<string, boolean> = $state({ ...userPreferences.preferences })
 
     // Opened again from "Cookie settings": the boxes show the current choice
     let wasHidden = false
@@ -30,7 +29,7 @@
         <h2>{t('prefsTitle')}</h2>
         <p>{t('prefsText')}</p>
 
-        <!-- One checkbox per category of stores/userPreferences.svelte.js -->
+        <!-- One checkbox per category of stores/userPreferences.svelte.ts -->
         {#if customizing}
             <div class="preferences-banner-categories">
                 {#each Object.entries(userPreferences.categories) as [name, category] (name)}

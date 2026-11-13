@@ -19,6 +19,8 @@ import { UserPreferencesStore } from '@/stores/userPreferences'
 const LOADER_ENABLED: boolean = design
 // Minimum time of the loader on a page change, so it does not just flash (milliseconds)
 const LOADER_PAGE_TIME = 400
+// Longest wait of the loader on the first opening, even if the fonts are not there yet (milliseconds)
+const LOADER_FIRST_MAX_TIME = 2000
 
 // Frame of every page (and of the 404 page): loader, header, page, footer, floating buttons, cookie banner
 @Component({
@@ -30,10 +32,11 @@ const LOADER_PAGE_TIME = 400
     imports: [Header, Footer, BackToTop, Loader, PreferencesBanner],
     // @end-one-language
     template: `
+        <!-- The loader covers the page, which is already there under it (search engines, speed) -->
         @if (showLoader()) {
             <app-loader />
         }
-        <div class="app-shell" [style.display]="showLoader() ? 'none' : null">
+        <div class="app-shell">
             <header app-header></header>
             <main><ng-content /></main>
             <footer app-footer></footer>
@@ -66,8 +69,8 @@ export class AppShell {
         if (userPreferences.preferences().functional) useLang().restore()
         // @end-two-languages
 
-        // Fonts of utils/fonts.css loaded: the text will not change size, the loader can go
-        document.fonts.ready.then(() => {
+        // Fonts of utils/fonts.css loaded (the text will not change size), or 2 seconds at most: the loader goes
+        Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, LOADER_FIRST_MAX_TIME))]).then(() => {
             this.ready = true
             this.showLoader.set(false)
         })

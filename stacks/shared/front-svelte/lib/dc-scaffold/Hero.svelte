@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import PageHero from '#lib/components/ui/PageHero/PageHero.svelte'
     import { useSite } from '#lib/composables/useSite.js'
     import { lang } from '#lib/plugins/lang.svelte.js'

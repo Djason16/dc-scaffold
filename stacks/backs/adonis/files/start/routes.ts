@@ -55,7 +55,7 @@ router
 
 /*
 |--------------------------------------------------------------------------
-| Controller routes, built from app/controllers (see app/core/RouteDiscovery.js)
+| Controller routes, built from app/controllers (see app/core/RouteDiscovery.ts)
 |--------------------------------------------------------------------------
 */
 const folder = new URL('../app/controllers/', import.meta.url)

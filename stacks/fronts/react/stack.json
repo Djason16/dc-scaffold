@@ -30,15 +30,31 @@
         }
     ],
     "publicDir": "public",
+    "hashedDir": "assets",
     "api": {
-        "file": "src/utils/api.js",
+        "file": "src/utils/api.ts",
         "imports": "",
         "base": "import.meta.env.VITE_API_URL",
         "source": "VITE_API_URL",
         "isDev": "import.meta.env.DEV",
-        "usage": "import { api } from '@/utils/api.js'"
+        "usage": "import { api } from '@/utils/api'"
     },
     "steps": [
+        {
+            "run": [
+                "npm",
+                "create",
+                "vite@latest",
+                "{{DIR}}",
+                "--",
+                "--template",
+                "react-ts",
+                "--no-interactive",
+                "--no-immediate"
+            ],
+            "in": "root",
+            "when": "ts"
+        },
         {
             "run": [
                 "npm",
@@ -51,7 +67,8 @@
                 "--no-interactive",
                 "--no-immediate"
             ],
-            "in": "root"
+            "in": "root",
+            "when": "js"
         },
         {
             "check": "package.json"
@@ -93,6 +110,14 @@
         },
         {
             "copy": "files"
+        },
+        {
+            "replace": {
+                "file": "tsconfig.app.json",
+                "find": "\"compilerOptions\": {",
+                "with": "\"compilerOptions\": {\n    \"paths\": { \"@/*\": [\"./src/*\"] },"
+            },
+            "when": "ts"
         },
         {
             "copy": "@shared/front-qualif"
@@ -152,16 +177,16 @@
         "css": "src/assets/css",
         "pages": "src/pages/",
         "storeLib": "Zustand",
-        "lang": "plugins/lang.jsx",
-        "storeFile": "stores/userPreferences.js",
-        "layoutFile": "components/layout/AppShell/AppShell.jsx",
+        "lang": "plugins/lang.tsx",
+        "storeFile": "stores/userPreferences.ts",
+        "layoutFile": "components/layout/AppShell/AppShell.tsx",
         "env": "`VITE_SITE_NAME` / `VITE_SITE_URL`",
         "public": "frontend/public",
-        "page": "pages/about.jsx",
-        "pageCopy": "pages/index.jsx",
+        "page": "pages/about.tsx",
+        "pageCopy": "pages/index.tsx",
         "textUsage": "`{lang.getTranslation('introTitle')}`",
-        "header": "components/layout/Header/Header.jsx",
-        "footer": "components/layout/Footer/Footer.jsx"
+        "header": "components/layout/Header/Header.tsx",
+        "footer": "components/layout/Footer/Footer.tsx"
     },
     "deploy": {
         "key": "B",

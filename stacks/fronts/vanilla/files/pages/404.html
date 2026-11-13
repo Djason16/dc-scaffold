@@ -15,9 +15,10 @@
 </head>
 <!-- Page shown for an address that does not exist -->
 <body data-page="notFound">
-    <!-- Loader, removed when the page is ready (delete these lines to have none) -->
-    <div class="loader" role="status" data-i18n-attr="aria-label:loading" data-loader>
-        <span class="loader-spinner"></span>
+    <!-- Loading screen over the page ("Loading" over a thin line), removed when the page is ready (delete these lines to have none) -->
+    <div class="loader" role="status" aria-live="polite" data-loader>
+        <p class="loader-label" data-i18n="loading">Loading</p>
+        <span class="loader-line" aria-hidden="true"></span>
     </div>
 
     <main>

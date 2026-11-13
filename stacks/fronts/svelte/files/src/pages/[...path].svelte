@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import NotFound from '#lib/components/views/NotFound/NotFound.svelte'
 </script>
 

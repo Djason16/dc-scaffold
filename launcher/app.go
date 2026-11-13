@@ -234,6 +234,7 @@ type createRequest struct {
 	Database    string `json:"database"`
 	Driver      string `json:"driver"`
 	Languages   string `json:"languages"`
+	Script      string `json:"script"`
 	AppPort     int    `json:"appPort"`
 	ApiPort     int    `json:"apiPort"`
 	PmaPort     int    `json:"pmaPort"`
@@ -251,7 +252,7 @@ func (a *app) handleCreate(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "bad request", http.StatusBadRequest)
 		return
 	}
-	for _, value := range []string{body.Lang, body.Front, body.Back, body.Database, body.Driver, body.Languages} {
+	for _, value := range []string{body.Lang, body.Front, body.Back, body.Database, body.Driver, body.Languages, body.Script} {
 		if !safeValue.MatchString(value) {
 			http.Error(w, "bad request", http.StatusBadRequest)
 			return
@@ -266,7 +267,7 @@ func (a *app) handleCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	args := []string{"-Ui", "-Lang", body.Lang, "-Name", body.Name, "-Destination", body.Destination, "-Front", body.Front, "-Back", body.Back}
-	optional := [][2]string{{"-Database", body.Database}, {"-Driver", body.Driver}, {"-Languages", body.Languages}}
+	optional := [][2]string{{"-Database", body.Database}, {"-Driver", body.Driver}, {"-Languages", body.Languages}, {"-Script", body.Script}}
 	for _, pair := range optional {
 		if pair[1] != "" {
 			args = append(args, pair[0], pair[1])

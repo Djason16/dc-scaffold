@@ -1,25 +1,50 @@
-/* Full screen shown while the page gets ready, and on every page change (Loader), in the colors of the site */
+/* The loading screen of the site (Loader), on the first opening and on every page change, in the colors of the site:
+   "Loading" in small capitals over a thin line in the accent color that fills from the left then empties to the right
+   (like djason-chery.dev). It covers the page, which is already there under it. Without JavaScript it goes away by
+   itself after a few seconds. */
 .loader {
     position: fixed;
     inset: 0;
     z-index: 1000;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--space-small);
     background-color: var(--background-color);
+    animation: loader-failsafe 0s linear 5s forwards;
 }
 
-/* Turning circle */
-.loader-spinner {
-    width: 2.5rem;
-    height: 2.5rem;
-    border: 3px solid var(--border-color);
-    border-top-color: var(--accent-color);
-    border-radius: 50%;
-    animation: loader-spin 0.8s linear infinite;
+.loader-label {
+    margin: 0;
+    color: var(--text-color);
+    font-size: var(--font-small);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.75;
 }
 
-@keyframes loader-spin {
-    to {
-        transform: rotate(360deg);
+.loader-line {
+    width: 7rem;
+    height: 1px;
+    background-color: var(--accent-color);
+    transform-origin: left;
+    animation: loader-fill 1.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes loader-fill {
+    0% { transform: scaleX(0); transform-origin: left; }
+    50% { transform: scaleX(1); transform-origin: left; }
+    50.1% { transform: scaleX(1); transform-origin: right; }
+    100% { transform: scaleX(0); transform-origin: right; }
+}
+
+@keyframes loader-failsafe {
+    to { visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loader-line {
+        animation: none;
     }
 }

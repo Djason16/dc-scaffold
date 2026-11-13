@@ -1,4 +1,4 @@
-import { TRAILING_SLASH_ENABLED } from './utils/pathHelpers.js'
+import { TRAILING_SLASH_ENABLED } from './utils/pathHelpers'
 
 const isDev = process.env.NODE_ENV !== 'production'
 
@@ -41,7 +41,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       // @two-languages
-      // Language of the pages (plugins/lang.js changes it in the browser)
+      // Language of the pages (plugins/lang.ts changes it in the browser)
       // @end-two-languages
       // @one-language
       // Language of the pages
