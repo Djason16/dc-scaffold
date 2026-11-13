@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Helper\ResponseHelper;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -44,5 +46,11 @@ abstract class Controller
     protected function execute(string $sql, array $params = []): int
     {
         return DB::affectingStatement($sql, $params);
+    }
+
+    // Answer of an update or a delete by id: { id } when a row changed, else 404
+    protected function changed(int $changed, int|string $id, string $notFound = 'Resource not found'): JsonResponse
+    {
+        return $changed > 0 ? ResponseHelper::success(['id' => $id]) : ResponseHelper::notFound($notFound);
     }
 }

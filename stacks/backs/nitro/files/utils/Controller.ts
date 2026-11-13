@@ -21,4 +21,8 @@ export class Controller {
     fetchOne = DatabaseHelper.fetchOne
     insert = DatabaseHelper.insert
     execute = DatabaseHelper.execute
+
+    // Answer of an update or a delete by id: { id } when a row changed, else 404
+    changed = (event: H3Event, changed: number | boolean, id: number | string, notFound?: string) =>
+        changed ? ResponseHelper.success(event, { id }) : ResponseHelper.notFound(event, notFound)
 }

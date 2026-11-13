@@ -130,7 +130,9 @@
                 "set": {
                     "scripts.pregenerate": "node scripts/design.mjs",
                     "scripts.pregenerate:prod": "node scripts/design.mjs",
-                    "scripts.generate:prod": "nuxt generate --dotenv .env.production"
+                    "scripts.generate:prod": "nuxt generate --dotenv .env.production",
+                    "scripts.pregenerate:qualif": "node scripts/design.mjs",
+                    "scripts.generate:qualif": "node scripts/qualif.mjs generate"
                 }
             },
             "when": "noInsideApi"
@@ -142,7 +144,9 @@
                 ],
                 "set": {
                     "scripts.prebuild:prod": "node scripts/design.mjs",
-                    "scripts.build:prod": "nuxt build --dotenv .env.production"
+                    "scripts.build:prod": "nuxt build --dotenv .env.production",
+                    "scripts.prebuild:qualif": "node scripts/design.mjs",
+                    "scripts.build:qualif": "node scripts/qualif.mjs build"
                 }
             },
             "when": "insideApi"

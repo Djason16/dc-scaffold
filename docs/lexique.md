@@ -25,6 +25,7 @@
 | **`.env`** | Les réglages et les mots de passe du projet. Ils ne quittent pas ton ordinateur (pas dans Git) |
 | **Build** | La version optimisée du site, prête à mettre en ligne (`start.bat` puis `B`) |
 | **Generate** | Pour Nuxt : le build en site statique (`start.bat` puis `G`) |
+| **Qualif (pré-production)** | Le site montré au client avant sa mise en ligne, sur ton hébergement, dans un dossier protégé par mot de passe : même code que la production, réglages de `.env.preprod` (`start.bat` puis `Q`). Voir [8. Mettre en ligne](08-mise-en-ligne.md#la-qualif-avant-la-mise-en-ligne) |
 | **Site statique** | Des fichiers HTML, CSS, JS prêts : n'importe quel hébergeur peut les servir, sans programme qui tourne |
 | **Serveur Node.js** | Un programme qui tourne en permanence chez l'hébergeur (`npm start`) : nécessaire pour une API JavaScript ou l'API dans le site |
 | **Pré-rendu** | Une page écrite en HTML au moment du build, au lieu d'être calculée à chaque visite |

@@ -175,6 +175,47 @@
             "when": "noDb"
         },
         {
+            "env": {
+                "file": ".env.preprod",
+                "from": ".env.example",
+                "values": {
+                    "APP_NAME": "\"{{PROJECT_NAME}}\"",
+                    "APP_ENV": "production",
+                    "APP_DEBUG": "false",
+                    "APP_KEY": "{{NEW_LARAVEL_KEY}}",
+                    "APP_TIMEZONE": "Europe/Paris",
+                    "APP_URL": "https://qualifs.example.com/{{SLUG}}-api",
+                    "APP_BASE_URL": "https://qualifs.example.com",
+                    "SESSION_DRIVER": "file",
+                    "CACHE_STORE": "file",
+                    "QUEUE_CONNECTION": "sync"
+                }
+            }
+        },
+        {
+            "env": {
+                "file": ".env.preprod",
+                "values": {
+                    "DB_CONNECTION": "mysql",
+                    "DB_HOST": "localhost",
+                    "DB_PORT": "3306",
+                    "DB_DATABASE": "",
+                    "DB_USERNAME": "",
+                    "DB_PASSWORD": ""
+                }
+            },
+            "when": "db"
+        },
+        {
+            "env": {
+                "file": ".env.preprod",
+                "values": {
+                    "DB_CONNECTION": "sqlite"
+                }
+            },
+            "when": "noDb"
+        },
+        {
             "touch": "database/database.sqlite",
             "when": "noDb"
         }
@@ -195,7 +236,7 @@
         "deploy": "laravel"
     },
     "online": {
-        "fr": "envoie `backend/` (avec `vendor/`) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur `backend/public/`",
-        "en": "upload `backend/` (with `vendor/`) to a PHP {{PHP_VERSION}}+ host; the address of the API points to `backend/public/`"
+        "fr": "envoie `backend/` (avec `vendor/`) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur le dossier `backend/` envoyé (pas sur `public/` : son `.htaccess` fait le tri)",
+        "en": "upload `backend/` (with `vendor/`) to a PHP {{PHP_VERSION}}+ host; the address of the API points to the uploaded `backend/` folder (not to `public/`: its `.htaccess` sorts the requests)"
     }
 }

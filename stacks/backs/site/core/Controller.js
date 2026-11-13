@@ -1,5 +1,6 @@
 import { DatabaseHelper } from './DatabaseHelper.js'
 import { RequestHelper } from './RequestHelper.js'
+import { ResponseHelper } from './ResponseHelper.js'
 
 /**
  * Base class for every controller in controllers/: short helpers so each controller stays small.
@@ -25,4 +26,8 @@ export class Controller {
     fetchOne = DatabaseHelper.fetchOne
     insert = DatabaseHelper.insert
     execute = DatabaseHelper.execute
+
+    // Answer of an update or a delete by id: { id } when a row changed, else 404
+    /** @param {number | boolean} changed @param {number | string} id @param {string} [notFound] */
+    changed = (changed, id, notFound) => (changed ? ResponseHelper.success({ id }) : ResponseHelper.notFound(notFound))
 }

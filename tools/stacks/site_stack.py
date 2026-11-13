@@ -7,7 +7,8 @@ STACK = Path(__file__).resolve().parents[2] / "stacks" / "backs" / "site" / "sta
 DB_SQLITE = {"DB_CONNECTION": "sqlite", "DB_HOST": "", "DB_NAME": "", "DB_USER": "", "DB_PASS": "", "DB_PORT": ""}
 
 # Address of the API for api.js: same site; on the server (first display of a page) the full local address
-SERVER_BASE = "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'"
+# The folder of a qualif (QUALIF_BASE_PATH on the server, Reflect.get(globalThis, '__QUALIF_BASE__') in the browser), empty in dev and online
+SERVER_BASE = "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'"
 
 
 def common(dir):
@@ -16,7 +17,7 @@ def common(dir):
         {"copy": "core", "to": dir},
         {"copy": "@shared/js-core", "to": dir},
         {"copy": "env"},
-        *({"env": {"file": f, "values": DB_SQLITE}, "when": "noDb"} for f in (".env", ".env.production", ".env.example")),
+        *({"env": {"file": f, "values": DB_SQLITE}, "when": "noDb"} for f in (".env", ".env.production", ".env.preprod", ".env.example")),
         {"npm": {"set": {"dependencies.mysql2": "^3.24.0"}}},
     ]
 
@@ -32,7 +33,7 @@ def inside(front, label, dir, entry, steps, online, versions=(), api=None):
         "versions": list(versions),
         "api": {"base": SERVER_BASE, "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products.", **(api or {})},
-        "steps": common(dir) + [{"copy": f"inside/{front}/files"}] + steps,
+        "steps": common(dir) + [{"copy": f"inside/{front}/files"}, {"copy": "@shared/node-start"}] + steps,
         "guide": {"entry": entry},
         "online": online,
         "doc": f"inside/{front}/doc.md",
@@ -99,7 +100,7 @@ stack = {
                 # Node.js adapter: the pages stay prerendered (dist/client), /api answers on each request (dist/server)
                 {"npm": {"set": {"dependencies.@astrojs/node": "^{{V_ASTRO_NODE}}",
                                  "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production dist/server/entry.mjs",
-                                 "scripts.postbuild": "node scripts/sitemap.mjs dist/client"}}},
+                                 "scripts.postbuild": "node scripts/sitemap.mjs dist/client --pages src/pages"}}},
                 {"replace": {"file": "astro.config.mjs", "find": r"import \{ defineConfig \} from 'astro/config'",
                              "with": "import node from '@astrojs/node'\nimport { defineConfig } from 'astro/config'"}},
                 # The comment above defineConfig (already in the language of the project): replaced by its position
@@ -139,7 +140,7 @@ stack = {
                                      "        ]\n"
                                      "    },"}},
                 {"npm": {"set": {"scripts.start": "next start",
-                                 "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --to public"}}},
+                                 "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --pages pages --to public"}}},
             ],
             online=online("pages et API compilées dans `frontend/.next`", "pages and API built into `frontend/.next`"),
         ),
@@ -149,6 +150,7 @@ stack = {
                 # Node.js server adapter instead of the static one: the pages stay prerendered in dist/
                 {"remove": ["adapters/static"]},
                 {"npm": {"set": {"scripts[build.server]": "qwik check-client src dist && vite build -c adapters/node-server/vite.config.ts",
+                                 "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/routes",
                                  "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production server/entry.node-server.js"}}},
             ],
             online=online("pages et API compilées dans `frontend/dist` et `frontend/server`",

@@ -46,6 +46,7 @@ Double-clique sur `start.bat` (ou `.\start.ps1` dans PowerShell). Le menu ne mon
 | `G` Générer | Nuxt sans API dans le site | Site statique dans `frontend/.output/public`, avec `.env.production` |
 | `B` Build | les autres fronts à compiler | Site statique à envoyer (avec `.env.production`) ; ou, avec l'API dans le site, **site + API dans un serveur Node.js** |
 | `A` Build API | API séparée qui se compile (Nitro, NestJS, AdonisJS) | `npm run build` dans `backend/` |
+| `Q` Qualif | Nuxt | Le site montré au client avant sa mise en ligne, avec `.env.preprod` : site (et API PHP) prêts à envoyer dans `qualif/` ([8. Mettre en ligne](08-mise-en-ligne.md#la-qualif-avant-la-mise-en-ligne)) |
 | `K` Sauvegarder | avec une base ou des fichiers envoyés | Copie dans `backups/<date-heure>/` la base MySQL de Docker (`database.sql`), les fichiers SQLite et `uploads/` (`uploads.zip`) |
 | `O` Restaurer | avec une base ou des fichiers envoyés | Remet la dernière sauvegarde de `backups/` (ou celle donnée : `scripts/restore.ps1 2026-11-06_21-30`), après confirmation |
 
@@ -75,6 +76,7 @@ Les réglages et les mots de passe sont dans des fichiers `.env`, **jamais envoy
 | ------- | ---- |
 | `.env` | Développement, sur ton ordinateur |
 | `.env.production` | En ligne : utilisé par le build du site (`B` / `G`) et par `npm start` des serveurs Node.js |
+| `.env.preprod` | Qualif (Nuxt) : les mêmes lignes que `.env.production` avec les adresses et la base de la qualif (`start.bat` puis `Q`) |
 | `.env.example` | Modèle sans mot de passe, sur Git : la liste des réglages à remplir |
 
 Dans `frontend/` : le nom et l'adresse du site (`*_SITE_NAME`, `*_SITE_URL`) et, avec une API séparée, l'adresse de l'API

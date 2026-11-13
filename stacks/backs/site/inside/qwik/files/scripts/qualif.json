@@ -1,0 +1,5 @@
+{
+    "siteUrl": "PUBLIC_SITE_URL",
+    "build": "npm run build",
+    "server": true
+}

@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Helper\RequestHelper;
+use App\Helper\ResponseHelper;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Contracts\Service\Attribute\Required;
 
 /**
@@ -54,5 +56,11 @@ abstract class Controller extends AbstractController
     protected function execute(string $sql, array $params = []): int
     {
         return (int) $this->connection->executeStatement($sql, $params);
+    }
+
+    // Answer of an update or a delete by id: { id } when a row changed, else 404
+    protected function changed(int $changed, int|string $id, string $notFound = 'Resource not found'): JsonResponse
+    {
+        return $changed > 0 ? ResponseHelper::success(['id' => $id]) : ResponseHelper::notFound($notFound);
     }
 }

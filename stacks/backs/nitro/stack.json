@@ -36,6 +36,9 @@
             "copy": "files"
         },
         {
+            "copy": "@shared/node-start"
+        },
+        {
             "copy": "@shared/js-core",
             "to": "utils"
         },
@@ -109,8 +112,8 @@
                 "en": "Nitro, API inside the site"
             },
             "api": {
-                "imports": "import { useRequestEvent } from '#imports'\n\n// First display of a page (on the server): the API is called inside Nuxt, without going through the network\nconst requestFetch = () => {\n    try { return useRequestEvent()?.fetch } catch { return undefined }\n}\nconst fetch = (url, options) => ((import.meta.server && requestFetch()) || globalThis.fetch)(url, options)",
-                "base": "'/api'",
+                "imports": "import { useRequestEvent, useRuntimeConfig } from '#imports'\n\n// First display of a page (on the server): the API is called inside Nuxt, without going through the network\nconst requestFetch = () => {\n    try { return useRequestEvent()?.fetch } catch { return undefined }\n}\nconst fetch = (url, options) => ((import.meta.server && requestFetch()) || globalThis.fetch)(url, options)",
+                "base": "useRuntimeConfig().app.baseURL.replace(/\\/$/, '') + '/api'",
                 "source": "same site, under /api",
                 "isDev": "import.meta.dev",
                 "usage": "Auto-imported by Nuxt: api.get('/products') anywhere (calls /api/products)."
@@ -118,6 +121,9 @@
             "steps": [
                 {
                     "copy": "inside/nuxt/files"
+                },
+                {
+                    "copy": "@shared/node-start"
                 },
                 {
                     "copy": "files/utils",
@@ -145,7 +151,14 @@
                     "replace": {
                         "file": "nuxt.config.ts",
                         "find": "(?m)^//[^\\n]*\\n//[^\\n]*\\n(?=export default defineNuxtConfig)",
-                        "with": "// Site + API (server/): \"nuxt build\" (start.bat then B) builds both into .output, \"npm start\" runs them.\n// Every page is rendered on each visit (always the latest data of the API), @nuxtjs/sitemap lists them automatically.\n"
+                        "with": "// Site + API (server/): \"nuxt build\" (start.bat then B) builds both into .output, \"npm start\" runs them.\n// Every page is rendered on each visit (always the latest data of the API); sitemap.xml lists them with their images\n// (server/routes/__sitemap__/pages.get.ts).\n"
+                    }
+                },
+                {
+                    "replace": {
+                        "file": "nuxt.config.ts",
+                        "find": "sitemap: \\{ autoLastmod: true,",
+                        "with": "sitemap: { autoLastmod: true, sources: ['/__sitemap__/pages'],"
                     }
                 },
                 {

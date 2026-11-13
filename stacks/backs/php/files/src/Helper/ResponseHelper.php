@@ -51,4 +51,13 @@ class ResponseHelper
     {
         self::error($message, 500, 'SERVER_ERROR');
     }
+
+    // Limit of tries reached (429): "Retry-After" tells the browser when to try again (in seconds)
+    public static function tooManyRequests(string $message = 'Too many attempts', int $retryAfter = 0): void
+    {
+        if ($retryAfter > 0) {
+            header('Retry-After: ' . $retryAfter);
+        }
+        self::error($message, 429, 'TOO_MANY_REQUESTS', $retryAfter > 0 ? ['retryAfter' => $retryAfter] : []);
+    }
 }

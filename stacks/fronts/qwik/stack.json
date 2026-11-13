@@ -67,7 +67,7 @@
             "replace": {
                 "file": "vite.config.ts",
                 "find": "server: \\{",
-                "with": "server: {\n      port: {{APP_PORT}},\n      strictPort: true,"
+                "with": "// Base of the site: \"/\" at the root of its address (dev, production), \"/my-site/\" in a qualif (scripts/qualif.mjs)\n    base: process.env.QUALIF_BASE_URL || '/',\n    server: {\n      port: {{APP_PORT}},\n      strictPort: true,"
             }
         },
         {
@@ -97,6 +97,16 @@
         },
         {
             "copy": "files"
+        },
+        {
+            "copy": "@shared/front-qualif"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.build:qualif": "node scripts/qualif.mjs"
+                }
+            }
         },
         {
             "npm": {

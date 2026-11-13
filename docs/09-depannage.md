@@ -42,7 +42,8 @@
 | -------- | -------- |
 | Le site en ligne appelle `localhost` | L'adresse de l'API de `frontend/.env.production` n'était pas remplie au moment du build : corrige, refais le build, renvoie |
 | Une page en ligne affiche une 404 en rechargeant | L'hébergement n'utilise pas le `.htaccess` fourni (Apache) : active-le, ou configure l'équivalent chez ton hébergeur |
-| L'API PHP affiche la liste des fichiers ou le code | Le domaine de l'API doit pointer sur `backend/public/`, pas sur `backend/` |
+| L'API PHP affiche la liste des fichiers ou le code | Le `.htaccess` de la racine de `backend/` n'a pas été envoyé (fichier caché) ou l'hébergement ne le lit pas : le domaine de l'API pointe sur le dossier `backend/` envoyé, avec son `.htaccess` |
+| Les photos envoyées depuis l'admin ne s'affichent pas (API PHP) | Le domaine de l'API pointe sur `backend/public/` : le faire pointer sur le dossier `backend/` lui-même (son `.htaccess` sert `/uploads/`) |
 | L'API dans le site ne démarre pas en ligne | L'hébergement doit être Node.js 22.13+, et lancer `npm start` dans `frontend/` |
 | Erreur 500 sans détail en ligne | Normal : en production, le message est caché. Regarde les journaux de l'hébergeur |
 

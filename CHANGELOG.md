@@ -4,6 +4,93 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+## [1.4.3] - 2026-11-13
+
+Search engines: no folder listing, and the private pages really closed in robots.txt.
+
+### SEO
+- Every `.htaccess` written for a site, an API or its public folder starts with `Options -Indexes`: a folder without
+  index page answers 403 instead of listing its files (« Index of / » on a domain whose site is not uploaded yet, the
+  `/_nuxt/` folder of the Nuxt sites crawled by Google with its sort links `?ND`, `?SA`...)
+- robots.txt: the private pages are written without slash at the end (`Disallow: /admin`), which also closes
+  `/admin?...` and `/admin`; with `Disallow: /admin/`, Google kept crawling the pages with parameters (profiles...)
+  (Nuxt `nuxt.config.ts` and `scripts/sitemap.mjs` of the other fronts)
+
+## [1.4.2] - 2026-11-11
+
+The qualif of the sites with their API inside (Nuxt + Nitro, Next, SvelteKit, Astro, Qwik): the API and the files sent
+answer from the folder of the qualif. Dev and production do not change.
+
+### Qualif
+- The API inside the site is called from the folder of the qualif (`/my-site/api/...`), on the server and in the browser:
+  Nuxt from `app.baseURL`, the other fronts from `QUALIF_BASE_PATH` (server) and the folder given by the page (browser).
+  Before, the calls went to the root of the qualif address: the pages that read the API (product page...) failed
+- The router of the API finds its routes behind the folder (`server/api/[...path].ts` of Nuxt, `core/handler.js`)
+- Nuxt + Nitro: the scripts moved into the folder keep the right size in the manifest of Nitro (before, the browser got a
+  cut script and the whole site stopped working in the qualif)
+- Next: the start module of the qualif reads the folder in `.env.production` (`next start` reads it after)
+- Nuxt: the images written in the templates (`<img src="/images/...">`) are not moved twice into the folder: Nuxt
+  already adds it with `publicAssetsURL()` (before, an image shown after the page loads, like the cookies banner, was
+  looked for in `/my-site/my-site/images/...`)
+- `server.cjs` in every project with a Node.js server (site + API inside, Nitro, Express, NestJS, AdonisJS): the start
+  file for the hosts that load a file instead of running `npm start` (cPanel "Setup Node.js App", o2switch). It runs the
+  `start` command of `package.json` (its `--env-file` and `--import`), gives the qualif folder back to the site when the
+  host removes it, and writes `.startup.log`. `Q` puts it in `qualif/`; AdonisJS copies it into `build/`
+- Nuxt + Nitro: the sitemap of the qualif no longer gives the folder twice in its addresses (`/my-site/my-site/`)
+
+### Docs
+- PHP APIs (Slim, Laravel, Symfony, PHP): online, the address of the API points to the uploaded `backend/` folder, not to
+  `public/`. Its `.htaccess` sends every request to `public/index.php` and serves `/uploads/`: with `public/` as the root, the files
+  sent from the admin page did not show
+- The addresses written from the root that come with the data (photos sent from the admin, `/uploads/...`) are moved
+  into the folder in the browser too, also when the site shows them again (Nuxt: `plugins/qualif.client.js`)
+- Node.js servers of the site: the start module of the qualif is a file of the project (`scripts/qualif-html.mjs`),
+  no longer written by the qualif script
+- A qualif keeps its own secrets (session, admin of the start) and generic data (example products, texts, accounts and
+  photos): never the ones of production (docs, message of `start.bat` then `Q`)
+
+## [1.4.1] - 2026-11-11
+
+Same content as 1.4.0, whose setup could not be published: the build machines of GitHub never got the packages they
+need (NSIS, mingw). This setup was built with Docker (`installer/build-docker.ps1`, the same build) and published by hand.
+
+## [1.4.0] - 2026-11-11
+
+Every site can now be shown to its client before it goes online: the qualif, a third environment between dev and
+production, for every front and every back end. Sitemaps list the images and the date of every page.
+
+### Qualif (every front, every back end)
+- New third environment between dev and production: the **qualif**, the site shown to the client before it goes online,
+  in a folder of one shared address (`https://qualifs.example.com/my-site/`). `start.bat` then `Q` builds it with
+  `.env.preprod` (the same lines as `.env.production`, only the addresses change) into `qualif/`, ready to upload
+- The code stays the one of production: the folder is read in the address and given to the front as its base (Vite, Astro,
+  Next, SvelteKit, Angular, Qwik, the router), the paths still written from the root are moved into it after the build,
+  the `.htaccess` follows, and nothing is ever indexed (`X-Robots-Tag`, `robots.txt`)
+- Node.js servers of the site (Next, SvelteKit, Astro, Qwik): a start module moves the links of the pages into the folder
+  as they are sent; Nuxt + Nitro: `server/plugins/qualif.ts`
+- Separate API in its own folder (`my-site-api/`) with its own database, its code unchanged: a small entry file for PHP
+  (Slim, Laravel, Symfony, PHP), a start module for Node.js (Express, NestJS, AdonisJS, Nitro); settings, `composer.json`
+  and the tools are never served
+- Docs: "La qualif" in `docs/08-mise-en-ligne.md` (what it is, the folder on the hosting, the steps for each site)
+
+### Sitemaps (every front)
+- Every page of `sitemap.xml` now has its date and its images: the ones of its `<main>` in the built page, else the files
+  of `public/` its page file shows; a page with `noindex` stays out, addresses are escaped
+- Nuxt: `autoLastmod`; Nuxt rendered on each visit (with Nitro) visits its own pages to find their images
+  (`server/routes/__sitemap__/pages.get.ts`), a product or an article added later shows up by itself
+- Node.js servers of the site: Astro, Next and Qwik read their pages folder too; SvelteKit's `sitemap.xml` route gives the
+  images of each page
+- Site without build (HTML / CSS / JS): `start.bat` then `B` writes its `sitemap.xml` and `robots.txt` (new
+  `.env.production` with the address of the site); the `.htaccess` of the static sites never serves `.env*` files
+
+### API (every back end)
+- `ResponseHelper.tooManyRequests` (429 with `Retry-After`), `RequestHelper.multipart` (form with files: `{ fields, files }`,
+  no extra package, Express included) and `Controller.changed` (`{ id }` when a row changed, else 404), taken from the sites
+- Symfony: `.env` now says `APP_ENV=prod` (dev stays in dev with `.env.local`): online it was running in dev and never read
+  `.env.prod.local`
+- Laravel: online, `.env.production` goes up renamed `.env` (Laravel only reads it), never the `.env` of dev
+- CORS: the origin of the site is its domain alone, never with a folder
+
 ### Stacks (published by the robot, no new version of the app needed)
 - `.gitignore`: only `backend/uploads/` and `frontend/uploads/` are ignored, no longer every folder named `uploads`
   (a route of the site in `server/routes/uploads/` was left out of Git, and missing once online)

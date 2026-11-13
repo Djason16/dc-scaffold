@@ -1,5 +1,5 @@
 ﻿# Launcher for {{PROJECT_NAME}} ({{STACK_LABEL}})
-# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A|K|O
+# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A|Q|K|O
 # Every option adapts to what the project contains (docker-compose.yml, backend/, frontend/).
 param([string]$Action)
 
@@ -37,6 +37,10 @@ $FrontGenerate = $AppScripts.ContainsKey('generate:prod')
 $FrontBuild = if ($FrontGenerate) { $null } elseif ($AppScripts.ContainsKey('build:prod')) { 'build:prod' } elseif ($AppScripts.ContainsKey('build')) { 'build' } else { $null }
 # The front builds a Node.js server with the API inside (Nuxt + Nitro), otherwise a static site to upload
 $FrontServer = '{{FRONT_SERVER}}' -eq 'true'
+# Site without build (HTML / CSS / JS): only its sitemap.xml and robots.txt to write before uploading it
+$FrontSitemap = -not $FrontGenerate -and -not $FrontBuild -and (Test-Path (Join-Path $AppDir 'scripts\sitemap.mjs'))
+# Qualif: the site shown to the client before it goes online, built with .env.preprod (scripts/qualif.ps1)
+$HasQualif = $AppScripts.ContainsKey('generate:qualif') -or $AppScripts.ContainsKey('build:qualif') -or (Test-Path (Join-Path $AppDir 'scripts\qualif.mjs'))
 
 # ---------------------------------------------------------------------------
 # Actions
@@ -141,8 +145,10 @@ if (-not $Action) {
     if ($FrontGenerate) { Write-MenuItem 'G' 'Generate' 'Static site to upload (frontend/.output/public), with .env.production' }
     if ($FrontBuild -and $FrontServer) { Write-MenuItem 'B' 'Build' 'Site + API in one Node.js server (then npm start, see the steps below)' }
     elseif ($FrontBuild) { Write-MenuItem 'B' 'Build front' 'Static site to upload, with .env.production' }
+    elseif ($FrontSitemap) { Write-MenuItem 'B' 'Sitemap' 'sitemap.xml and robots.txt of production (.env.production), then upload frontend/' }
     if ($ApiScripts.ContainsKey('build')) { Write-MenuItem 'A' 'Build API' 'npm run build (backend/)' }
-    if ($FrontGenerate -or $FrontBuild -or $ApiScripts.ContainsKey('build')) { Write-Host '' }
+    if ($HasQualif) { Write-MenuItem 'Q' 'Qualif' 'Site shown to the client before going online, into qualif/ (.env.preprod)' }
+    if ($FrontGenerate -or $FrontBuild -or $FrontSitemap -or $ApiScripts.ContainsKey('build') -or $HasQualif) { Write-Host '' }
     # How to put this project online (filled by DC Scaffold for the chosen front and back end)
     Write-Host '  {{DEPLOY_TITLE}}' -ForegroundColor DarkGray
 {{DEPLOY_LINES}}
@@ -156,8 +162,12 @@ switch ($Action.ToUpper()) {
     'R' { if ($HasDocker) { Invoke-In $Root { docker compose build --no-cache } | Out-Null } }
     'I' { if (Install-Dependencies -All) { exit 0 } else { exit 1 } }
     'G' { if ($FrontGenerate) { Start-Window $AppDir 'Front generate (production)' 'npm run generate:prod' } }
-    'B' { if ($FrontBuild) { Start-Window $AppDir 'Front build (production)' "npm run $FrontBuild" } }
+    'B' {
+        if ($FrontBuild) { Start-Window $AppDir 'Front build (production)' "npm run $FrontBuild" }
+        elseif ($FrontSitemap) { Invoke-In $AppDir { node scripts/sitemap.mjs . --pages pages --pages-only } | Out-Null }
+    }
     'A' { Start-Window $ApiDir 'API build (production)' 'npm run build' }
+    'Q' { if ($HasQualif) { & (Join-Path $Root 'scripts\qualif.ps1') -AppDir $AppDir -ApiDir $ApiDir } }
     'K' { if ($HasData) { & (Join-Path $Root 'scripts\backup.ps1') } }
     'O' { if ($HasData) { & (Join-Path $Root 'scripts\restore.ps1') } }
     default { Write-Fail 'Invalid choice.' }

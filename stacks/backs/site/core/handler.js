@@ -36,7 +36,8 @@ export async function handleApi(request) {
 /** @param {Request} request @returns {Promise<Response>} */
 async function answer(request) {
     const { pathname } = new URL(request.url)
-    const path = pathname.replace(/^\/api/, '').replace(/\/+$/, '') || '/'
+    // Everything up to /api goes away, the folder of a qualif too (/my-site/api/products -> /products)
+    const path = pathname.replace(/^.*?\/api(?=\/|$)/, '').replace(/\/+$/, '') || '/'
 
     if (path === '/' && request.method === 'GET') {
         return ResponseHelper.success({

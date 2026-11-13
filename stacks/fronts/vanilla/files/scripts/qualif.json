@@ -1,0 +1,8 @@
+{
+    "siteUrl": "SITE_URL",
+    "build": "",
+    "output": ".",
+    "public": ".",
+    "apiConfig": "js/config.js",
+    "sitemap": "node scripts/sitemap.mjs . --pages pages --pages-only --to {target}"
+}

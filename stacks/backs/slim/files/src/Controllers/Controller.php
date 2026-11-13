@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use App\Helper\DatabaseHelper;
 use App\Helper\RequestHelper;
+use App\Helper\ResponseHelper;
+use Psr\Http\Message\ResponseInterface as Response;
 use mysqli;
 use PDO;
 use RuntimeException;
@@ -57,5 +59,11 @@ abstract class Controller
     private function db(): mysqli|PDO
     {
         return $this->connection ?? throw new RuntimeException('No database configured: set DB_HOST in backend/.env');
+    }
+
+    // Answer of an update or a delete by id: { id } when a row changed, else 404
+    protected function changed(Response $response, int $changed, int|string $id, string $notFound = 'Resource not found'): Response
+    {
+        return $changed > 0 ? ResponseHelper::success($response, ['id' => $id]) : ResponseHelper::notFound($response, $notFound);
     }
 }

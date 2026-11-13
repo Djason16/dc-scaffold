@@ -2,6 +2,8 @@
 
 namespace App\Helper;
 
+use Illuminate\Http\Request;
+
 /**
  * Same validation helper as the other back ends.
  */
@@ -16,5 +18,14 @@ class RequestHelper
             $requiredFields,
             fn (string $field) => !isset($data[$field]) || $data[$field] === ''
         ));
+    }
+
+    /**
+     * Form with files (multipart/form-data): the fields, and the files by field name.
+     *   ['fields' => $fields, 'files' => $files] = RequestHelper::multipart($request)   // $files['photo']->store(...)
+     */
+    public static function multipart(Request $request): array
+    {
+        return ['fields' => $request->post(), 'files' => $request->allFiles()];
     }
 }

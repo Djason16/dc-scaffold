@@ -16,7 +16,7 @@ Pas besoin de tout lire : commence par la partie qui te concerne.
 | [5. Le site (front)](05-le-site.md) | Design, couleurs, textes, langues, cookies, pages, SEO, appeler l'API |
 | [6. L'API (back end)](06-l-api.md) | Contrôleurs, routes automatiques, helpers, erreurs, CORS, chaque back end |
 | [7. Base de données](07-base-de-donnees.md) | MySQL et phpMyAdmin dans Docker, SQLite, `mysqli` / `PDO`, passer de l'un à l'autre |
-| [8. Mettre en ligne](08-mise-en-ligne.md) | Build ou Generate, quoi envoyer et où, pour chaque type de projet |
+| [8. Mettre en ligne](08-mise-en-ligne.md) | Build ou Generate, quoi envoyer et où, pour chaque type de projet ; la qualif (le site montré au client avant sa mise en ligne) |
 | [9. Dépannage](09-depannage.md) | Les problèmes courants et leur solution |
 | [Lexique](lexique.md) | Les mots utilisés (front, API, build, port, Docker...) |
 
@@ -34,4 +34,4 @@ Pas besoin de tout lire : commence par la partie qui te concerne.
 2. Donne un nom au projet, choisis un **front** (le site), un **back end** (l'API qui garde les données) et les options.
 3. DC Scaffold installe ce qui manque, crée le projet et ouvre la page de fin.
 4. Dans le projet : double-clique sur **`start.bat`**, puis tape **`D`** pour lancer le site et l'API.
-5. Pour mettre en ligne : la section **« Mettre en ligne »** du `README.md` du projet donne les étapes, dans l'ordre.
+5. Pour mettre en ligne : la section **« Mettre en ligne »** du `README.md` du projet donne les étapes, dans l'ordre. Pour montrer le site au client avant : la section **« Qualif »** (`start.bat` puis `Q`).

@@ -1,0 +1,6 @@
+{
+    "siteUrl": "PUBLIC_SITE_URL",
+    "build": "npm run build",
+    "output": "dist",
+    "public": "public"
+}

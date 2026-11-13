@@ -92,7 +92,9 @@ Le choix du visiteur est dans `stores/userPreferences.js`. Pour ajouter une cat�
 - Titre, description et image de partage de chaque page : `utils/seo.js` (et `plugins/translations/common/seo.js` avec deux langues).
 - Image de partage par défaut : `public/og-image.jpg` (1200 × 630 px).
 - **`sitemap.xml` et `robots.txt` sont créés automatiquement** avec le site de production, à partir de l'adresse
-  `*_SITE_URL` de `.env.production`.
+  `*_SITE_URL` de `.env.production`. Chaque page y est avec **sa date et ses images** (celles de son `<main>`, ou celles de
+  `public/` que son fichier affiche) ; une page `noindex` reste dehors. Nuxt rendu à chaque visite (avec son API) visite ses
+  pages lui-même pour les trouver (`server/routes/__sitemap__/pages.get.ts`) ; le site sans build : `start.bat` puis `B`.
 - Chaque page porte `<meta name="generator" content="DC Scaffold">` ; une ligne à retirer dans `utils/seo.js` pour le cacher.
 - **Pages privées** (admin, compte...) : `privateRoutes` en haut de `nuxt.config.ts` (Nuxt) ou `PRIVATE_ROUTES` en haut de `scripts/sitemap.mjs` (les autres fronts). Elles sortent du `sitemap.xml` et `robots.txt` les interdit aux robots.
 - Un seul `<h1>` par page ; quand le titre visible n'en est pas un : `<h1 class="visually-hidden">`.

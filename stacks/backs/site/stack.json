@@ -54,7 +54,7 @@
                 }
             ],
             "api": {
-                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'",
                 "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products.",
                 "imports": "import { dev } from '$app/env'"
@@ -101,6 +101,20 @@
                 },
                 {
                     "env": {
+                        "file": ".env.preprod",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
                         "file": ".env.example",
                         "values": {
                             "DB_CONNECTION": "sqlite",
@@ -122,6 +136,9 @@
                 },
                 {
                     "copy": "inside/sveltekit/files"
+                },
+                {
+                    "copy": "@shared/node-start"
                 },
                 {
                     "npm": {
@@ -183,7 +200,7 @@
                 }
             ],
             "api": {
-                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'",
                 "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products."
             },
@@ -229,6 +246,20 @@
                 },
                 {
                     "env": {
+                        "file": ".env.preprod",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
                         "file": ".env.example",
                         "values": {
                             "DB_CONNECTION": "sqlite",
@@ -252,11 +283,14 @@
                     "copy": "inside/astro/files"
                 },
                 {
+                    "copy": "@shared/node-start"
+                },
+                {
                     "npm": {
                         "set": {
                             "dependencies.@astrojs/node": "^{{V_ASTRO_NODE}}",
                             "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production dist/server/entry.mjs",
-                            "scripts.postbuild": "node scripts/sitemap.mjs dist/client"
+                            "scripts.postbuild": "node scripts/sitemap.mjs dist/client --pages src/pages"
                         }
                     }
                 },
@@ -310,7 +344,7 @@
             },
             "versions": [],
             "api": {
-                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'",
                 "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products."
             },
@@ -343,6 +377,20 @@
                 {
                     "env": {
                         "file": ".env.production",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
+                        "file": ".env.preprod",
                         "values": {
                             "DB_CONNECTION": "sqlite",
                             "DB_HOST": "",
@@ -379,6 +427,9 @@
                     "copy": "inside/next/files"
                 },
                 {
+                    "copy": "@shared/node-start"
+                },
+                {
                     "replace": {
                         "file": "next.config.mjs",
                         "find": "(?m)^ *//[^\\n]*\\n *//[^\\n]*\\n *output: 'export',\\n",
@@ -410,7 +461,7 @@
                     "npm": {
                         "set": {
                             "scripts.start": "next start",
-                            "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --to public"
+                            "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --pages pages --to public"
                         }
                     }
                 }
@@ -436,7 +487,7 @@
             },
             "versions": [],
             "api": {
-                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}` : '') + '/api'",
+                "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'",
                 "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products."
             },
@@ -482,6 +533,20 @@
                 },
                 {
                     "env": {
+                        "file": ".env.preprod",
+                        "values": {
+                            "DB_CONNECTION": "sqlite",
+                            "DB_HOST": "",
+                            "DB_NAME": "",
+                            "DB_USER": "",
+                            "DB_PASS": "",
+                            "DB_PORT": ""
+                        }
+                    },
+                    "when": "noDb"
+                },
+                {
+                    "env": {
                         "file": ".env.example",
                         "values": {
                             "DB_CONNECTION": "sqlite",
@@ -505,6 +570,9 @@
                     "copy": "inside/qwik/files"
                 },
                 {
+                    "copy": "@shared/node-start"
+                },
+                {
                     "remove": [
                         "adapters/static"
                     ]
@@ -513,6 +581,7 @@
                     "npm": {
                         "set": {
                             "scripts[build.server]": "qwik check-client src dist && vite build -c adapters/node-server/vite.config.ts",
+                            "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/routes",
                             "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production server/entry.node-server.js"
                         }
                     }

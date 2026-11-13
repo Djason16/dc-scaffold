@@ -80,7 +80,7 @@
             "replace": {
                 "file": "vite.config.js",
                 "find": "adapter: adapter\\(\\)",
-                "with": "adapter: adapter({ fallback: '200.html' })"
+                "with": "adapter: adapter({ fallback: '200.html' }), paths: { base: process.env.QUALIF_BASE_PATH || '' },\n\t\t\t// Qualif: the links written from the root are moved into the folder after the build (scripts/qualif.mjs)\n\t\t\tprerender: { handleHttpError: ({ message }) => { if (!process.env.QUALIF_BASE_PATH || !message.includes('does not begin with')) throw new Error(message) } }"
             }
         },
         {
@@ -114,6 +114,16 @@
         },
         {
             "copy": "files"
+        },
+        {
+            "copy": "@shared/front-qualif"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.build:qualif": "node scripts/qualif.mjs"
+                }
+            }
         },
         {
             "npm": {

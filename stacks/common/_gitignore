@@ -48,6 +48,8 @@ env/
 # Database files and backups
 /database/
 /backups/
+# Qualif ready to upload (start.bat then Q)
+/qualif/
 *.sql
 !example.sql
 !mysql/init/*.sql

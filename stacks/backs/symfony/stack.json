@@ -5,7 +5,9 @@
         "fr": "PHP complet et très structuré, apprécié des grandes entreprises",
         "en": "Full, very structured PHP, liked by large companies"
     },
-    "vscode": ["bmewburn.vscode-intelephense-client"],
+    "vscode": [
+        "bmewburn.vscode-intelephense-client"
+    ],
     "requires": [
         "composer",
         "docker"
@@ -129,6 +131,7 @@
             "env": {
                 "file": ".env",
                 "values": {
+                    "APP_ENV": "prod",
                     "APP_NAME": "\"{{PROJECT_NAME}}\"",
                     "APP_BASE_URL": "http://localhost:{{APP_PORT}}"
                 }
@@ -188,6 +191,35 @@
                 }
             },
             "when": "noDb"
+        },
+        {
+            "env": {
+                "file": ".env.preprod",
+                "values": {
+                    "APP_ENV": "prod",
+                    "APP_DEBUG": "0",
+                    "APP_SECRET": "{{NEW_SECRET}}",
+                    "APP_BASE_URL": "https://qualifs.example.com"
+                }
+            }
+        },
+        {
+            "env": {
+                "file": ".env.preprod",
+                "values": {
+                    "DATABASE_URL": "\"mysql://USER:PASSWORD@localhost:3306/DATABASE?serverVersion={{DB_SERVER_VERSION}}&charset=utf8mb4\""
+                }
+            },
+            "when": "db"
+        },
+        {
+            "env": {
+                "file": ".env.preprod",
+                "values": {
+                    "DATABASE_URL": "\"sqlite:///%kernel.project_dir%/var/data.db\""
+                }
+            },
+            "when": "noDb"
         }
     ],
     "controllers": "src/Controller",
@@ -206,7 +238,7 @@
         "deploy": "symfony"
     },
     "online": {
-        "fr": "envoie `backend/` (avec `vendor/`) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur `backend/public/`, `APP_ENV=prod` dans `backend/.env.prod.local`",
-        "en": "upload `backend/` (with `vendor/`) to a PHP {{PHP_VERSION}}+ host; the address of the API points to `backend/public/`, `APP_ENV=prod` in `backend/.env.prod.local`"
+        "fr": "envoie `backend/` (avec `vendor/`) sur un hébergement PHP {{PHP_VERSION}}+ ; l'adresse de l'API pointe sur le dossier `backend/` envoyé (pas sur `public/` : son `.htaccess` fait le tri), `APP_ENV=prod` dans `backend/.env.prod.local`",
+        "en": "upload `backend/` (with `vendor/`) to a PHP {{PHP_VERSION}}+ host; the address of the API points to the uploaded `backend/` folder (not to `public/`: its `.htaccess` sorts the requests), `APP_ENV=prod` in `backend/.env.prod.local`"
     }
 }

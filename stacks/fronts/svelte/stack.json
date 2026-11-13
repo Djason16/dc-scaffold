@@ -84,6 +84,16 @@
             "copy": "files"
         },
         {
+            "copy": "@shared/front-qualif"
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.build:qualif": "node scripts/qualif.mjs"
+                }
+            }
+        },
+        {
             "replace": {
                 "file": "src/lib/components/layout/AppShell/AppShell.svelte",
                 "find": "'\\$app/navigation'",

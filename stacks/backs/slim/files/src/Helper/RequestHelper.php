@@ -42,4 +42,13 @@ class RequestHelper
             fn (string $field) => !isset($data[$field]) || $data[$field] === ''
         ));
     }
+
+    /**
+     * Form with files (multipart/form-data): the fields, and the files by field name.
+     *   ['fields' => $fields, 'files' => $files] = RequestHelper::multipart($request)   // $files['photo']->getSize()
+     */
+    public static function multipart(Request $request): array
+    {
+        return ['fields' => self::body($request), 'files' => $request->getUploadedFiles()];
+    }
 }

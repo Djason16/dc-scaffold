@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/readme/badges/version.svg" alt="Version 1.3.0">
+  <img src="assets/readme/badges/version.svg" alt="Version 1.4.3">
   <img src="assets/readme/badges/windows.svg" alt="Windows 10 | 11">
   <img src="assets/readme/badges/license.svg" alt="License">
 </p>
@@ -40,7 +40,7 @@ crée le projet, le relie et t'explique chaque fichier dans le `README.md` du pr
 2. Ouvre **DC Scaffold** : un nom, un front, un back end, les options… et la création se suit en direct.
    Les outils qui manquent (Node.js, Docker, Git, VS Code…) sont proposés à l'installation.
 3. Dans le projet : **`start.bat`** puis **`D`** pour lancer le site et l'API.
-4. Pour mettre en ligne : la section **« Mettre en ligne »** du `README.md` du projet donne les étapes, dans l'ordre.
+4. Pour mettre en ligne : la section **« Mettre en ligne »** du `README.md` du projet donne les étapes, dans l'ordre. Pour montrer le site au client avant : la section **« Qualif »** (`start.bat` puis `Q`).
 
 En console : `dcscaffold -Name "Boutique" -Front nuxt -Back slim -Database mysql`
 (toutes les options : [Créer un projet](docs/02-creer-un-projet.md)).

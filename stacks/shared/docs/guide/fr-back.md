@@ -39,7 +39,8 @@ Ses méthodes deviennent des routes toutes seules :
 - Ce que le front envoie : `{{BACK_BODY}}`
 - Champs obligatoires : `{{BACK_MISSING}}` donne la liste de ceux qui manquent
 - Répondre : `{{BACK_SUCCESS}}`
-- Erreurs : `notFound`, `validationError`, `authError`, `forbidden`, `serverError` de `ResponseHelper`, toutes au même format
+- Erreurs : `notFound`, `validationError`, `authError`, `forbidden`, `tooManyRequests` (429), `serverError` de `ResponseHelper`, toutes au même format
+- Formulaire avec fichiers : `RequestHelper.multipart` (`{ fields, files }`) ; modification ou suppression par id : `this.changed(lignes, id)` (`{ id }` ou 404)
 
 ### Sécurité
 
@@ -95,8 +96,8 @@ Déjà en place, et vérifié par la recette d'un site avant sa mise en ligne :
 [node] - **Développement** : `start.bat` puis `D` (ou `npm run dev` dans `backend/`), sur http://localhost:{{API_PORT}}, redémarre à chaque modification
 [slim] - **En ligne** : envoie `backend/` (avec `vendor/` et `.env.production`, sans le `.env`) sur un hébergement PHP, le site pointe sur `backend/public/`. Sans `.env`, l'API lit `.env.production` (`config/env.php`) : rien à régler sur le serveur
 [php] - **En ligne** : envoie `backend/` (avec `.env.production`, sans le `.env`) sur un hébergement PHP, le site pointe sur `backend/public/` (aucun Composer nécessaire). Sans `.env`, l'API lit `.env.production` (`config/env.php`) : rien à régler sur le serveur
-[laravel] - **En ligne** : envoie `backend/` (avec `vendor/`), le site pointe sur `backend/public/`
-[symfony] - **En ligne** : envoie `backend/` (avec `vendor/`), le site pointe sur `backend/public/`, `APP_ENV=prod` dans `backend/.env.prod.local`
+[laravel] - **En ligne** : envoie `backend/` (avec `vendor/`, **sans le `.env`** du dev) et `.env.production` renommé `.env` (Laravel ne lit que lui), le site pointe sur `backend/public/`
+[symfony] - **En ligne** : envoie `backend/` (avec `vendor/`, **sans `.env.local`**, les réglages du dev), le site pointe sur `backend/public/` : en ligne, `.env` lance le mode `prod`, qui lit `backend/.env.prod.local`
 [nitro] - **En ligne** : `start.bat` puis `A` (compilation dans `backend/.output`), puis `npm start` sur le serveur (Node.js 22.13+)
 [inside] - **En ligne** : le site et l'API forment un seul serveur Node.js (22.13+) : un seul envoi, une seule adresse, les étapes sont dans « Mettre en ligne » ci-dessous. Un site avec API ne peut pas être purement statique
 [express] - **En ligne** : envoie `backend/`, puis `npm install --omit=dev` et `npm start` sur le serveur (Node.js 22.13+)

@@ -25,4 +25,7 @@ export const router = createBrowserRouter([{
     Component: App,
     loader: runMiddleware,
     children: Object.entries(pages).map(([file, module]) => ({ path: toPath(file), Component: module.default })),
-}])
+}], {
+    // Base of the site (vite.config.js): "/" at the root of its address, "/my-site/" in a qualif
+    basename: import.meta.env.BASE_URL,
+})

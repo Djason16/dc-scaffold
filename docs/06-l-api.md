@@ -92,9 +92,10 @@ L'exemple de **ton** back end (PHP, Nitro, Express...) est dans le `README.md` d
 
 | Helper | Méthodes |
 | ------ | -------- |
-| **ResponseHelper** | `success(données, code)`, `error(message, code, type)`, `validationError`, `authError`, `forbidden`, `notFound`, `serverError` |
-| **RequestHelper** | `body` (corps JSON ou formulaire, en objet), `query(clé)` (paramètre `?page=2`), `missing(données, champs)` (liste des champs obligatoires vides) |
+| **ResponseHelper** | `success(données, code)`, `error(message, code, type)`, `validationError`, `authError`, `forbidden`, `notFound`, `tooManyRequests(message, secondes)` (429, avec `Retry-After`), `serverError` |
+| **RequestHelper** | `body` (corps JSON ou formulaire, en objet), `query(clé)` (paramètre `?page=2`), `missing(données, champs)` (liste des champs obligatoires vides), `multipart` (formulaire avec fichiers : `{ fields, files }`, sans paquet en plus) |
 | **DatabaseHelper** (dans chaque contrôleur : `this.`) | `fetchAll(sql, params)` (toutes les lignes), `fetchOne` (la première ou `null`), `insert` (renvoie le nouvel id), `execute` (renvoie le nombre de lignes modifiées) |
+| **Controller** (`this.`) | `changed(lignes, id, message)` : réponse d'une modification ou d'une suppression, `{ id }` si une ligne a changé, sinon 404 |
 
 Les `?` des requêtes SQL protègent des injections : ne mets jamais une valeur du visiteur directement dans le texte SQL.
 
