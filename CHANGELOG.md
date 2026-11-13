@@ -4,6 +4,16 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+## [1.4.4] - 2026-11-13
+
+Nuxt + Nitro: the API files of the model without TypeScript errors in the editor.
+
+### Fixed
+- `server/routes/__sitemap__/pages.get.ts`: the addresses read in the pages are always strings (no « string | undefined »)
+- `server/plugins/qualif.ts`: the `sitemap:output` hook of @nuxtjs/sitemap, missing from the types of Nitro, is typed
+  (no « 'ctx' implicitly has an 'any' type »)
+- `server/utils/ResponseHelper.ts`: `Retry-After` given as a number, as h3 expects
+
 ## [1.4.3] - 2026-11-13
 
 Search engines: no folder listing, and the private pages really closed in robots.txt.

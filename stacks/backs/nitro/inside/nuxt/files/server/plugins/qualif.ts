@@ -19,7 +19,8 @@ export default defineNitroPlugin((nitroApp) => {
 
     // sitemap.xml: @nuxtjs/sitemap adds the folder again to the addresses of the pages, which already have it
     // ("/my-site/my-site/" becomes "/my-site/")
-    nitroApp.hooks.hook('sitemap:output', (ctx) => {
+    // (hook of @nuxtjs/sitemap, missing from the types of Nitro)
+    ;(nitroApp.hooks as any).hook('sitemap:output', (ctx: { sitemap: string }) => {
         while (ctx.sitemap.includes(`${prefix}${prefix}/`)) ctx.sitemap = ctx.sitemap.replaceAll(`${prefix}${prefix}/`, `${prefix}/`)
     })
 })

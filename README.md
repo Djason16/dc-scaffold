@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/readme/badges/version.svg" alt="Version 1.4.3">
+  <img src="assets/readme/badges/version.svg" alt="Version 1.4.4">
   <img src="assets/readme/badges/windows.svg" alt="Windows 10 | 11">
   <img src="assets/readme/badges/license.svg" alt="License">
 </p>
