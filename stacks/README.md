@@ -44,6 +44,7 @@ stacks/
 | `requires` | Outils vérifiés au démarrage : `node`, `composer`, `docker` |
 | `versions` | Paquets vérifiés sur npm ou Packagist. `stable` = version validée ; une nouvelle version majeure est proposée, jamais imposée. `token` rend la version utilisable dans les fichiers (`^{{V_VUE}}`). `pin` remet le paquet sur la version stable si l'outil de création a installé une majeure plus récente. |
 | `steps` | Étapes exécutées dans l'ordre (voir ci-dessous) |
+| `script` | `"ts"` ou `"js"` : le stack n'existe que dans ce langage (Angular, Qwik, NestJS, AdonisJS : `ts` ; HTML / CSS / JS : `js`). Sans ce champ, TypeScript ou JavaScript au choix : les fichiers du stack sont écrits **en TypeScript**, et `engine/to-js.mjs` en retire les types quand JavaScript est choisi (commentaires et mise en forme gardés). Dans les noms de fichiers des étapes, `{{SCRIPT_EXT}}` vaut `ts` ou `js` (`vite.config.{{SCRIPT_EXT}}`) |
 
 Fronts uniquement :
 
@@ -90,6 +91,7 @@ Toutes acceptent une condition `when` :
 | `front` / `noFront` | le projet a un front / n'en a pas |
 | `db` / `noDb` | MySQL a été choisi / aucune base |
 | `separateApi` / `insideApi` / `noInsideApi` | le back end est dans `backend/` / il est rangé dans le front (`inside`) / il n'est pas dans le front (y compris sans back end) |
+| `ts` / `js` | le code de ce côté (front ou back end) est en TypeScript / en JavaScript |
 Les chemins sont relatifs à `frontend/` (front) ou `backend/` (back end), sauf mention contraire.
 
 | Étape | Exemple | Effet |

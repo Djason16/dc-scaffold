@@ -5,6 +5,7 @@
         "fr": "Le framework complet de Google, en TypeScript, très structuré",
         "en": "The full framework by Google, in TypeScript, very structured"
     },
+    "script": "ts",
     "vscode": [
         "angular.ng-template"
     ],
@@ -22,12 +23,12 @@
     ],
     "publicDir": "public",
     "api": {
-        "file": "src/app/utils/api.js",
+        "file": "src/app/utils/api.ts",
         "imports": "import { environment } from '../../environments/environment'",
         "base": "environment.apiUrl",
         "source": "API_URL",
         "isDev": "!environment.production",
-        "usage": "import { api } from '@/utils/api.js'"
+        "usage": "import { api } from '@/utils/api'"
     },
     "steps": [
         {

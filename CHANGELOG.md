@@ -4,6 +4,80 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-11-15
+
+Every starting site and the DC Scaffold window down to 320 px wide and high, and every image and link of the window named.
+
+### Small screens (320 px wide and high)
+- The starting site of every front works down to 320 x 320 (checked at 320 x 640, 320 x 320 and 568 x 320): the cookie
+  banner is never taller than the screen (it scrolls inside, less padding on a small screen) and its line of colors stays
+  inside it; full heights in `100dvh` (the real height on a phone); the three cards « What next? » of the DC Scaffold
+  design one under the other until the three fit side by side (no card alone next to an empty cell), words cut only as
+  a last resort
+- The DC Scaffold window works down to 320 px wide and high: one column on a small window (the left panel becomes a thin
+  bar with the logo, the name and the version; gone on a very low window), numbers of the steps only, every grid of the
+  steps in one column (cards, options, switches, ports two per line), a long folder path wraps instead of pushing the
+  step out of the window, narrower buttons in the bottom bar
+
+### Images and links named
+- Every image of the DC Scaffold window has a filled `alt` and a `title`, its links a `title` (logo of DC Scaffold, link and
+  logo of Djason CHERY): the same rule as the generated sites
+
+## [1.5.0] - 2026-11-13
+
+TypeScript or JavaScript, your choice, and the design of DC Scaffold switched or taken out in one key.
+
+### TypeScript or JavaScript
+- New choice « Code language » (window: options; console: `-Script ts|js`) for every front (Vue, React, Solid, Svelte,
+  SvelteKit, Next.js, Nuxt, Astro) and every Node.js back end (Express, Nitro, API inside the site). Angular, Qwik,
+  NestJS and AdonisJS stay in TypeScript, HTML / CSS / JS in JavaScript (`"script"` of `stack.json`)
+- The models of the stacks are written once, in TypeScript, with real types (no more JSDoc); for JavaScript,
+  `engine/to-js.mjs` takes the types out with the parser of TypeScript (ts-blank-space, JSX included), keeping comments,
+  blank lines and layout. Every project in TypeScript has `npm run typecheck` (or `check`) without error
+- The creation tools are started in the chosen language (`create-vue --ts`, `vite --template react-ts`, `sv --types ts`,
+  `create-next-app --ts`...); Express runs its TypeScript with Node.js itself (22.18+), without build
+- Imports of the fronts written without extension (TypeScript, Vite, Next.js, Nuxt, Astro find the file); the routers
+  of React and Solid read the pages in `.tsx` as well as `.jsx`
+- `server/controllers.d.ts` of Nuxt + Nitro replaced by a type template of `modules/controllers.ts`
+
+### Design
+- `start.bat` then `P` (Design): DC Scaffold design, blank site, or **start from zero** (the design of DC Scaffold taken
+  out of the project for good: its folder, its logo, the switch and `scripts/design.mjs`), in `frontend/scripts/design.ps1`
+
+### Speed (cache of the static sites)
+- The files of the build with a hash in their name (`_nuxt/`, `assets/`, `_astro/`, `_next/static/`...) are kept a year
+  by the browser (`immutable`): `.htaccess` written in their folder (`"hashedDir"` of `stack.json`). Before, every
+  script and style was sent again at each visit (`no-store`)
+- Pages, scripts and styles out of that folder: `no-cache` (checked at each visit) instead of `no-store`, which also
+  kept the back button from being instant
+- Images and fonts of `public/` kept 30 days instead of a week; files sent to the PHP APIs (`uploads/`) kept 30 days
+
+### Speed (loading screen and pages)
+- One loading screen for every front, the same on the first opening and on every page change: « Loading » in small
+  capitals over a thin line that fills (the turning circle is gone). It covers the page instead of hiding it
+  (`display: none` before: nothing to show while the scripts started), waits for the fonts 2 seconds at most
+  (`LOADER_FIRST_MAX_TIME`) and goes away by itself without JavaScript (Vue, Nuxt, React, Next.js, Solid, Svelte,
+  SvelteKit, Angular, Qwik, Astro, HTML / CSS / JS). Design of DC Scaffold: the line in its gradient, on its glow
+- Next.js: the projects build again (`.htaccess` of `public/_next/static/` refused by Next.js since 1.5.0): the one year
+  rule of its build files goes at the end of the root `.htaccess` (`"hashedInRoot"` of `stack.json`)
+- Nuxt + Nitro: pages compressed by the server (`server/plugins/z-compression.ts`, brotli or gzip, after `qualif.ts`)
+- Docs « Vitesse : viser 100 sur Lighthouse » (05-le-site.md): images, fonts, icons, animations, heavy libraries,
+  accessibility; the light loading screen costs a few points on phones, on purpose
+
+### Accessibility
+- Language buttons: their name read by screen readers starts with the text shown (« FR, Switch to French »), as WCAG asks
+  (Lighthouse « label-content-name-mismatch »)
+
+## [1.4.4] - 2026-11-13
+
+Nuxt + Nitro: the API files of the model without TypeScript errors in the editor.
+
+### Fixed
+- `server/routes/__sitemap__/pages.get.ts`: the addresses read in the pages are always strings (no « string | undefined »)
+- `server/plugins/qualif.ts`: the `sitemap:output` hook of @nuxtjs/sitemap, missing from the types of Nitro, is typed
+  (no « 'ctx' implicitly has an 'any' type »)
+- `server/utils/ResponseHelper.ts`: `Retry-After` given as a number, as h3 expects
+
 ## [1.4.3] - 2026-11-13
 
 Search engines: no folder listing, and the private pages really closed in robots.txt.

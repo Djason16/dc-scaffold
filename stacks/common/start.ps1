@@ -1,5 +1,5 @@
 ﻿# Launcher for {{PROJECT_NAME}} ({{STACK_LABEL}})
-# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A|Q|K|O
+# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A|Q|K|O|P
 # Every option adapts to what the project contains (docker-compose.yml, backend/, frontend/).
 param([string]$Action)
 
@@ -41,6 +41,8 @@ $FrontServer = '{{FRONT_SERVER}}' -eq 'true'
 $FrontSitemap = -not $FrontGenerate -and -not $FrontBuild -and (Test-Path (Join-Path $AppDir 'scripts\sitemap.mjs'))
 # Qualif: the site shown to the client before it goes online, built with .env.preprod (scripts/qualif.ps1)
 $HasQualif = $AppScripts.ContainsKey('generate:qualif') -or $AppScripts.ContainsKey('build:qualif') -or (Test-Path (Join-Path $AppDir 'scripts\qualif.mjs'))
+# Design of the site: the DC Scaffold design, a blank site, or start from zero (frontend/scripts/design.ps1)
+$HasDesign = Test-Path (Join-Path $AppDir 'dc-scaffold.config.js')
 
 # ---------------------------------------------------------------------------
 # Actions
@@ -149,6 +151,10 @@ if (-not $Action) {
     if ($ApiScripts.ContainsKey('build')) { Write-MenuItem 'A' 'Build API' 'npm run build (backend/)' }
     if ($HasQualif) { Write-MenuItem 'Q' 'Qualif' 'Site shown to the client before going online, into qualif/ (.env.preprod)' }
     if ($FrontGenerate -or $FrontBuild -or $FrontSitemap -or $ApiScripts.ContainsKey('build') -or $HasQualif) { Write-Host '' }
+    if ($HasDesign) {
+        Write-MenuItem 'P' 'Design' 'DC Scaffold design, blank site, or start from zero with your own design'
+        Write-Host ''
+    }
     # How to put this project online (filled by DC Scaffold for the chosen front and back end)
     Write-Host '  {{DEPLOY_TITLE}}' -ForegroundColor DarkGray
 {{DEPLOY_LINES}}
@@ -170,5 +176,6 @@ switch ($Action.ToUpper()) {
     'Q' { if ($HasQualif) { & (Join-Path $Root 'scripts\qualif.ps1') -AppDir $AppDir -ApiDir $ApiDir } }
     'K' { if ($HasData) { & (Join-Path $Root 'scripts\backup.ps1') } }
     'O' { if ($HasData) { & (Join-Path $Root 'scripts\restore.ps1') } }
+    'P' { if ($HasDesign) { & (Join-Path $AppDir 'scripts\design.ps1') } }
     default { Write-Fail 'Invalid choice.' }
 }

@@ -10,6 +10,21 @@
     border-radius: var(--radius);
     background-color: var(--background-color);
     box-shadow: var(--shadow);
+    /* Never taller than the screen (320px high phones, landscape): it scrolls inside instead of being cut */
+    max-height: calc(100dvh - 2 * var(--space-normal));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+/* Small screens (down to 320px wide or high): less room around the text */
+@media (max-width: 360px), (max-height: 480px) {
+    .preferences-banner {
+        padding: var(--space-normal);
+    }
+
+    .preferences-banner-actions {
+        margin-top: var(--space-small);
+    }
 }
 
 .preferences-banner h2 {

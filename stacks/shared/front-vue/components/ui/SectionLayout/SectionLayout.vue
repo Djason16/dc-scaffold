@@ -7,7 +7,7 @@
     </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
     sections: { type: Array, required: true },
 })

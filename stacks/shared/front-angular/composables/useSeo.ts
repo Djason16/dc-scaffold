@@ -7,7 +7,7 @@ import { applyHead } from '@/utils/head.js'
 import { buildSeo } from '@/utils/seo.js'
 
 // @two-languages
-// <head> of a page from SEO_PAGES (utils/seo.js), updated on language change. In a page: useSeo('index')
+// <head> of a page from SEO_PAGES (utils/seo.ts), updated on language change. In a page: useSeo('index')
 export const useSeo = (pageKey: string) => {
     const lang = useLang()
     const site = useSite()
@@ -17,7 +17,7 @@ export const useSeo = (pageKey: string) => {
 }
 // @end-two-languages
 // @one-language
-// <head> of a page from SEO_PAGES (utils/seo.js). In a page: useSeo('index')
+// <head> of a page from SEO_PAGES (utils/seo.ts). In a page: useSeo('index')
 export const useSeo = (pageKey: string) => {
     applyHead(buildSeo({ pageKey, locale: '{{DEFAULT_LANG}}', site: useSite() }))
 }

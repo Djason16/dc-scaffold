@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import '#lib/assets/css/main.css'
     // DC Scaffold design, while it is on (dc-scaffold.config.js)
     import '#lib/assets/css/design.css'

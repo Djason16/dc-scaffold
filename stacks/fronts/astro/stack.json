@@ -18,16 +18,29 @@
             "registry": "npm",
             "stable": "7",
             "token": "V_ASTRO"
+        },
+        {
+            "package": "@astrojs/check",
+            "registry": "npm",
+            "stable": "0",
+            "token": "V_ASTRO_CHECK"
+        },
+        {
+            "package": "@types/node",
+            "registry": "npm",
+            "stable": "26",
+            "token": "V_TYPES_NODE"
         }
     ],
     "publicDir": "public",
+    "hashedDir": "_astro",
     "api": {
-        "file": "src/lib/api.js",
+        "file": "src/lib/api.ts",
         "imports": "",
         "base": "import.meta.env.PUBLIC_API_URL",
         "source": "PUBLIC_API_URL",
         "isDev": "import.meta.env.DEV",
-        "usage": "import { api } from '../lib/api.js'"
+        "usage": "import { api } from '../lib/api'"
     },
     "steps": [
         {
@@ -84,15 +97,26 @@
         {
             "copy": "files-api",
             "when": "separateApi"
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.@astrojs/check": "^{{V_ASTRO_CHECK}}",
+                    "devDependencies.typescript": "~6.0.3",
+                    "scripts.check": "astro check",
+                    "devDependencies.@types/node": "^{{V_TYPES_NODE}}"
+                }
+            },
+            "when": "ts"
         }
     ],
     "layout": {
         "src": "src/",
         "css": "src/assets/css",
         "pages": "src/pages/",
-        "storeLib": "`utils/store.js`",
-        "lang": "plugins/lang.js",
-        "storeFile": "stores/userPreferences.js",
+        "storeLib": "`utils/store.ts`",
+        "lang": "plugins/lang.ts",
+        "storeFile": "stores/userPreferences.ts",
         "layoutFile": "components/layout/AppShell/AppShell.astro",
         "env": "`PUBLIC_SITE_NAME` / `PUBLIC_SITE_URL`",
         "public": "frontend/public",

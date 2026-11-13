@@ -9,10 +9,10 @@
     </footer>
 </template>
 
-<script setup>
-import { useLang } from '@/composables/useLang.js'
-import { useSite } from '@/composables/useSite.js'
-import { useUserPreferencesStore } from '@/stores/userPreferences.js'
+<script setup lang="ts">
+import { useLang } from '@/composables/useLang'
+import { useSite } from '@/composables/useSite'
+import { useUserPreferencesStore } from '@/stores/userPreferences'
 
 const { getTranslation: t } = useLang()
 const site = useSite()

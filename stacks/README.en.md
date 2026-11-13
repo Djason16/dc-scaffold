@@ -44,6 +44,7 @@ stacks/
 | `requires` | Tools checked (and installed) at startup: `node`, `composer`, `docker` |
 | `versions` | Packages checked on npm or Packagist. `stable` = tested version; a newer major is offered, never forced. `token` makes the version usable in files (`^{{V_VUE}}`). `pin` sets the package back to the stable version when the create tool installed a newer major. |
 | `steps` | Steps run in order (see below) |
+| `script` | `"ts"` or `"js"`: the stack only exists in that language (Angular, Qwik, NestJS, AdonisJS: `ts`; HTML / CSS / JS: `js`). Without this field, TypeScript or JavaScript as chosen: the files of the stack are written **in TypeScript**, and `engine/to-js.mjs` takes their types out when JavaScript is chosen (comments and layout kept). In the file names of the steps, `{{SCRIPT_EXT}}` is `ts` or `js` (`vite.config.{{SCRIPT_EXT}}`) |
 
 Fronts only:
 
@@ -90,6 +91,7 @@ Every step accepts a `when` condition:
 | `front` / `noFront` | the project has a front / has none |
 | `db` / `noDb` | MySQL was chosen / no database |
 | `separateApi` / `insideApi` / `noInsideApi` | the back end is in `backend/` / it goes inside the front (`inside`) / it is not inside the front (no back end included) |
+| `ts` / `js` | the code of this side (front or back end) is in TypeScript / in JavaScript |
 
 Paths are relative to `frontend/` (front) or `backend/` (back end) unless stated otherwise.
 

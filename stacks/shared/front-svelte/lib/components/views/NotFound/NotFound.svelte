@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import PageHero from '#lib/components/ui/PageHero/PageHero.svelte'
     import Seo from '#lib/components/ui/Seo/Seo.svelte'
     import { lang } from '#lib/plugins/lang.svelte.js'

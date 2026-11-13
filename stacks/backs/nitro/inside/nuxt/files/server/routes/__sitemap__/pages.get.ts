@@ -25,9 +25,9 @@ export default defineSitemapEventHandler(async () => {
         // A page closed to search engines stays out
         if (/<meta[^>]+name="robots"[^>]+noindex/i.test(html)) continue
         const main = html.match(/<main[\s\S]*?<\/main>/i)?.[0] ?? html
-        const images = [...new Set([...main.matchAll(IMAGE)].map(([, src]) => decode(src)).filter((src) => !src.startsWith('data:')))]
+        const images = [...new Set([...main.matchAll(IMAGE)].map(([, src = '']) => decode(src)).filter((src) => !src.startsWith('data:')))]
         entries.push({ loc: path, images: images.map((loc) => ({ loc })) })
-        for (const [, href] of html.matchAll(LINK)) {
+        for (const [, href = ''] of html.matchAll(LINK)) {
             const link = decode(href)
             if (seen.has(link) || NOT_A_PAGE.test(link) || seen.size >= MAX_PAGES) continue
             seen.add(link)

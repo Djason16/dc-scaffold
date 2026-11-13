@@ -108,6 +108,9 @@ Les `?` des requêtes SQL protègent des injections : ne mets jamais une valeur 
 | **LengthHelper** (PHP) | `tooLong($data, ['name' => 100])` : erreur 400 claire au lieu d'une erreur 500 de la base |
 | **SecurityHelper** (JavaScript) | `headers(isHttps)`, `tooMany(clé, ip, max, secondes)`, `hit`, `clear`, `ip(forwardedFor, remote)`, `fileType(buffer)` (premiers octets), `tooLong(data, max)` |
 
+- **Pages compressées** (Nitro dans Nuxt) : `server/plugins/z-compression.ts` compresse chaque page avant de l'envoyer
+  (brotli, sinon gzip : 150 Ko arrivent en 25 Ko). Le « z- » le fait passer après les plugins qui changent le texte
+  des pages (`qualif.ts`) : Nitro les charge par ordre alphabétique.
 - **En-têtes de sécurité** sur chaque réponse, erreurs comprises (nosniff, X-Frame-Options, Referrer-Policy, HSTS en HTTPS), sans `X-Powered-By` : `backend/.htaccess` et `php.ini` (PHP), le serveur (Express, NestJS), `middleware/security.ts` (Nitro), `app/middleware/security_headers_middleware.ts` (AdonisJS), `handler.js` (API dans le site).
 - **`uploads/.htaccess`** (Slim, PHP) : un fichier envoyé n'est jamais lancé comme du code.
 - **Mot de passe oublié** : toujours un lien valable une heure, jamais un nouveau mot de passe envoyé tout de suite.

@@ -24,8 +24,9 @@
         }
     ],
     "publicDir": "public",
+    "hashedDir": "assets",
     "api": {
-        "file": "src/lib/api.js",
+        "file": "src/lib/api.ts",
         "imports": "",
         "base": "import.meta.env.VITE_API_URL",
         "source": "VITE_API_URL",
@@ -41,11 +42,27 @@
                 "{{DIR}}",
                 "--",
                 "--template",
+                "svelte-ts",
+                "--no-interactive",
+                "--no-immediate"
+            ],
+            "in": "root",
+            "when": "ts"
+        },
+        {
+            "run": [
+                "npm",
+                "create",
+                "vite@latest",
+                "{{DIR}}",
+                "--",
+                "--template",
                 "svelte",
                 "--no-interactive",
                 "--no-immediate"
             ],
-            "in": "root"
+            "in": "root",
+            "when": "js"
         },
         {
             "check": "package.json"
@@ -116,9 +133,9 @@
         },
         {
             "replace": {
-                "file": "src/lib/middleware/index.js",
-                "find": "src/routes/\\+layout\\.js",
-                "with": "src/lib/router.svelte.js"
+                "file": "src/lib/middleware/index.ts",
+                "find": "src/routes/\\+layout\\.[jt]s",
+                "with": "src/lib/router.svelte.ts"
             }
         },
         {
@@ -161,12 +178,19 @@
             "npm": {
                 "set": {
                     "imports.#lib/*": "./src/lib/*",
-                    "scripts.check": "svelte-check --tsconfig ./jsconfig.json",
-                    "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/pages",
+                    "scripts.postbuild": "node scripts/sitemap.mjs dist --pages src/pages"
+                }
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "scripts.check": "svelte-check --tsconfig ./tsconfig.app.json",
                     "devDependencies.svelte-check": "^4.7.7",
                     "devDependencies.typescript": "^6.0.3"
                 }
-            }
+            },
+            "when": "ts"
         },
         {
             "copy": "files-api",
@@ -178,8 +202,8 @@
         "css": "src/lib/assets/css",
         "pages": "src/pages/",
         "storeLib": "Svelte `$state`",
-        "lang": "plugins/lang.svelte.js",
-        "storeFile": "stores/userPreferences.svelte.js",
+        "lang": "plugins/lang.svelte.ts",
+        "storeFile": "stores/userPreferences.svelte.ts",
         "layoutFile": "components/layout/AppShell/AppShell.svelte",
         "env": "`VITE_SITE_NAME` / `VITE_SITE_URL`",
         "public": "frontend/public",

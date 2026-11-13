@@ -5,6 +5,7 @@
         "fr": "TypeScript (Node.js), structuré comme Angular, très demandé",
         "en": "TypeScript (Node.js), structured like Angular, in demand"
     },
+    "script": "ts",
     "requires": [
         "node",
         "docker"
@@ -88,7 +89,7 @@
             "replace": {
                 "file": "tsconfig.json",
                 "find": "\"compilerOptions\": \\{",
-                "with": "\"compilerOptions\": {\n    \"allowJs\": true,"
+                "with": "\"compilerOptions\": {\n    \"allowJs\": true,\n    \"allowImportingTsExtensions\": true,\n    \"rewriteRelativeImportExtensions\": true,"
             }
         },
         {

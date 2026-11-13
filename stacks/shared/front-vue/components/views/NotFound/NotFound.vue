@@ -9,10 +9,10 @@
     </section>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import PageHero from '@/components/ui/PageHero/PageHero.vue'
-import { useLang } from '@/composables/useLang.js'
-import { useSeo } from '@/composables/useSeo.js'
+import { useLang } from '@/composables/useLang'
+import { useSeo } from '@/composables/useSeo'
 
 const { getTranslation: t } = useLang()
 useSeo('notFound')

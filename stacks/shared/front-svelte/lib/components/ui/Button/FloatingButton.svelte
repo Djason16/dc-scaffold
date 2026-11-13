@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     // Floating button: class, aria-label and onclick are passed through
     let { children, class: className = '', ...attributes } = $props()
 </script>

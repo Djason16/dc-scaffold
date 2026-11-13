@@ -1,0 +1,9 @@
+
+# Files of the build (Next.js: /_next/static/, no .htaccess allowed in public/_next): their name changes with their
+# content (hash), so the browser keeps them a year without asking again
+<IfModule mod_setenvif.c>
+    SetEnvIf Request_URI "/_next/static/" HASHED_BUILD_FILE
+</IfModule>
+<IfModule mod_headers.c>
+    Header set Cache-Control "public, max-age=31536000, immutable" env=HASHED_BUILD_FILE
+</IfModule>

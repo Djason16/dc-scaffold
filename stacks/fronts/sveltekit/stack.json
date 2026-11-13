@@ -21,11 +21,18 @@
             "pin": [
                 "devDependencies.@sveltejs/kit"
             ]
+        },
+        {
+            "package": "@types/node",
+            "registry": "npm",
+            "stable": "26",
+            "token": "V_TYPES_NODE"
         }
     ],
     "publicDir": "static",
+    "hashedDir": "_app/immutable",
     "api": {
-        "file": "src/lib/api.js",
+        "file": "src/lib/api.ts",
         "imports": "import { PUBLIC_API_URL } from '$app/env/public'\nimport { dev } from '$app/env'",
         "base": "PUBLIC_API_URL",
         "source": "PUBLIC_API_URL",
@@ -43,11 +50,28 @@
                 "--template",
                 "minimal",
                 "--types",
-                "jsdoc",
+                "ts",
                 "--no-add-ons",
                 "--no-install"
             ],
-            "in": "root"
+            "in": "root",
+            "when": "ts"
+        },
+        {
+            "run": [
+                "npx",
+                "--yes",
+                "sv@latest",
+                "create",
+                "{{DIR}}",
+                "--template",
+                "minimal",
+                "--no-add-ons",
+                "--no-install",
+                "--no-types"
+            ],
+            "in": "root",
+            "when": "js"
         },
         {
             "check": "package.json"
@@ -64,28 +88,28 @@
         },
         {
             "replace": {
-                "file": "vite.config.js",
+                "file": "vite.config.{{SCRIPT_EXT}}",
                 "find": "@sveltejs/adapter-auto",
                 "with": "@sveltejs/adapter-static"
             }
         },
         {
             "replace": {
-                "file": "vite.config.js",
+                "file": "vite.config.{{SCRIPT_EXT}}",
                 "find": "(?m)^\\s*// adapter-auto.*\\r?\\n(\\s*//.*\\r?\\n)*",
                 "with": ""
             }
         },
         {
             "replace": {
-                "file": "vite.config.js",
+                "file": "vite.config.{{SCRIPT_EXT}}",
                 "find": "adapter: adapter\\(\\)",
-                "with": "adapter: adapter({ fallback: '200.html' }), paths: { base: process.env.QUALIF_BASE_PATH || '' },\n\t\t\t// Qualif: the links written from the root are moved into the folder after the build (scripts/qualif.mjs)\n\t\t\tprerender: { handleHttpError: ({ message }) => { if (!process.env.QUALIF_BASE_PATH || !message.includes('does not begin with')) throw new Error(message) } }"
+                "with": "adapter: adapter({ fallback: '200.html' }), paths: { base: process.env.QUALIF_BASE_PATH ? `/${process.env.QUALIF_BASE_PATH.replace(/^[/]+/, '')}` : '' },\n\t\t\t// Qualif: the links written from the root are moved into the folder after the build (scripts/qualif.mjs)\n\t\t\tprerender: { handleHttpError: ({ message }) => { if (!process.env.QUALIF_BASE_PATH || !message.includes('does not begin with')) throw new Error(message) } }"
             }
         },
         {
             "insert": {
-                "file": "vite.config.js",
+                "file": "vite.config.{{SCRIPT_EXT}}",
                 "after": "defineConfig\\(\\{",
                 "text": "\tserver: { port: {{APP_PORT}}, strictPort: true },"
             }
@@ -157,6 +181,14 @@
         {
             "copy": "files-api",
             "when": "separateApi"
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.@types/node": "^{{V_TYPES_NODE}}"
+                }
+            },
+            "when": "ts"
         }
     ],
     "layout": {
@@ -164,8 +196,8 @@
         "css": "src/lib/assets/css",
         "pages": "src/routes/",
         "storeLib": "Svelte `$state`",
-        "lang": "plugins/lang.svelte.js",
-        "storeFile": "stores/userPreferences.svelte.js",
+        "lang": "plugins/lang.svelte.ts",
+        "storeFile": "stores/userPreferences.svelte.ts",
         "layoutFile": "components/layout/AppShell/AppShell.svelte",
         "env": "`PUBLIC_SITE_NAME` / `PUBLIC_SITE_URL`",
         "public": "frontend/static",

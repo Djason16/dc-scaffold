@@ -5,6 +5,7 @@
         "fr": "Le plus simple : rien d'autre à apprendre. Idéal pour débuter",
         "en": "The simplest: nothing else to learn. Great to start"
     },
+    "script": "js",
     "requires": [
         "docker"
     ],
@@ -12,7 +13,7 @@
     "docker": true,
     "publicDir": "",
     "api": {
-        "file": "js/api.js",
+        "file": "js/api.ts",
         "imports": "import { API_URL, IS_DEV } from './config.js'",
         "base": "API_URL",
         "source": "js/config.js",

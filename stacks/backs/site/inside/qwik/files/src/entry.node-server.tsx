@@ -18,7 +18,7 @@ createServer((req, res) => {
         res.end()
         return
     }
-    // Security headers on every page, file and answer of the API (server/SecurityHelper.js)
+    // Security headers on every page, file and answer of the API (server/SecurityHelper.ts)
     for (const [name, value] of Object.entries(SecurityHelper.headers(req.headers['x-forwarded-proto'] === 'https'))) res.setHeader(name, value)
     staticFile(req, res, () => {
         router(req, res, () => {

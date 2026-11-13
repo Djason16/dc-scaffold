@@ -1,7 +1,9 @@
 /*
  * Fonts of the site. The simple style uses the font of the system: nothing to load.
  * Your own font: put its files in {{FRONT_PUBLIC}}/fonts/, add a block like this one,
- * then put its name first in --font-primary (utils/variables.css).
+ * then put its name first in --font-primary (utils/variables.css). Fonts seen at the top of the pages: preload them
+ * too (<link rel="preload" as="font" type="font/woff2" href="/fonts/MyFont-Regular.woff2" crossorigin>), else the text
+ * changes size when they arrive (Lighthouse).
  *
  * @font-face {
  *     font-family: 'My Font';

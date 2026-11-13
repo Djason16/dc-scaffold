@@ -18,8 +18,8 @@ const files = {
         ? `export * from '${path('{{DESIGN_JS}}', '{{DESIGN_FOLDER}}/index{{DESIGN_INDEX_EXT}}')}'\n`
         : [
             'export const design = false',
-            '/** @type {any[] | null} */',
-            'export const welcome = null',
+            // In TypeScript the type of "welcome" is written, in JavaScript it is a comment for the editor
+            ...('{{DESIGN_JS}}'.endsWith('.ts') ? ['export const welcome: any[] | null = null'] : ['/** @type {any[] | null} */', 'export const welcome = null']),
             '',
         ].join('\n'),
     '{{DESIGN_CSS}}': design ? `@import "${path('{{DESIGN_CSS}}', '{{DESIGN_FOLDER}}/theme.css')}";\n` : '',

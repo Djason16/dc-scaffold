@@ -1,8 +1,9 @@
 ---
-import { lang } from '../../../plugins/lang.js'
+import { lang } from '../../../plugins/lang'
 ---
 
-<!-- Full screen shown while the page gets ready, removed by plugins/app.js -->
-<div class="loader" role="status" aria-label={lang.getTranslation('loading')} data-loader>
-    <span class="loader-spinner"></span>
+<!-- The loading screen of the site while the page gets ready ("Loading" over a thin line), removed by plugins/app.js -->
+<div class="loader" role="status" aria-live="polite" data-loader>
+    <p class="loader-label">{lang.getTranslation('loading')}</p>
+    <span class="loader-line" aria-hidden="true"></span>
 </div>

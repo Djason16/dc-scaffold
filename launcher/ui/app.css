@@ -374,8 +374,10 @@ button {
     padding: 28px 40px 24px;
 }
 
+/* One column that never grows wider than the window (a long path cannot push the step out of it) */
 .step {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 22px;
     max-width: 980px;
     animation: rise 0.45s var(--ease) both;
@@ -428,7 +430,9 @@ button {
 
 .field {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 10px;
+    min-width: 0;
 }
 
 .field-label {
@@ -499,10 +503,12 @@ button {
     background: rgb(248 113 113 / 8%);
     color: #fecaca;
     font-size: var(--text-md);
+    overflow-wrap: anywhere;
 }
 
 .fields {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
     max-width: 760px;
 }
@@ -1341,6 +1347,177 @@ details[open] summary {
     .bottombar {
         padding-top: 10px;
         padding-bottom: 10px;
+    }
+}
+
+/*
+ * Small windows (down to 320px wide or high): one column. The left panel becomes a thin bar at the top (logo, name,
+ * version), the step takes the rest and scrolls; every grid of the steps one column, tighter spaces.
+ */
+@media (max-width: 760px) {
+    body {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+        height: 100dvh;
+    }
+
+    .brand {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 12px;
+        height: auto;
+        padding: 10px 16px;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .brand-tile {
+        flex: 0 0 auto;
+        width: 36px;
+        height: 36px;
+        box-shadow: none;
+    }
+
+    .brand-bottom {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 2px 10px;
+        min-width: 0;
+    }
+
+    .brand-title {
+        font-size: var(--text-lg);
+        line-height: 1;
+    }
+
+    .step-title {
+        font-size: var(--text-xl-small);
+    }
+
+    .brand-title br {
+        display: none;
+    }
+
+    .brand-bar,
+    .brand-tagline,
+    .brand-by,
+    .brand-console {
+        display: none;
+    }
+
+    .main {
+        grid-template-columns: minmax(0, 1fr);
+        height: auto;
+        min-height: 0;
+    }
+
+    /* The switches (latest versions, Git...) one under the other */
+    .switches {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .topbar {
+        gap: 12px;
+        padding: 0 16px;
+    }
+
+    .stepper {
+        min-width: 0;
+        overflow-x: auto;
+    }
+
+    .stepper button {
+        padding: 14px 10px 12px 0;
+        margin-right: 6px;
+    }
+
+    /* Only the numbers of the steps (01 02 ...), their names do not fit */
+    .stepper button em {
+        display: none;
+    }
+
+    .content {
+        padding: 16px;
+    }
+
+    .options,
+    .option-group,
+    .cards,
+    .cards:has(> :nth-child(10)) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .options {
+        gap: 20px;
+    }
+
+    .option-group {
+        gap: 8px;
+    }
+
+    .option-group > .field-label {
+        padding-top: 0;
+    }
+
+    .summary {
+        position: static;
+        min-width: 0;
+    }
+
+    .summary dl div {
+        grid-template-columns: 80px minmax(0, 1fr);
+    }
+
+    .summary dd {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    /* Ports: two per line, the fields as narrow as the room left */
+    .ports {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .ports .input {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .bottombar {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px 12px;
+        padding: 10px 16px;
+    }
+
+    /* Buttons of the bottom bar a little narrower: "Back" and "Create the project" side by side at 320px */
+    .bottombar .btn {
+        padding-left: 16px;
+        padding-right: 16px;
+        letter-spacing: 0.1em;
+    }
+}
+
+/* Very low windows (a phone held sideways, 320px high): the bar of the logo goes, the step keeps the room */
+@media (max-width: 760px) and (max-height: 480px), (max-height: 380px) {
+    .brand {
+        display: none;
+    }
+
+    body {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: minmax(0, 1fr);
+    }
+
+    .main {
+        height: 100dvh;
+    }
+
+    .stepper button {
+        padding-top: 10px;
+        padding-bottom: 8px;
     }
 }
 

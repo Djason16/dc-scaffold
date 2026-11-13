@@ -1,7 +1,7 @@
 import { Component } from '@angular/core'
 import { useLang } from '@/composables/useLang'
 
-// "What next?" section of DC Scaffold: three cards (texts in dc-scaffold/texts/nextSteps.js)
+// "What next?" section of DC Scaffold: three cards (texts in dc-scaffold/texts/nextSteps.ts)
 @Component({
     selector: 'app-next-steps',
     template: `

@@ -16,18 +16,45 @@
         "en": "The data in a plain file, nothing to install"
     },
     "fallbackDatabase": "SQLite",
-    "nodeEngine": ">=22.13.0",
+    "nodeEngine": ">=22.18.0",
     "versions": [
         {
             "package": "express",
             "registry": "npm",
             "stable": "5",
             "token": "V_EXPRESS"
+        },
+        {
+            "package": "@types/express",
+            "registry": "npm",
+            "stable": "5",
+            "token": "V_TYPES_EXPRESS"
+        },
+        {
+            "package": "@types/node",
+            "registry": "npm",
+            "stable": "26",
+            "token": "V_TYPES_NODE"
         }
     ],
     "steps": [
         {
             "copy": "files"
+        },
+        {
+            "copy": "files-ts",
+            "when": "ts"
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.typescript": "~6.0.3",
+                    "devDependencies.@types/express": "^{{V_TYPES_EXPRESS}}",
+                    "devDependencies.@types/node": "^{{V_TYPES_NODE}}",
+                    "scripts.typecheck": "tsc"
+                }
+            },
+            "when": "ts"
         },
         {
             "copy": "@shared/node-start"
@@ -80,7 +107,7 @@
         }
     ],
     "controllers": "controllers",
-    "controllerExt": "js",
+    "controllerExt": "ts",
     "guide": {
         "helpers": "utils",
         "middleware": "middleware/",

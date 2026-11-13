@@ -11,3 +11,8 @@ RemoveType .php .phtml .php3 .php4 .php5 .php7 .php8 .phar
     Require all denied
 </FilesMatch>
 Options -Indexes -ExecCGI
+
+# Sent files keep their name (a new file gets a new name): kept 30 days by the browser
+<IfModule mod_headers.c>
+    Header set Cache-Control "public, max-age=2592000"
+</IfModule>

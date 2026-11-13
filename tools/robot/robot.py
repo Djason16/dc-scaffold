@@ -244,7 +244,7 @@ def create_project(kind, stack_id, use_latest, log):
 
 
 def check_front(stack_id, project, log):
-    """The front builds (SvelteKit and Svelte pass svelte-check, Angular passes the TypeScript check of VS Code; Qwik checks its types while it builds)"""
+    """The front builds, then passes its own type check (npm run typecheck / check: Nuxt, Svelte, SvelteKit, Astro in TypeScript; Angular: the TypeScript check of VS Code; Qwik checks its types while it builds)"""
     frontend = project / "frontend"
     package = frontend / "package.json"
     if not package.exists():
@@ -253,8 +253,10 @@ def check_front(stack_id, project, log):
     script = "generate" if stack_id == "nuxt" else "build"
     if script in scripts and not run(["npm", "run", script], frontend, log):
         return False
-    if stack_id in ("sveltekit", "svelte"):
-        return run(["npx", "svelte-check", "--threshold", "error"], frontend, log)
+    # The type check of the project itself (TypeScript: "typecheck" or "check", the command written in its README)
+    for check in ("typecheck", "check"):
+        if check in scripts:
+            return run(["npm", "run", check], frontend, log)
     if stack_id == "angular":
         # Same check as VS Code (it shows these errors even when the build works)
         ok = run(["npx", "tsc", "-p", "tsconfig.app.json"], frontend, log)
@@ -298,8 +300,10 @@ def check_inside(stack_id, project, log):
     frontend = project / "frontend"
     if not run(["npm", "run", "build"], frontend, log):
         return False
-    # Same type check as the front alone (SvelteKit: svelte-check), the API code included
-    if stack_id.startswith("sveltekit-") and not run(["npx", "svelte-check", "--threshold", "error"], frontend, log):
+    # Same type check as the front alone (npm run typecheck / check), the API code included
+    scripts = read_json(frontend / "package.json").get("scripts", {})
+    check = next((name for name in ("typecheck", "check") if name in scripts), None)
+    if check and not run(["npm", "run", check], frontend, log):
         return False
     with open(log, "a", encoding="utf-8") as out:
         server = subprocess.Popen(["npm", "start"], cwd=frontend, stdout=out,

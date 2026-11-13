@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     // Each component of "sections" in its own <section>, in order
     let { sections } = $props()
 </script>

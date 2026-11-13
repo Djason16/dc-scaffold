@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     /*
      * Top of a page: small title, large title, text and buttons (assets/css/components/page-hero.css, decorated by the DC Scaffold design while it is on).
      *   <PageHero eyebrow={t('aboutEyebrow')} title={t('aboutTitle')} text={t('aboutText')}>
@@ -7,8 +7,7 @@
      * badge: a snippet shown instead of the eyebrow text (the home page). large: taller, for the home page.
      */
 
-    /** @type {{ eyebrow?: string, title: string, text?: string, large?: boolean, badge?: import('svelte').Snippet, children?: import('svelte').Snippet }} */
-    let { eyebrow = '', title, text = '', large = false, badge, children } = $props()
+    let { eyebrow = '', title, text = '', large = false, badge, children }: { eyebrow?: string, title: string, text?: string, large?: boolean, badge?: import('svelte').Snippet, children?: import('svelte').Snippet } = $props()
 </script>
 
 <div class="page-hero" class:page-hero-large={large}>

@@ -20,6 +20,8 @@ html {
 /* Page background, text color and font of the whole site */
 body {
     min-height: 100vh;
+    /* The real height on phones (the bar of the browser counted) */
+    min-height: 100dvh;
     background-color: var(--background-color);
     color: var(--text-color);
     font-family: var(--font-primary);

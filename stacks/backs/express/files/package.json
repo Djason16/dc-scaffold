@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node --disable-warning=ExperimentalWarning --env-file=.env --watch-path=./controllers --watch-path=./utils --watch-path=./middleware --watch-path=./server.js server.js",
-    "start": "node --disable-warning=ExperimentalWarning --env-file=.env.production server.js"
+    "dev": "node --disable-warning=ExperimentalWarning --env-file=.env --watch-path=./controllers --watch-path=./utils --watch-path=./middleware --watch-path=./server.ts ./server.ts",
+    "start": "node --disable-warning=ExperimentalWarning --env-file=.env.production ./server.ts"
   },
   "dependencies": {
     "express": "^{{V_EXPRESS}}",

@@ -1,13 +1,13 @@
-<script>
+<script lang="ts">
     import { useSite } from '#lib/composables/useSite.js'
     import { lang } from '#lib/plugins/lang.svelte.js'
     import { buildSeo } from '#lib/utils/seo.js'
 
     // @two-languages
-    // <head> of a page from SEO_PAGES (utils/seo.js), prerendered, updated on language change
+    // <head> of a page from SEO_PAGES (utils/seo.ts), prerendered, updated on language change
     // @end-two-languages
     // @one-language
-    // <head> of a page from SEO_PAGES (utils/seo.js), prerendered
+    // <head> of a page from SEO_PAGES (utils/seo.ts), prerendered
     // @end-one-language
     let { pageKey } = $props()
     const site = useSite()
@@ -21,8 +21,8 @@
 
 <svelte:head>
     <title>{seo.title}</title>
-    {#each seo.meta as tag (tag.name ?? tag.property)}
-        {#if tag.property}
+    {#each seo.meta as tag ('name' in tag ? tag.name : tag.property)}
+        {#if 'property' in tag}
             <meta property={tag.property} content={tag.content} />
         {:else}
             <meta name={tag.name} content={tag.content} />

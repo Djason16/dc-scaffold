@@ -134,3 +134,8 @@ jobs:
           number=$(gh issue list --state open --search 'in:title "Compatibility robot"' --json number --jq '.[0].number')
           if [ -n "$number" ]; then gh issue comment "$number" --body-file dist/issue.md
           else gh issue create --title 'Compatibility robot: stacks to fix' --body-file dist/issue.md; fi
+      - name: Close the issue when every stack works
+        if: hashFiles('dist/issue.md') == ''
+        run: |
+          number=$(gh issue list --state open --search 'in:title "Compatibility robot"' --json number --jq '.[0].number')
+          if [ -n "$number" ]; then gh issue close "$number" --comment 'Every stack works again with the latest versions: closed by the compatibility robot.'; fi

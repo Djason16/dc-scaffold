@@ -59,6 +59,8 @@ Code partagé entre stacks, dans `stacks/shared/` : `front-core` (textes, cookie
 | `port` | Port de développement par défaut |
 | `api` | Comment ce front lit l'adresse de l'API, pour générer `api.js` : `file` (où l'écrire), `imports`, `base` (expression de l'adresse), `source` (variable), `isDev`, `usage` |
 | `publicDir` | Dossier copié tel quel au build, qui reçoit le `.htaccess` (`""` = racine de `frontend/`) |
+| `hashedDir` | Dossier du build (dans `publicDir`) dont les fichiers ont un hash dans leur nom (`_nuxt`, `assets`...) : il reçoit un `.htaccess` qui les garde un an. Absent = pas de dossier de ce genre |
+| `hashedInRoot` | `true` = la règle d'un an va à la fin du `.htaccess` racine (selon l'adresse), pas dans un `.htaccess` du dossier : Next.js refuse un dossier `public/_next` |
 | `docker` | `true` = servi par nginx dans Docker en développement (front sans build) |
 | `deploy` | Mise en ligne : `key` (touche de `start.bat` qui produit le site, `B` ou `G`) et `dir` (dossier à envoyer, depuis `frontend/`) ; `key` vide = `frontend/` envoyé tel quel |
 | `layout` | Chemins écrits dans le README du projet : `src`, `css`, `public`, `pages`, `page`, `pageCopy`, `storeFile`, `storeLib`, `layoutFile`, `header`, `footer`, `pageHero`, `textUsage`, `prefsUsage`, `env` ou `siteFile`, `homeSections`, `omitGuide`, `designIndexExt`, `designRuntime`, `designClientTexts` |

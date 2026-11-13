@@ -4,14 +4,14 @@ frontend/
 [fr] ├── server/
 [fr] │   ├── controllers/          tes contrôleurs (routes créées automatiquement, sous /api)
 [fr] │   ├── index.js              Controller, ResponseHelper, RequestHelper, DatabaseHelper (un seul import)
-[fr] │   ├── handler.js            routeur de l'API : GET /api, routes des contrôleurs, erreurs en JSON
+[fr] │   ├── handler.ts            routeur de l'API : GET /api, routes des contrôleurs, erreurs en JSON
 [fr] │   └── controllers.js        trouve tout seul les fichiers de controllers/
 [fr] ├── app/api/[[...path]]/route.js             reçoit chaque adresse /api
 [fr] └── pages/, components/...                   le site
 [en] ├── server/
 [en] │   ├── controllers/          your controllers (routes built automatically, under /api)
 [en] │   ├── index.js              Controller, ResponseHelper, RequestHelper, DatabaseHelper (one import)
-[en] │   ├── handler.js            router of the API: GET /api, routes of the controllers, JSON errors
+[en] │   ├── handler.ts            router of the API: GET /api, routes of the controllers, JSON errors
 [en] │   └── controllers.js        finds the files of controllers/ by itself
 [en] ├── app/api/[[...path]]/route.js             receives every /api address
 [en] └── pages/, components/...                   the site

@@ -25,7 +25,7 @@
     "controllerExt": "js",
     "guide": {
         "helpers": ".",
-        "middleware": "handler.js",
+        "middleware": "handler.ts",
         "envDev": ".env",
         "envProd": ".env.production",
         "custom": "static routes = { markShipped: ['POST', '/{id}/mark-shipped'] }",
@@ -51,6 +51,12 @@
                     "registry": "npm",
                     "stable": "6",
                     "token": "V_SVELTE_ADAPTER_NODE"
+                },
+                {
+                    "package": "@types/node",
+                    "registry": "npm",
+                    "stable": "26",
+                    "token": "V_TYPES_NODE"
                 }
             ],
             "api": {
@@ -148,7 +154,7 @@
                         ],
                         "set": {
                             "devDependencies.@sveltejs/adapter-node": "^{{V_SVELTE_ADAPTER_NODE}}",
-                            "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production server.js"
+                            "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production ./server.ts"
                         }
                     }
                 },
@@ -159,25 +165,33 @@
                 },
                 {
                     "replace": {
-                        "file": "vite.config.js",
+                        "file": "vite.config.{{SCRIPT_EXT}}",
                         "find": "@sveltejs/adapter-static",
                         "with": "@sveltejs/adapter-node"
                     }
                 },
                 {
                     "replace": {
-                        "file": "vite.config.js",
+                        "file": "vite.config.{{SCRIPT_EXT}}",
                         "find": "adapter: adapter\\(\\{ fallback: '200.html' \\}\\)",
                         "with": "adapter: adapter()"
                     }
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "devDependencies.@types/node": "^{{V_TYPES_NODE}}"
+                        }
+                    },
+                    "when": "ts"
                 }
             ],
             "guide": {
                 "entry": "../../routes/api/[...path]/+server.js"
             },
             "online": {
-                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/build`), envoie `frontend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
-                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/build`), upload `frontend/` to a Node.js 22.13+ host and run `npm start`"
+                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/build`), envoie `frontend/` sur un hébergement Node.js 22.18+ et lance `npm start`",
+                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/build`), upload `frontend/` to a Node.js 22.18+ host and run `npm start`"
             },
             "doc": "inside/sveltekit/doc.md"
         },
@@ -197,6 +211,12 @@
                     "registry": "npm",
                     "stable": "11",
                     "token": "V_ASTRO_NODE"
+                },
+                {
+                    "package": "@types/node",
+                    "registry": "npm",
+                    "stable": "26",
+                    "token": "V_TYPES_NODE"
                 }
             ],
             "api": {
@@ -321,14 +341,22 @@
                         "after": "APP_NAME=[^\\n]*",
                         "text": "# Server of the site online (npm start): listens on every address of the host\nHOST=0.0.0.0"
                     }
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "devDependencies.@types/node": "^{{V_TYPES_NODE}}"
+                        }
+                    },
+                    "when": "ts"
                 }
             ],
             "guide": {
                 "entry": "../pages/api/[...path].js"
             },
             "online": {
-                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/dist`), envoie `frontend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
-                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/dist`), upload `frontend/` to a Node.js 22.13+ host and run `npm start`"
+                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/dist`), envoie `frontend/` sur un hébergement Node.js 22.18+ et lance `npm start`",
+                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/dist`), upload `frontend/` to a Node.js 22.18+ host and run `npm start`"
             },
             "doc": "inside/astro/doc.md"
         },
@@ -342,7 +370,14 @@
                 "fr": "API dans le site : l'API est rangée dans frontend/server/ et répond sous /api, avec le serveur de Next.js. Un seul dossier, un seul serveur à lancer et à mettre en ligne (hébergement Node.js).",
                 "en": "API inside the site: the API goes into frontend/server/ and answers under /api, with the server of Next.js. One folder, one server to start and to put online (Node.js host)."
             },
-            "versions": [],
+            "versions": [
+                {
+                    "package": "@types/node",
+                    "registry": "npm",
+                    "stable": "26",
+                    "token": "V_TYPES_NODE"
+                }
+            ],
             "api": {
                 "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'",
                 "source": "same site, under /api",
@@ -447,14 +482,14 @@
                     "replace": {
                         "file": "next.config.mjs",
                         "find": "(?m)^/\\*\\* @type",
-                        "with": "import { SecurityHelper } from './server/SecurityHelper.js'\n\n/** @type"
+                        "with": "import { SecurityHelper } from './server/SecurityHelper.ts'\n\n/** @type"
                     }
                 },
                 {
                     "replace": {
                         "file": "next.config.mjs",
                         "find": "images: \\{ unoptimized: true \\},",
-                        "with": "images: { unoptimized: true },\n    // Security headers on every page and every answer of the API (server/SecurityHelper.js)\n    async headers() {\n        return [{ source: '/:path*', headers: Object.entries(SecurityHelper.headers(true)).map(([key, value]) => ({ key, value })) }]\n    },\n    // www.my-site.com -> my-site.com (path kept): not every host does it, the site does it itself\n    async redirects() {\n        return [\n            { source: '/:path*', has: [{ type: 'host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n            { source: '/:path*', has: [{ type: 'header', key: 'x-forwarded-host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n        ]\n    },"
+                        "with": "images: { unoptimized: true },\n    // Security headers on every page and every answer of the API (server/SecurityHelper.ts)\n    async headers() {\n        return [{ source: '/:path*', headers: Object.entries(SecurityHelper.headers(true)).map(([key, value]) => ({ key, value })) }]\n    },\n    // www.my-site.com -> my-site.com (path kept): not every host does it, the site does it itself\n    async redirects() {\n        return [\n            { source: '/:path*', has: [{ type: 'host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n            { source: '/:path*', has: [{ type: 'header', key: 'x-forwarded-host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n        ]\n    },"
                     }
                 },
                 {
@@ -464,14 +499,22 @@
                             "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --pages pages --to public"
                         }
                     }
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "devDependencies.@types/node": "^{{V_TYPES_NODE}}"
+                        }
+                    },
+                    "when": "ts"
                 }
             ],
             "guide": {
                 "entry": "../app/api/[[...path]]/route.js"
             },
             "online": {
-                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/.next`), envoie `frontend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
-                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/.next`), upload `frontend/` to a Node.js 22.13+ host and run `npm start`"
+                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/.next`), envoie `frontend/` sur un hébergement Node.js 22.18+ et lance `npm start`",
+                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/.next`), upload `frontend/` to a Node.js 22.18+ host and run `npm start`"
             },
             "doc": "inside/next/doc.md"
         },
@@ -485,7 +528,14 @@
                 "fr": "API dans le site : l'API est rangée dans frontend/src/server/ et répond sous /api, avec le serveur de Qwik. Un seul dossier, un seul serveur à lancer et à mettre en ligne (hébergement Node.js).",
                 "en": "API inside the site: the API goes into frontend/src/server/ and answers under /api, with the server of Qwik. One folder, one server to start and to put online (Node.js host)."
             },
-            "versions": [],
+            "versions": [
+                {
+                    "package": "@types/node",
+                    "registry": "npm",
+                    "stable": "26",
+                    "token": "V_TYPES_NODE"
+                }
+            ],
             "api": {
                 "base": "(typeof window === 'undefined' ? `http://localhost:${process.env.PORT ?? {{APP_PORT}}}${process.env.QUALIF_BASE_PATH ?? ''}` : (Reflect.get(globalThis, '__QUALIF_BASE__') ?? '')) + '/api'",
                 "source": "same site, under /api",
@@ -585,14 +635,22 @@
                             "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production server/entry.node-server.js"
                         }
                     }
+                },
+                {
+                    "npm": {
+                        "set": {
+                            "devDependencies.@types/node": "^{{V_TYPES_NODE}}"
+                        }
+                    },
+                    "when": "ts"
                 }
             ],
             "guide": {
                 "entry": "../routes/api/[...path]/index.ts"
             },
             "online": {
-                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/dist` et `frontend/server`), envoie `frontend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
-                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/dist` and `frontend/server`), upload `frontend/` to a Node.js 22.13+ host and run `npm start`"
+                "fr": "Site + API : `start.bat` puis `B` (pages et API compilées dans `frontend/dist` et `frontend/server`), envoie `frontend/` sur un hébergement Node.js 22.18+ et lance `npm start`",
+                "en": "Site + API: `start.bat` then `B` (pages and API built into `frontend/dist` and `frontend/server`), upload `frontend/` to a Node.js 22.18+ host and run `npm start`"
             },
             "doc": "inside/qwik/doc.md"
         }

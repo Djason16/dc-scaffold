@@ -11,5 +11,5 @@ const sections = welcome ?? [Intro]
 // Home page: sections rendered in order by SectionLayout
 export default component$(() => <SectionLayout sections={sections} />)
 
-// Title, description, Open Graph... of the page (utils/seo.js)
+// Title, description, Open Graph... of the page (utils/seo.ts)
 export const head: DocumentHead = { frontmatter: { pageKey: 'index' } }

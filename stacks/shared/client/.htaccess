@@ -32,15 +32,14 @@ RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
 #####################################
 # Cache rules
 <IfModule mod_headers.c>
-    # Images and fonts: kept a week by the browser (pages load faster on the next visit)
-    <FilesMatch "\.(png|jpg|jpeg|gif|webp|avif|ico|svg|woff|woff2|ttf|otf)$">
-        Header set Cache-Control "public, max-age=604800"
+    # Images and fonts of public/: kept 30 days by the browser (pages load faster on the next visit)
+    <FilesMatch "\.(png|jpg|jpeg|gif|webp|avif|ico|svg|woff|woff2|ttf|otf|mp4|webm)$">
+        Header set Cache-Control "public, max-age=2592000"
     </FilesMatch>
 
-    # Pages, scripts and styles: always the latest version
-    <FilesMatch "\.(js|css|html)$">
-        Header set Cache-Control "no-cache, no-store, must-revalidate"
-        Header set Pragma "no-cache"
-        Header set Expires "0"
+    # Pages, scripts and styles: checked again at each visit (the latest version, and the back button stays instant).
+    # The files of the build with a hash in their name are kept a year: .htaccess of their folder (_nuxt/, assets/...)
+    <FilesMatch "\.(js|mjs|css|html|json|xml|txt|webmanifest)$">
+        Header set Cache-Control "no-cache"
     </FilesMatch>
 </IfModule>

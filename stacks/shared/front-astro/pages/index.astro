@@ -1,7 +1,7 @@
 ---
 import SectionLayout from '../components/ui/SectionLayout/SectionLayout.astro'
 import Intro from '../components/views/Index/Intro.astro'
-import { welcome } from '../design.js'
+import { welcome } from '../design'
 import Default from '../layouts/Default.astro'
 
 // Ordered list of the home page sections (components/views/Index).
@@ -9,7 +9,7 @@ import Default from '../layouts/Default.astro'
 const sections = welcome ?? [Intro]
 ---
 
-<!-- pageKey: title, description, Open Graph... of utils/seo.js -->
+<!-- pageKey: title, description, Open Graph... of utils/seo.ts -->
 <Default pageKey="index">
     <SectionLayout sections={sections} />
 </Default>

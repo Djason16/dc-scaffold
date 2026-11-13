@@ -34,6 +34,7 @@ ou **Aucun** (site sans données à enregistrer).
 | **Base de données** | Fixée à MySQL pour les back ends PHP. Pour les back ends JavaScript : MySQL (dans Docker) ou SQLite (un simple fichier, rien à installer) |
 | **Accès à MySQL** | Slim et PHP : `mysqli` ou `PDO` |
 | **Langues du site** | Français, anglais, ou les deux (boutons de langue et textes traduits) |
+| **Langage du code** | TypeScript (les types sont vérifiés pendant que tu écris, `npm run typecheck` ou `check`) ou JavaScript (sans types). Proposé pour tous les fronts et back ends Node.js ; Angular, Qwik, NestJS et AdonisJS sont toujours en TypeScript, HTML / CSS / JS toujours en JavaScript |
 | **Git** | Crée le dépôt et le premier commit |
 | **VS Code + Copilot** | Vérifie VS Code, GitHub Copilot et les extensions des stacks choisis |
 | **Dernières versions majeures** | Utilise une nouvelle version majeure d'un framework même si elle n'est pas encore validée (déconseillé pour débuter) |
@@ -85,6 +86,7 @@ dcscaffold -Name "Blog" -Front sveltekit -Back site -Database sqlite -Languages 
 | `-Database` | `mysql`, `sqlite` (back ends JavaScript ; les back ends PHP utilisent toujours MySQL) | MySQL |
 | `-Driver` | `mysqli`, `pdo` (Slim et PHP) | `mysqli` |
 | `-Languages` | `fr`, `en`, `fr,en`, `en,fr` (la première est la langue par défaut) | la langue de `-Lang` |
+| `-Script` | `ts` (TypeScript) ou `js` (JavaScript) | `ts` |
 | `-AppPort` | port du site en développement | celui du framework (3000, 5173, 4321...) |
 | `-ApiPort` | port de l'API séparée | 8000 |
 | `-PmaPort` | port de phpMyAdmin | 8081 |

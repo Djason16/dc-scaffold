@@ -21,7 +21,7 @@ app.enableCors({
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'user_id', 'X-Requested-With'],
 })
-// Security headers on every answer (utils/SecurityHelper.js); no "X-Powered-By: Express" header;
+// Security headers on every answer (utils/SecurityHelper.ts); no "X-Powered-By: Express" header;
 // trusts one proxy in front (the host): req.ip = last entry of X-Forwarded-For, req.secure = HTTPS of the visitor
 const server = app.getHttpAdapter().getInstance()
 server.disable('x-powered-by')

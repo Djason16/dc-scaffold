@@ -8,10 +8,10 @@ import { useSite } from '~/composables/useSite'
 import { buildSeo } from '~/utils/seo.js'
 
 // @two-languages
-// <head> of the current page from SEO_PAGES (utils/seo.js), written into each built page, updated on language change.
+// <head> of the current page from SEO_PAGES (utils/seo.ts), written into each built page, updated on language change.
 // @end-two-languages
 // @one-language
-// <head> of the current page from SEO_PAGES (utils/seo.js), written into each built page.
+// <head> of the current page from SEO_PAGES (utils/seo.ts), written into each built page.
 // @end-one-language
 // A page gives its key with:  export const head: DocumentHead = { frontmatter: { pageKey: 'about' } }
 export default component$(() => {
@@ -33,7 +33,7 @@ export default component$(() => {
     return (
         <>
             <title>{seo.title}</title>
-            {seo.meta.map((tag) => (tag.property
+            {seo.meta.map((tag) => ('property' in tag
                 ? <meta key={tag.property} property={tag.property} content={tag.content} />
                 : <meta key={tag.name} name={tag.name} content={tag.content} />))}
             {seo.link.map((link) => <link key={link.rel} rel={link.rel} href={link.href} />)}

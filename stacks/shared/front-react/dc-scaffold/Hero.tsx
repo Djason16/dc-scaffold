@@ -1,0 +1,27 @@
+import PageHero from '@/components/ui/PageHero/PageHero'
+import { useLang } from '@/composables/useLang'
+import { useSite } from '@/composables/useSite'
+
+// Welcome of DC Scaffold, shown while design is true in dc-scaffold.config.js
+export default function Hero() {
+    const { getTranslation: t } = useLang()
+    const site = useSite()
+
+    const badge = (
+        <span className="hero-badge">
+            <img src="/dc-scaffold/icon.png" alt="DC Scaffold" title="DC Scaffold" width="28" height="28" />
+            {t('heroBadge')}
+        </span>
+    )
+
+    return (
+        <PageHero eyebrow={badge} title={t('heroTitle', { name: site.name })} text={t('heroText')} large>
+            <div className="hero-by">
+                {t('heroBy')}
+                <a className="hero-by-link" href="https://djason-chery.dev/" title="Djason CHERY" target="_blank" rel="noopener">
+                    <img src="/dc-scaffold/logo-light.png" alt="Djason CHERY" title="Djason CHERY" width="114" height="32" />
+                </a>
+            </div>
+        </PageHero>
+    )
+}

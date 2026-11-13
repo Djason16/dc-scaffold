@@ -3,10 +3,10 @@
     <FloatingButton v-if="visible" :aria-label="t('backToTop')" :title="t('backToTop')" @click="scrollToTop">↑</FloatingButton>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import FloatingButton from '@/components/ui/Button/FloatingButton.vue'
-import { useLang } from '@/composables/useLang.js'
+import { useLang } from '@/composables/useLang'
 
 // Scroll distance (in pixels) after which the button shows
 const SHOW_AFTER = 400

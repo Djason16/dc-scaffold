@@ -1,5 +1,6 @@
 ---
 // Each component of "sections" in its own <section>, in order
+type Props = { sections: ((props: Record<string, any>) => any)[] }
 const { sections } = Astro.props
 ---
 

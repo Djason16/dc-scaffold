@@ -1,4 +1,4 @@
-// Security headers on every answer, errors included (utils/SecurityHelper.js); the proxy of the host says when it is HTTPS
+// Security headers on every answer, errors included (utils/SecurityHelper.ts); the proxy of the host says when it is HTTPS
 export default defineEventHandler((event) => {
     setResponseHeaders(event, SecurityHelper.headers(getRequestProtocol(event, { xForwardedProto: true }) === 'https'))
 })
