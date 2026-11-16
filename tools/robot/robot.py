@@ -6,6 +6,7 @@
     robot.py test <kind> <id> <out>   creates a project with this stack and checks it works
     robot.py infra-test <out>         checks the candidate PHP / MySQL: Docker images, a database query,
                                       every PHP back end (run with the candidate PHP)
+    robot.py overlay <stacks.zip>     takes the versions validated by the last runs (the published catalog)
     robot.py publish <results> <dist> [previous catalog.json]
                                       raises the validated versions, writes catalog.json + stacks.zip
 
@@ -447,6 +448,50 @@ def raise_stable(stack_file, package, latest):
     return old, new
 
 
+def overlay(zip_path):
+    """Versions validated by the last runs, kept only in the published catalog (stacks.zip, the robot never commits):
+    "stable" of every package of every stack.json, the PHP / MySQL versions and stacks/version.txt, each the higher of
+    the repository and the catalog (a stack changed in the repository keeps every other change)"""
+    if not Path(zip_path).exists():
+        print("no catalog yet: the versions of the repository are used")
+        return
+    with zipfile.ZipFile(zip_path) as archive:
+        names = set(archive.namelist())
+        for stack_file in sorted(STACKS.glob("*/*/stack.json")):
+            name = "stacks/" + str(stack_file.relative_to(STACKS)).replace(os.sep, "/")
+            if name not in names:
+                continue
+            published = json.loads(archive.read(name).decode("utf-8-sig"))
+            for entry in published.get("versions", []) if isinstance(published.get("versions"), list) else []:
+                if isinstance(entry, dict) and entry.get("package") and entry.get("stable"):
+                    current = next((e.get("stable") for e in (read_json(stack_file).get("versions") or []) if isinstance(e, dict) and e.get("package") == entry["package"]), None)
+                    if current and version_key(entry["stable"]) > version_key(current):
+                        set_stable(stack_file, entry["package"], entry["stable"])
+        if "stacks/infra/versions.json" in names:
+            published = json.loads(archive.read("stacks/infra/versions.json").decode("utf-8-sig"))
+            mine = read_json(INFRA)
+            write_infra({key: published[key] for key in ("php", "mysql")
+                         if published.get(key) and mine.get(key) and version_key(published[key]) > version_key(mine[key])})
+        if "stacks/version.txt" in names:
+            version_file = STACKS / "version.txt"
+            published = archive.read("stacks/version.txt").decode("utf-8").strip()
+            if version_key(published) > version_key(version_file.read_text(encoding="utf-8").strip()):
+                version_file.write_text(published + "\n", encoding="utf-8")
+    print("validated versions of the catalog taken")
+
+
+def set_stable(stack_file, package, value):
+    """"stable" of a package in stack.json set to a value (line breaks and BOM kept)"""
+    raw = stack_file.read_bytes()
+    bom = raw.startswith(b"\xef\xbb\xbf")
+    text = raw.decode("utf-8-sig")
+    pattern = re.compile(r'("package"\s*:\s*"' + re.escape(package) + r'".*?"stable"\s*:\s*")([^"]+)(")', re.DOTALL)
+    match = pattern.search(text)
+    if match:
+        text = text[:match.start(2)] + value + text[match.end(2):]
+        stack_file.write_bytes((b"\xef\xbb\xbf" if bom else b"") + text.encode("utf-8"))
+
+
 def stacks_hash():
     """Fingerprint of the stacks (every file except version.txt)"""
     digest = hashlib.sha256()
@@ -555,7 +600,9 @@ def publish(results_dir, dist, previous_catalog=None):
 
 if __name__ == "__main__":
     command, args = (sys.argv[1], sys.argv[2:]) if len(sys.argv) > 1 else ("", [])
-    if command == "plan":
+    if command == "overlay":
+        overlay(args[0])
+    elif command == "plan":
         plan()
     elif command == "infra-plan":
         infra_plan()

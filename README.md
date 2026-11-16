@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <img src="assets/readme/badges/version.svg" alt="Version 1.5.1">
-  <img src="assets/readme/badges/windows.svg" alt="Windows 10 | 11">
+  <img src="assets/readme/badges/version.svg" alt="Version 1.6.0">
+  <img src="assets/readme/badges/systems.svg" alt="Windows | macOS | Linux">
   <img src="assets/readme/badges/license.svg" alt="License">
 </p>
 
@@ -35,11 +35,17 @@ crée le projet, le relie et t'explique chaque fichier dans le `README.md` du pr
 
 ### Démarrer
 
-1. Télécharge **[`DCScaffold-Setup.exe`](DCScaffold-Setup.exe)** (ou l'onglet *Releases*) et lance-le : installation
-   pour ton compte, sans droits administrateur.
+1. Télécharge le fichier de ton système dans l'onglet *Releases*, installation pour ton compte, sans droits administrateur :
+   - **Windows** : **[`DCScaffold-Setup.exe`](DCScaffold-Setup.exe)**, lance-le ;
+   - **macOS** : `DCScaffold-<version>-mac-arm64.dmg` (Apple Silicon) ou `-mac-x64.dmg` (Intel), glisse DC Scaffold dans
+     Applications ; il faut **PowerShell 7** (`brew install --cask powershell`) ;
+   - **Linux** : `DCScaffold-<version>-linux-x64.tar.gz`, décompresse-le puis `./install.sh` ; il faut **PowerShell 7**
+     (`sudo snap install powershell --classic`).
+
+   Détails, premier lancement sur macOS et prérequis : [Installation](docs/01-installation.md).
 2. Ouvre **DC Scaffold** : un nom, un front, un back end, les options… et la création se suit en direct.
    Les outils qui manquent (Node.js, Docker, Git, VS Code…) sont proposés à l'installation.
-3. Dans le projet : **`start.bat`** puis **`D`** pour lancer le site et l'API.
+3. Dans le projet : **`start.bat`** (macOS, Linux : **`./start.sh`**) puis **`D`** pour lancer le site et l'API.
 4. Pour mettre en ligne : la section **« Mettre en ligne »** du `README.md` du projet donne les étapes, dans l'ordre. Pour montrer le site au client avant : la section **« Qualif »** (`start.bat` puis `Q`).
 
 En console : `dcscaffold -Name "Boutique" -Front nuxt -Back slim -Database mysql`
@@ -70,7 +76,9 @@ Lequel choisir : [Choisir front et back end](docs/03-choisir-front-et-back.md).
 - **Un site prêt** : AppShell, bandeau cookies, page 404, SEO, `sitemap.xml`, une ou deux langues, design de DC Scaffold
   ou page blanche (et `start.bat` puis `P` pour basculer ou repartir de zéro)
 - **TypeScript ou JavaScript** au choix, pour tous les fronts et back ends Node.js : le même code, avec ou sans types
-- **Tout s'installe selon tes choix** (via winget, après accord), Docker seulement si le projet en a besoin
+- **Tout s'installe selon tes choix** (winget sous Windows, Homebrew sous macOS, après accord), Docker seulement si le
+  projet en a besoin
+- **Windows, macOS et Linux** : la même fenêtre, le même moteur, les mêmes projets (`start.bat` ou `./start.sh`)
 - **Versions testées chaque semaine** par un robot ; les stacks à jour arrivent tout seuls, sans réinstaller
 - **Un README par projet**, dans ta langue, avec ses chemins, ses commandes et ses étapes de mise en ligne ; le code est
   commenté en français ou en anglais
@@ -91,8 +99,7 @@ Tout est expliqué dans **[`docs/`](docs/README.md)** :
 
 ### Feuille de route
 
-- Signature de l'exe (plus d'avertissement SmartScreen)
-- Versions macOS et Linux de la fenêtre
+- Signature de l'exe et de l'app macOS (plus d'avertissement SmartScreen ni Gatekeeper)
 - Nouveaux stacks (Django, FastAPI, Hono...)
 
 ### Licence
@@ -109,11 +116,16 @@ everything and explains every file in the `README.md` of the project. No need to
 
 ### Getting started
 
-1. Download **[`DCScaffold-Setup.exe`](DCScaffold-Setup.exe)** (or the *Releases* tab) and run it: installed for your
-   account, no administrator rights.
+1. Download the file of your system from the *Releases* tab, installed for your account, no administrator rights:
+   - **Windows**: **[`DCScaffold-Setup.exe`](DCScaffold-Setup.exe)**, run it;
+   - **macOS**: `DCScaffold-<version>-mac-arm64.dmg` (Apple Silicon) or `-mac-x64.dmg` (Intel), drag DC Scaffold into
+     Applications; **PowerShell 7** is needed (`brew install --cask powershell`). The app is not signed by Apple: the
+     first time, *System Settings > Privacy & Security > Open Anyway* (or `xattr -dr com.apple.quarantine "/Applications/DC Scaffold.app"`);
+   - **Linux**: `DCScaffold-<version>-linux-x64.tar.gz`, extract it then `./install.sh`; **PowerShell 7** is needed
+     (`sudo snap install powershell --classic`). A Chromium browser (Chrome, Edge, Brave, Chromium) is recommended for the window.
 2. Open **DC Scaffold**: a name, a front, a back end, the options… and the creation is followed live. Missing tools
    (Node.js, Docker, Git, VS Code…) are offered for installation.
-3. In the project: **`start.bat`** then **`D`** to start the site and the API.
+3. In the project: **`start.bat`** (macOS, Linux: **`./start.sh`**) then **`D`** to start the site and the API.
 4. To go online: the **"Going online"** section of the project's `README.md` gives the steps, in order.
 
 In a console: `dcscaffold -Name "Shop" -Front nuxt -Back slim -Database mysql`.
@@ -141,7 +153,9 @@ Two ways to place the API, picked for the chosen pair:
 - **A ready site**: AppShell, cookie banner, 404 page, SEO, `sitemap.xml`, one or two languages, DC Scaffold design or blank page
   (and `start.bat` then `P` to switch or start from zero)
 - **TypeScript or JavaScript**, your choice, for every front and Node.js back end: the same code, with or without types
-- **Everything installed for your choices** (through winget, after asking), Docker only when the project needs it
+- **Everything installed for your choices** (winget on Windows, Homebrew on macOS, after asking), Docker only when the
+  project needs it
+- **Windows, macOS and Linux**: the same window, the same engine, the same projects (`start.bat` or `./start.sh`)
 - **Versions tested every week** by a robot; updated stacks arrive by themselves, without reinstalling
 - **One README per project**, in your language, with its paths, commands and going-online steps; code commented in French or English
 - **Extensible**: every front and back end is a folder with its `stack.json`
@@ -154,8 +168,7 @@ The full documentation is in **[`docs/`](docs/README.md)** (in French). In Engli
 
 ### Roadmap
 
-- Signed exe (no SmartScreen warning)
-- macOS and Linux windows
+- Signed exe and macOS app (no SmartScreen or Gatekeeper warning)
 - More stacks (Django, FastAPI, Hono...)
 
 ### License

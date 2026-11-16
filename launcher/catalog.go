@@ -8,7 +8,7 @@ package main
 //	catalog.json   { "version", "minApp", "stacks": { "url", "sha256" } }
 //	stacks.zip     the stacks/ folder
 //
-// DC Scaffold downloads them when it opens, into %LOCALAPPDATA%\DC Scaffold\catalog:
+// DC Scaffold downloads them when it opens, into %LOCALAPPDATA%\DC Scaffold\catalog (macOS, Linux: see catalogDir):
 //
 //	current\stacks    the stacks used (the engine reads the same folder)
 //	next\stacks       a new download, used as soon as nothing is being created
@@ -38,13 +38,12 @@ type catalog struct {
 	} `json:"stacks"`
 }
 
-// %LOCALAPPDATA%\DC Scaffold\catalog (removed by the uninstaller)
+// %LOCALAPPDATA%\DC Scaffold\catalog on Windows (removed by the uninstaller), catalog in userDataDir() on macOS and Linux
 func catalogDir() string {
 	if local := os.Getenv("LOCALAPPDATA"); local != "" {
 		return filepath.Join(local, productName, "catalog")
 	}
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".dc-scaffold", "catalog")
+	return filepath.Join(userDataDir(), "catalog")
 }
 
 // Address of catalog.json: the "catalog" release of the repository (DCS_CATALOG_URL for the tests)

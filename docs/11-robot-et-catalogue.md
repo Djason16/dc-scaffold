@@ -37,7 +37,7 @@ Le workflow [`.github/workflows/compatibility.yml`](../.github/workflows/compati
    - chaque nouvelle version majeure qui marche devient la version validée (`stable` dans `stack.json`) ;
    - PHP / MySQL sont mis à jour dans `versions.json` si tout marche ;
    - `stacks/version.txt` est augmenté si les stacks ont changé (format `2026.10.29.1`) ;
-   - les changements sont commités par « DC Scaffold robot » (`🤖 chore: stacks ...`) ;
+   - **aucun commit** : ces versions validées ne vivent que dans le catalogue publié ; au début de chaque passage, `robot.py overlay` les reprend de `stacks.zip` (pour chaque paquet, la plus haute entre le dépôt et le catalogue), donc l'historique de `master` ne contient que tes versions ;
    - le catalogue est publié dans la release GitHub **`catalog`** : `catalog.json` et `stacks.zip`.
 
 ## Quand quelque chose casse
@@ -71,7 +71,7 @@ Les journaux de chaque test sont dans les *artifacts* du run (`result-<kind>-<id
 - `version` est plus récente que ses stacks ;
 - **et** `minApp` (la version de l'application pour laquelle ces stacks sont écrits) est inférieure ou égale à sa version.
 
-`stacks.zip` est vérifié (sha256) puis décompressé dans `%LOCALAPPDATA%\DC Scaffold\catalog\current`. Sans internet,
+`stacks.zip` est vérifié (sha256) puis décompressé dans `%LOCALAPPDATA%\DC Scaffold\catalog\current` (macOS, Linux : `catalog/current` du dossier de DC Scaffold, voir [1. Installation](01-installation.md)). Sans internet,
 ou si `minApp` est trop récent, DC Scaffold garde les stacks qu'il a.
 
 ## Faut-il recompiler le setup ?

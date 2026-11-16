@@ -6,23 +6,33 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"os/exec"
-	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
 )
 
-// Name of the installer attached to every GitHub release (see .github/workflows/build.yml)
-const setupAsset = "DCScaffold-Setup.exe"
-
+// Files attached to every GitHub release (see .github/workflows/release.yml), one per system:
+//
+//	Windows  DCScaffold-Setup.exe                         (assetMatches in update_windows.go)
+//	macOS    DCScaffold-<version>-mac-<arm64|x64>.dmg / .zip  (update_unix.go)
+//	Linux    DCScaffold-<version>-linux-<x64|arm64>.tar.gz
 type release struct {
 	Version string
+	Name    string // file of this system
 	URL     string
 }
 
-// Latest GitHub release with an installer, or nil: no repository set (local build), no network,
-// private repository... DC Scaffold then simply works without update.
+// Processor in the names of the files: x64 for Intel / AMD, arm64 for Apple Silicon and ARM
+func releaseArch() string {
+	if runtime.GOARCH == "amd64" {
+		return "x64"
+	}
+	return runtime.GOARCH
+}
+
+// Latest GitHub release with a file for this system, or nil: no repository set (local build), no network,
+// private repository, no file for this system... DC Scaffold then simply works without update.
 func latestRelease() *release {
 	if updateRepo == "" || os.Getenv("DCS_NO_UPDATE") != "" {
 		return nil
@@ -38,30 +48,32 @@ func latestRelease() *release {
 	}
 
 	var data struct {
-		TagName string `json:"tag_name"`
-		Assets  []struct {
-			Name string `json:"name"`
-			URL  string `json:"browser_download_url"`
-		} `json:"assets"`
+		TagName string  `json:"tag_name"`
+		Assets  []asset `json:"assets"`
 	}
 	if json.NewDecoder(response.Body).Decode(&data) != nil {
 		return nil
 	}
-	for _, asset := range data.Assets {
-		if asset.Name == setupAsset {
-			return &release{Version: strings.TrimPrefix(data.TagName, "v"), URL: asset.URL}
-		}
-	}
-	return nil
+	return pickAsset(strings.TrimPrefix(data.TagName, "v"), data.Assets)
 }
 
-// Downloads the new installer and opens it: it updates the same folder once this exe has closed
-func installUpdate(update *release) error {
-	setup := filepath.Join(os.TempDir(), setupAsset)
-	if err := download(update.URL, setup); err != nil {
-		return err
+type asset struct {
+	Name string `json:"name"`
+	URL  string `json:"browser_download_url"`
+}
+
+// The file of this system; macOS: the disk image before the zip
+func pickAsset(version string, assets []asset) *release {
+	var found *release
+	for _, file := range assets {
+		if !assetMatches(file.Name) {
+			continue
+		}
+		if found == nil || strings.HasSuffix(file.Name, ".dmg") {
+			found = &release{Version: version, Name: file.Name, URL: file.URL}
+		}
 	}
-	return exec.Command(setup).Start()
+	return found
 }
 
 func download(url, path string) error {

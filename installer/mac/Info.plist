@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Info.plist of DC Scaffold.app, {{VERSION}} filled by installer/build-mac.sh. LSUIElement: no Dock icon of its own,
+     the window is the one of the browser (Chrome, Edge, Brave or Chromium in application mode). -->
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>DC Scaffold</string>
+    <key>CFBundleDisplayName</key>
+    <string>DC Scaffold</string>
+    <key>CFBundleIdentifier</key>
+    <string>dev.djason-chery.dcscaffold</string>
+    <key>CFBundleExecutable</key>
+    <string>DCScaffold</string>
+    <key>CFBundleIconFile</key>
+    <string>DCScaffold</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>{{VERSION}}</string>
+    <key>CFBundleVersion</key>
+    <string>{{VERSION}}</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>fr</string>
+    </array>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.developer-tools</string>
+    <key>LSMinimumSystemVersion</key>
+    <string>11.0</string>
+    <key>LSUIElement</key>
+    <true/>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright (C) 2026 Djason CHERY</string>
+</dict>
+</plist>

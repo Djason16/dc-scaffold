@@ -1,5 +1,5 @@
 ﻿# Launcher for {{PROJECT_NAME}} ({{STACK_LABEL}})
-# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A|Q|K|O|P
+# Usage: start.bat (menu; macOS, Linux: ./start.sh) or .\start.ps1 -Action D|S|R|I|G|B|A|Q|K|O|P
 # Every option adapts to what the project contains (docker-compose.yml, backend/, frontend/).
 param([string]$Action)
 
@@ -58,7 +58,10 @@ function Start-Window([string]$Path, [string]$Title, [string]$Command) {
         "Write-Host ''"
         $Command
     ) -join "`n"
+    # macOS / Linux: the new window gets the PATH of this one (npm, docker of Homebrew or ~/.local/bin)
+    if ($IsMacOS -or $IsLinux) { $script = "`$env:PATH = '$($env:PATH.Replace("'", "''"))'`n$script" }
     $encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($script))
+    if ($IsMacOS -or $IsLinux) { Start-TerminalWindow $Path $Title @('-NoExit', '-NoProfile', '-EncodedCommand', $encoded); return }
     Start-Process $Shell -ArgumentList '-NoExit', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-EncodedCommand', $encoded
 }
 
@@ -94,6 +97,13 @@ function Install-Dependencies([switch]$All) {
                 Write-Warn 'npm failed, trying again with the latest npm...'
                 $installed = Invoke-In $dir { & $Npx --yes npm@latest install --no-fund --no-audit }
             }
+            if (-not $installed) {
+                # A package published a few minutes ago can be listed before its files can be downloaded (error 404):
+                # one last try a minute later
+                Write-Warn 'npm failed again (a package published a few minutes ago may not be downloadable yet): last try in 60 seconds...'
+                Start-Sleep -Seconds 60
+                $installed = Invoke-In $dir { & $Npm install --no-fund --no-audit }
+            }
             if ($installed) { Write-Ok "Ready: $name/node_modules" } else { Write-Fail "Installation failed in $name/ (npm)"; $ok = $false }
             $done = $true
         }
@@ -104,7 +114,8 @@ function Install-Dependencies([switch]$All) {
 
 function Start-Dev {
     if ($HasDocker -and -not (Test-Docker)) {
-        Write-Fail 'Docker is not running. Start Docker Desktop and retry.'
+        if ($IsLinux) { Write-Fail 'Docker is not running. Start it (sudo systemctl start docker, or Docker Desktop) and retry.' }
+        else { Write-Fail 'Docker is not running. Start Docker Desktop and retry.' }
         return
     }
     Install-Dependencies | Out-Null

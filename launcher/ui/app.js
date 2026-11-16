@@ -15,6 +15,8 @@ const TEXTS = {
         updateTitle: 'Nouvelle version disponible',
         updateButton: 'Mettre à jour',
         updateStarting: "L'installation de la nouvelle version s'ouvre : DC Scaffold se ferme le temps de la mise à jour.",
+        updateOpened: "La nouvelle version s'ouvre dans le Finder : glisse DC Scaffold dans Applications (Remplacer), puis rouvre-le.",
+        updateInstalled: "La nouvelle version est installée : DC Scaffold se ferme, rouvre-le depuis le menu des applications.",
         steps: ['Projet', 'Site', 'Serveur', 'Options', 'Création'],
         step: 'Étape',
         back: 'Retour',
@@ -111,6 +113,7 @@ const TEXTS = {
             'folder not found': "Ce dossier n'existe plus (il a peut-être été déplacé ou supprimé)",
             'VS Code not found': "VS Code est introuvable : installe-le depuis code.visualstudio.com",
             'no update': "Aucune mise à jour n'est disponible",
+            'terminal not found': "aucun terminal trouvé : ouvre un terminal dans le dossier du projet et lance ./start.sh",
             'unknown action': 'Action inconnue',
             busy: 'Une création est déjà en cours',
         },
@@ -129,6 +132,8 @@ const TEXTS = {
         updateTitle: 'New version available',
         updateButton: 'Update',
         updateStarting: 'The installer of the new version opens: DC Scaffold closes during the update.',
+        updateOpened: 'The new version opens in the Finder: drag DC Scaffold into Applications (Replace), then open it again.',
+        updateInstalled: 'The new version is installed: DC Scaffold closes, open it again from the applications menu.',
         steps: ['Project', 'Site', 'Server', 'Options', 'Creation'],
         step: 'Step',
         back: 'Back',
@@ -224,6 +229,7 @@ const TEXTS = {
             'folder not found': 'This folder no longer exists (it may have been moved or deleted)',
             'VS Code not found': 'VS Code cannot be found: install it from code.visualstudio.com',
             'no update': 'No update is available',
+            'terminal not found': 'no terminal found: open a terminal in the folder of the project and run ./start.sh',
             'unknown action': 'Unknown action',
             busy: 'A creation is already running',
         },
@@ -841,7 +847,7 @@ function bindStep() {
         state.destination = destination.value
         $('[data-folder]').textContent = slugify(state.name) ? projectFolder() : ''
     })
-    // Folder picker of Windows; if it cannot open, the path can still be typed in the field
+    // Folder picker of the system (Windows, Finder, zenity / kdialog); if it cannot open, the path can still be typed in the field
     $('[data-browse]')?.addEventListener('click', async (event) => {
         event.currentTarget.disabled = true
         const answer = await api('/api/browse', { start: state.destination, title: t('browseTitle') })
@@ -995,7 +1001,14 @@ async function checkUpdate() {
             event.target.disabled = false
             return toast(t('errorGeneric', answer.error))
         }
-        toast(t('updateStarting'))
+        // macOS: the new app is shown in the Finder, the window stays open with what to do
+        if (answer.mode === 'opened') {
+            $('[data-update] p').textContent = t('updateOpened')
+            event.target.hidden = true
+            return toast(t('updateOpened'))
+        }
+        // Windows: the installer opens; Linux: install.sh has already replaced the files
+        toast(t(answer.mode === 'installed' ? 'updateInstalled' : 'updateStarting'))
         setTimeout(() => window.close(), 2500)
     })
 }

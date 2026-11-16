@@ -5,7 +5,7 @@
 
 ## Démarrer
 
-1. Double-clique sur `start.bat`, à la racine du projet.
+1. Double-clique sur `start.bat`, à la racine du projet (macOS, Linux : `./start.sh` dans un terminal, avec PowerShell 7).
 2. Tape `D` puis Entrée : tout se lance (Docker si besoin, le serveur, le site) et ton navigateur s'ouvre.
 
 {{URL_TABLE}}

@@ -49,6 +49,16 @@ $AppName = 'DC Scaffold'
 $AppVersion = (Get-Content (Join-Path (Split-Path $PSScriptRoot -Parent) 'VERSION') -ErrorAction SilentlyContinue | Select-Object -First 1)
 if (-not $AppVersion) { $AppVersion = '0.0.0' }
 $AppAuthor = 'Djason CHERY'
+# macOS or Linux (PowerShell 7). Windows PowerShell 5.1 knows neither $IsMacOS nor $IsLinux: Windows.
+$OnUnix = [bool]($IsMacOS -or $IsLinux)
+
+# Folder of the settings, custom stacks and downloaded catalog on macOS and Linux (Windows: %APPDATA% and
+# %LOCALAPPDATA%), the same as userDataDir() in launcher/paths.go
+function Get-DataDir {
+    if ($IsMacOS) { return Join-Path $HOME "Library/Application Support/$AppName" }
+    $config = if ($env:XDG_CONFIG_HOME -and [IO.Path]::IsPathRooted($env:XDG_CONFIG_HOME)) { $env:XDG_CONFIG_HOME } else { Join-Path $HOME '.config' }
+    return Join-Path $config 'dc-scaffold'
+}
 
 # Version "2026.10.19.1" or "1.0.0" -> [version] (0.0 when empty or unreadable)
 function ConvertTo-Version([string]$Text) {
@@ -59,8 +69,9 @@ function ConvertTo-Version([string]$Text) {
 
 # The downloaded stacks when they fit this version of DC Scaffold and are newer than the installed ones
 function Get-NewestStacks([string]$InstalledDir) {
-    if (-not $env:LOCALAPPDATA) { return $InstalledDir }
-    $folder = Join-Path $env:LOCALAPPDATA 'DC Scaffold\catalog\current'
+    if ($env:LOCALAPPDATA) { $folder = Join-Path $env:LOCALAPPDATA 'DC Scaffold\catalog\current' }
+    elseif ($OnUnix) { $folder = Join-Path (Get-DataDir) 'catalog/current' }
+    else { return $InstalledDir }
     $file = Join-Path $folder 'catalog.json'
     if (-not (Test-Path (Join-Path $folder 'stacks\fronts')) -or -not (Test-Path $file)) { return $InstalledDir }
     try { $downloaded = Get-Content $file -Raw -Encoding UTF8 | ConvertFrom-Json } catch { return $InstalledDir }
@@ -76,6 +87,8 @@ $EngineDir = $PSScriptRoot
 $StacksDir = Join-Path (Split-Path $EngineDir -Parent) 'stacks'
 $StacksDir = Get-NewestStacks $StacksDir
 . (Join-Path $StacksDir 'common\scripts\common.ps1')
+# macOS and Linux: installing the tools (Homebrew, user folders, instructions), Docker, VS Code, ports
+if ($OnUnix) { . (Join-Path $EngineDir 'unix.ps1') }
 
 $Utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 $Utf8Bom = New-Object System.Text.UTF8Encoding($true)
@@ -87,7 +100,7 @@ try { [Net.ServicePointManager]::SecurityProtocol = [Net.ServicePointManager]::S
 # Settings (language and last folder, remembered between runs)
 # ===========================================================================
 
-$SettingsDir = if ($env:APPDATA) { Join-Path $env:APPDATA $AppName } else { Join-Path $HOME '.dc-scaffold' }
+$SettingsDir = if ($env:APPDATA) { Join-Path $env:APPDATA $AppName } elseif ($OnUnix) { Get-DataDir } else { Join-Path $HOME '.dc-scaffold' }
 $SettingsFile = Join-Path $SettingsDir 'settings.json'
 
 function Get-Settings {
@@ -155,8 +168,8 @@ function Convert-Comments([string]$Text, [string]$RelativePath) {
         }
     }
     $Text = $lines -join "`n"
-    # Messages shown by start.ps1, between single or double quotes
-    if ($RelativePath.EndsWith('.ps1')) {
+    # Messages shown by start.ps1 (and start.sh), between single or double quotes
+    if ($RelativePath.EndsWith('.ps1') -or $RelativePath.EndsWith('.sh')) {
         foreach ($key in $MessageTexts.Keys) {
             $Text = $Text.Replace("'$key'", "'" + $MessageTexts[$key].Replace("'", "''") + "'").Replace("`"$key`"", "`"$($MessageTexts[$key])`"")
         }
@@ -231,6 +244,7 @@ function New-Secret([int]$Length = 20) {
 }
 
 function Test-PortInUse([int]$Port) {
+    if ($OnUnix) { return Test-UnixPortInUse $Port }
     try { return [bool](Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction Stop) } catch { return $false }
 }
 
@@ -749,6 +763,8 @@ function Test-VersionRange([string]$Version, [string]$Range) {
 
 # Reloads PATH from the registry so freshly installed tools work without reopening the console
 function Update-SessionPath {
+    # macOS / Linux: no registry, the folders of Homebrew and ~/.local/bin instead (common.ps1)
+    if ($OnUnix) { Add-ToolPaths; $script:Npm = 'npm'; $script:Npx = 'npx'; return }
     $paths = foreach ($scope in 'Machine', 'User') { [Environment]::GetEnvironmentVariable('Path', $scope) }
     $joined = ($paths | Where-Object { $_ }) -join [IO.Path]::PathSeparator
     if ($joined) { $env:Path = $joined }
@@ -756,8 +772,10 @@ function Update-SessionPath {
     $script:Npx = if (Test-Command 'npx.cmd') { 'npx.cmd' } else { 'npx' }
 }
 
-# Installs a tool with winget (Windows package manager), or opens its download page
+# Installs a tool with winget (Windows package manager), or opens its download page.
+# macOS / Linux: Homebrew, otherwise what to type (engine/unix.ps1)
 function Install-Tool([string]$Label, [string]$WingetId, [string]$Url) {
+    if ($OnUnix) { return Install-UnixTool $Label $WingetId }
     if (-not (Test-Command 'winget')) {
         Write-Warn (T 'winget_missing' $Label $Url)
         Start-Process $Url
@@ -772,6 +790,7 @@ function Install-Tool([string]$Label, [string]$WingetId, [string]$Url) {
 }
 
 function Install-Node([string]$Version) {
+    if ($OnUnix) { Install-UnixNode $Version; return }
     if (Test-Command 'nvm') {
         nvm install $Version | Out-Host
         nvm use $Version | Out-Host
@@ -784,6 +803,7 @@ function Install-Node([string]$Version) {
 # VS Code command line (code.cmd): in the PATH, or in its usual folders right after its installation
 function Find-VSCode {
     foreach ($command in 'code.cmd', 'code') { if (Test-Command $command) { return $command } }
+    if ($OnUnix) { return Find-UnixVSCode }
     foreach ($folder in @($env:LOCALAPPDATA, $env:ProgramFiles) | Where-Object { $_ }) {
         $path = Join-Path $folder 'Programs\Microsoft VS Code\bin\code.cmd'
         if (Test-Path $path) { return $path }
@@ -829,6 +849,7 @@ function Test-Editor([string[]]$Extensions) {
 # Composer without installer: composer.phar (checked with its sha256) and composer.cmd in
 # %LOCALAPPDATA%\Programs\Composer, added to the PATH of the user
 function Install-Composer([string]$Site = 'https://getcomposer.org') {
+    if ($OnUnix) { return Install-UnixComposer $Site }
     $folder = Join-Path $env:LOCALAPPDATA 'Programs\Composer'
     $phar = Join-Path $folder 'composer.phar'
     Write-Info (T 'installing' 'Composer')
@@ -861,6 +882,7 @@ function Test-DockerRunning {
 
 # Starts Docker Desktop and waits until the engine answers (up to 3 minutes)
 function Start-DockerDesktop {
+    if ($OnUnix) { return Start-UnixDocker }
     if (-not $env:ProgramFiles) { return $false }
     $exe = Join-Path $env:ProgramFiles 'Docker\Docker\Docker Desktop.exe'
     if (-not (Test-Path $exe)) { return $false }
@@ -982,7 +1004,7 @@ function Test-Tools([string[]]$Needs, [string[]]$NpmPackages, [object[]]$NodeRan
         if (-not $docker) {
             Write-VersionLine 'Docker' (T 'missing') 'Desktop' (T 'docker_required') 'Red'
             if (Confirm-Choice (T 'install_question' 'Docker Desktop' '') $true) {
-                if (Install-Tool 'Docker Desktop' 'Docker.DockerDesktop' 'https://www.docker.com/products/docker-desktop/') {
+                if ((Install-Tool 'Docker Desktop' 'Docker.DockerDesktop' 'https://www.docker.com/products/docker-desktop/') -and -not $OnUnix) {
                     Write-Warn (T 'docker_restart_hint')
                 }
                 $docker = Get-ToolVersion 'docker'
@@ -1533,6 +1555,8 @@ Write-Title "[4/8] $(T 'step_shared')"
 Send-UiEvent @{ type = 'step'; step = 4; total = 8; title = "$(T 'step_shared')" }
 New-Item -ItemType Directory -Path $Root -Force | Out-Null
 Copy-Template (Join-Path $StacksDir 'common')
+# start.sh (the menu on macOS and Linux) can be run as a program
+if ($OnUnix -and (Test-Path (Join-Path $Root 'start.sh'))) { & chmod +x (Join-Path $Root 'start.sh') }
 Write-ProjectFile 'README.md' $Readme
 # VS Code suggests these extensions when the project is opened
 Write-ProjectFile '.vscode\extensions.json' (@{ recommendations = @(Get-EditorExtensions) } | ConvertTo-Json)
@@ -1673,6 +1697,8 @@ if ($NoGit) {
     Push-Location $Root
     git init -q
     git add -A
+    # start.sh executable in the repository too: a project created on Windows starts on a Mac or Linux after git clone
+    if (Test-Path (Join-Path $Root 'start.sh')) { git update-index --chmod=+x start.sh }
     # Message written to a file so the emoji survives Windows PowerShell 5.1
     $messageFile = [System.IO.Path]::GetTempFileName()
     [System.IO.File]::WriteAllText($messageFile, "🎉 init: scaffold $StackLabel project`n", $Utf8NoBom)
@@ -1696,7 +1722,7 @@ Send-UiEvent @{
 
 $summary = @("$(T 'ready')  ·  $ProjectName", $StackLabel, '') + ($urlRows | ForEach-Object { '{0,-12} {1}' -f $_[0], $_[1] })
 if ($HasDatabase) { $summary += '{0,-12} root / {1}' -f '', $DbPass }
-$summary += @('', (T 'next_step'), "$AppName · $AppAuthor")
+$summary += @('', (T $(if ($OnUnix) { 'next_step_unix' } else { 'next_step' })), "$AppName · $AppAuthor")
 
 if (-not $Ui) {
     Write-Host ''

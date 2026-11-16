@@ -1,6 +1,7 @@
 # Compatibility robot: every Monday, tests every stack with the latest versions of its packages
 # (tools/robot/robot.py), raises the validated versions that work, and publishes the online catalog
-# (release "catalog": catalog.json + stacks.zip) that DC Scaffold downloads when it opens.
+# (release "catalog": catalog.json + stacks.zip) that DC Scaffold downloads when it opens. It never commits: the
+# validated versions live only in that catalog, taken again at the start of every job (robot.py overlay).
 # A stack that breaks: a GitHub issue is opened, and DC Scaffold stays on the version that works.
 #
 # Also run by hand (Actions > Compatibility > Run workflow), and after every change of stacks/ (or of the robot)
@@ -16,6 +17,7 @@ on:
     paths: ['stacks/**', 'tools/robot/**', '.github/workflows/compatibility.yml']
 
 permissions:
+  # contents: the release "catalog" (no commit); issues: the issue of the broken stacks
   contents: write
   issues: write
 
@@ -33,6 +35,13 @@ jobs:
       change: ${{ steps.plan.outputs.change }}
     steps:
       - uses: actions/checkout@v4
+      # Versions validated by the last runs: kept only in the published catalog (the robot never commits on master)
+      - name: Validated versions of the catalog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download catalog --pattern stacks.zip --dir "$RUNNER_TEMP/catalog" || true
+          python3 tools/robot/robot.py overlay "$RUNNER_TEMP/catalog/stacks.zip"
       - id: plan
         run: |
           echo "stacks=$(python3 tools/robot/robot.py plan)" >> "$GITHUB_OUTPUT"
@@ -52,6 +61,13 @@ jobs:
     name: ${{ matrix.stack.kind }}/${{ matrix.stack.id }}
     steps:
       - uses: actions/checkout@v4
+      # Versions validated by the last runs: kept only in the published catalog (the robot never commits on master)
+      - name: Validated versions of the catalog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download catalog --pattern stacks.zip --dir "$RUNNER_TEMP/catalog" || true
+          python3 tools/robot/robot.py overlay "$RUNNER_TEMP/catalog/stacks.zip"
       - uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
@@ -81,6 +97,13 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+      # Versions validated by the last runs: kept only in the published catalog (the robot never commits on master)
+      - name: Validated versions of the catalog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download catalog --pattern stacks.zip --dir "$RUNNER_TEMP/catalog" || true
+          python3 tools/robot/robot.py overlay "$RUNNER_TEMP/catalog/stacks.zip"
       - uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
@@ -107,6 +130,13 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
+      # Versions validated by the last runs: kept only in the published catalog (the robot never commits on master)
+      - name: Validated versions of the catalog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download catalog --pattern stacks.zip --dir "$RUNNER_TEMP/catalog" || true
+          python3 tools/robot/robot.py overlay "$RUNNER_TEMP/catalog/stacks.zip"
       - uses: actions/download-artifact@v4
         with:
           path: results
@@ -114,15 +144,6 @@ jobs:
         run: gh release download catalog --pattern catalog.json --output previous-catalog.json || true
       - name: Versions and catalog
         run: python3 tools/robot/robot.py publish results dist previous-catalog.json
-      - name: Save the new versions
-        run: |
-          git config user.name 'DC Scaffold robot'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add stacks
-          if ! git diff --cached --quiet; then
-            { echo "🤖 chore: stacks $(cat stacks/version.txt)"; echo; cat dist/summary.md; } > dist/message.txt
-            git commit -F dist/message.txt && git push
-          fi
       - name: Publish the catalog
         run: |
           gh release view catalog >/dev/null 2>&1 || gh release create catalog --title 'Catalog' --notes 'Stacks and offers downloaded by DC Scaffold. Updated by the compatibility robot.' --latest=false

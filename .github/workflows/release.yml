@@ -1,0 +1,108 @@
+# Builds DC Scaffold for every system; on a v* tag, publishes the files in the GitHub release of that tag
+# (created with the notes of CHANGELOG.md when it does not exist yet):
+#   DCScaffold-Setup.exe                      Windows installer (Go launcher + NSIS)
+#   DCScaffold-<version>-mac-arm64.zip / .dmg  macOS, Apple Silicon
+#   DCScaffold-<version>-mac-x64.zip / .dmg    macOS, Intel
+#   DCScaffold-<version>-linux-x64.tar.gz      Linux, with install.sh
+# The installed DC Scaffold checks the latest release of this repository and offers the file of its system (launcher/update.go).
+# Run by hand (Actions > Release > Run workflow): the files are only kept as artifacts of the run.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    # Ubuntu 24.04: on ubuntu-latest (26.04) the mirror never answered for the mingw packages (2026-11-11)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Install NSIS and mingw
+        timeout-minutes: 10
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        # The Azure mirror of the runners stopped answering for these packages (2026-11-11): the main Ubuntu mirror instead
+        run: |
+          echo 'http://archive.ubuntu.com/ubuntu' | sudo tee /etc/apt/apt-mirrors.txt > /dev/null
+          sudo sed -i 's#http://azure.archive.ubuntu.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          sudo apt-get update && sudo apt-get install -y nsis mingw-w64
+
+      - name: Build DCScaffold-Setup.exe
+        run: UPDATE_REPO='${{ github.repository }}' sh ./installer/build.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: DCScaffold-Setup.exe
+
+  mac:
+    # Apple Silicon runner: builds both processors (Go cross-compiles), signs ad hoc, makes the disk images with hdiutil
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Build DC Scaffold.app (zip and dmg)
+        run: UPDATE_REPO='${{ github.repository }}' ARCHS='arm64 x64' sh ./installer/build-mac.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac
+          path: dist/*
+
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Build the Linux archive
+        run: UPDATE_REPO='${{ github.repository }}' ARCHS='x64' sh ./installer/build-linux.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: dist/*
+
+  publish:
+    needs: [windows, mac, linux]
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: release
+          merge-multiple: true
+
+      # The section "## [1.6.0] - ..." of CHANGELOG.md, up to the next version
+      - name: Notes of the version
+        run: |
+          awk -v head="## [${TAG#v}]" 'index($0, head) == 1 { found = 1; next } found && /^## \[/ { exit } found { print }' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "DC Scaffold ${TAG#v}" > notes.md
+
+      - name: Publish the release
+        run: |
+          gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 ||
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" --title "$TAG" --notes-file notes.md --verify-tag
+          gh release upload "$TAG" --repo "$GITHUB_REPOSITORY" --clobber release/*

@@ -8,13 +8,13 @@ import (
 	"strings"
 )
 
-// Folder of the settings shared with the engine: %APPDATA%\DC Scaffold (settings.json, custom stacks)
+// Folder of the settings shared with the engine (settings.json, custom stacks): %APPDATA%\DC Scaffold on Windows,
+// userDataDir() on macOS and Linux
 func settingsDir() string {
 	if appData := os.Getenv("APPDATA"); appData != "" {
 		return filepath.Join(appData, productName)
 	}
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".dc-scaffold")
+	return userDataDir()
 }
 
 func readSettings() map[string]any {

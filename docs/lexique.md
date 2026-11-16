@@ -34,4 +34,4 @@
 | **SEO** | Ce qui aide les moteurs de recherche : titre, description, `sitemap.xml`, `robots.txt` |
 | **Catalogue** | Les stacks à jour publiés en ligne par le robot, téléchargés tout seuls par DC Scaffold |
 | **Version validée** | La version d'un framework testée par le robot (`stable` dans `stack.json`) |
-| **winget** | Le gestionnaire d'applications de Windows, utilisé pour installer Node.js, Docker, Git, VS Code |
+| **winget** | Le gestionnaire d'applications de Windows, utilisé pour installer Node.js, Docker, Git, VS Code (sous macOS : Homebrew, `brew`) |

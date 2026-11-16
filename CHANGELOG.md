@@ -4,6 +4,49 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-16
+
+DC Scaffold on macOS and Linux: the same window, the same engine and the same projects as on Windows.
+
+### macOS and Linux
+- `DC Scaffold.app` for macOS (Apple Silicon and Intel: `DCScaffold-1.6.0-mac-arm64.dmg` / `-mac-x64.dmg`, also in `.zip`),
+  and `DCScaffold-1.6.0-linux-x64.tar.gz` for Linux with `install.sh` (no sudo: `~/.local/share/dc-scaffold`, the
+  `dcscaffold` command in `~/.local/bin`, DC Scaffold in the menu of the applications with its icon) and `uninstall.sh`
+- The window in Chrome, Edge, Brave or Chromium in application mode, with its own profile (otherwise a tab of the default
+  browser); folder picker of the Finder (`osascript`) or of the desktop (`zenity`, `kdialog`); open the folder (`open`,
+  `xdg-open`), VS Code (also inside its macOS app); « Start » and « Console version » in a new Terminal window (macOS) or
+  in the terminal of the desktop (`x-terminal-emulator`, GNOME Terminal, Konsole...); French when the system is
+  (`LANG`, languages of macOS); errors in a dialog box
+- The engine runs with PowerShell 7 (`pwsh`): when it is missing, DC Scaffold says how to install it
+  (`brew install --cask powershell`, `sudo snap install powershell --classic`)
+- Opened from the Finder or a menu, DC Scaffold takes the PATH of the terminal of the user (Homebrew, nvm, `~/.local/bin`)
+- Settings, custom stacks, downloaded catalog and window profile in `~/Library/Application Support/DC Scaffold` (macOS)
+  and `~/.config/dc-scaffold` (Linux); Windows keeps `%APPDATA%` and `%LOCALAPPDATA%`
+- Tools installed when missing, after asking, never with sudo: Homebrew on macOS (Node.js LTS as `node@<version>`,
+  Docker Desktop, Git, PHP, Composer, VS Code), otherwise the official installer of Node.js and the developer tools of
+  Apple for Git; on Linux, Node.js LTS and Composer installed for the user in `~/.local` (official files checked with
+  their sha256), the command to type for Git and PHP (`sudo apt install git`, `dnf`, `pacman`, `zypper`), the install
+  pages of Docker and VS Code; Docker Desktop started by itself (macOS, Docker Desktop for Linux), the Docker Engine
+  explained (`sudo systemctl start docker`); free ports checked without `Get-NetTCPConnection`
+
+### Every new project
+- `start.sh` next to `start.bat`: the same menu on macOS and Linux (`./start.sh`, `./start.sh -Action D`), executable,
+  also in Git (a project created on Windows starts after a `git clone` on a Mac)
+- `start.ps1` opens its windows (Docker, API, Front, builds) in Terminal on macOS and in the terminal of the desktop on
+  Linux, with the PATH of the menu; without a desktop they run in the background with a log file. Windows: unchanged
+- Composer in Docker (no Composer on the computer) writes `vendor/` as the user on Linux, not as root
+- The README of the project names `./start.sh` for macOS and Linux
+
+### Updates and releases
+- The update button takes the file of the system: the installer on Windows (as before); on macOS the new app is
+  downloaded into Downloads and shown in the Finder, to drag into Applications; on Linux the archive is installed by
+  its `install.sh`, then DC Scaffold closes
+- GitHub workflow `release.yml` (replaces `build.yml`): on a `v*` tag, the Windows installer, the macOS zips and disk
+  images (macOS runner, ad hoc signature) and the Linux archive, published in the release of the tag with the notes of
+  this changelog
+- `installer/build-mac.sh` and `installer/build-linux.sh` (Linux, macOS or WSL, Go only); the `.icns` icon of the app
+  made from the icons of `assets/`
+
 ## [1.5.1] - 2026-11-15
 
 Every starting site and the DC Scaffold window down to 320 px wide and high, and every image and link of the window named.

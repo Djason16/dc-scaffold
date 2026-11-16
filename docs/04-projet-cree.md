@@ -16,6 +16,7 @@ mon-projet/
 ├── scripts/             fonctions de start.ps1
 ├── start.bat            le menu du projet (voir plus bas)
 ├── start.ps1            le même menu, en PowerShell
+├── start.sh             le même menu sous macOS et Linux (./start.sh, avec PowerShell 7)
 ├── .vscode/             extensions conseillées par VS Code à l'ouverture
 ├── .gitignore           node_modules, vendor, builds, .env, bases de données...
 └── README.md            le guide du projet, dans ta langue
@@ -27,7 +28,7 @@ mon-projet/
 mon-projet/
 ├── frontend/            le site ET l'API (frontend/server/, src/lib/server/ ou src/server/ selon le front)
 ├── mysql/, docker-compose.yml   seulement avec MySQL
-├── start.bat, start.ps1, scripts/
+├── start.bat, start.sh, start.ps1, scripts/
 └── README.md
 ```
 
@@ -35,7 +36,9 @@ Il n'y a pas de dossier `backend/`.
 
 ## `start.bat` : le menu du projet
 
-Double-clique sur `start.bat` (ou `.\start.ps1` dans PowerShell). Le menu ne montre que **ce qui existe dans ce projet**.
+Double-clique sur `start.bat` (ou `.\start.ps1` dans PowerShell). Sous macOS et Linux : `./start.sh` dans un terminal
+(PowerShell 7 est nécessaire) ; partout dans cette documentation, « `start.bat` » veut dire ce menu. Le menu ne montre que
+**ce qui existe dans ce projet**.
 
 | Touche | Quand | Ce que ça fait |
 | ------ | ----- | -------------- |

@@ -12,6 +12,41 @@ function Test-Command([string]$Command) {
     return [bool](Get-Command $Command -ErrorAction SilentlyContinue)
 }
 
+# macOS / Linux: the folders of Homebrew and ~/.local/bin in the PATH, even in a window opened from the Finder or a menu
+function Add-ToolPaths {
+    if (-not ($IsMacOS -or $IsLinux)) { return }
+    $current = @($env:PATH -split ':' | Where-Object { $_ })
+    $extra = @('/opt/homebrew/bin', '/opt/homebrew/sbin', '/usr/local/bin', (Join-Path $HOME '.local/bin')) |
+        Where-Object { $current -notcontains $_ -and (Test-Path $_) }
+    if ($extra) { $env:PATH = (@($extra) + $current) -join ':' }
+}
+Add-ToolPaths
+
+# macOS / Linux: a new terminal window running pwsh with these arguments, in the folder $Path.
+# A script file: Terminal opens the .command files itself (macOS), every Linux terminal runs a file the same way.
+# No terminal (server without desktop): the command runs in the background, its output in a log file.
+function Start-TerminalWindow([string]$Path, [string]$Title, [string[]]$Arguments) {
+    $pwsh = (Get-Command pwsh -ErrorAction SilentlyContinue).Source
+    $quote = { param([string]$Text) "'" + $Text.Replace("'", "'\''") + "'" }
+    $line = (@($pwsh) + $Arguments | ForEach-Object { & $quote $_ }) -join ' '
+    $extension = if ($IsMacOS) { '.command' } else { '.sh' }
+    $script = Join-Path ([IO.Path]::GetTempPath()) ("dc-scaffold-" + [guid]::NewGuid().ToString('n') + $extension)
+    [IO.File]::WriteAllText($script, "#!/bin/sh`nrm -f `"`$0`"`ncd $(& $quote $Path) || exit 1`nexec $line`n")
+    & chmod 755 $script
+    if ($IsMacOS) { & open -a Terminal $script; return }
+    foreach ($terminal in @('x-terminal-emulator -e', 'gnome-terminal --', 'kgx --', 'konsole -e', 'xfce4-terminal -x', 'mate-terminal -x', 'tilix -e', 'terminator -x', 'alacritty -e', 'kitty', 'foot', 'xterm -e')) {
+        $name, $option = $terminal -split ' '
+        if (Test-Command $name) {
+            Start-Process $name -ArgumentList (@($option, $script) | Where-Object { $_ }) -WorkingDirectory $Path
+            return
+        }
+    }
+    Remove-Item $script -ErrorAction SilentlyContinue
+    $log = Join-Path ([IO.Path]::GetTempPath()) (($Title -replace '[^\w-]+', '-').Trim('-').ToLower() + '.log')
+    Start-Process $pwsh -ArgumentList ($Arguments | Where-Object { $_ -ne '-NoExit' }) -WorkingDirectory $Path -RedirectStandardOutput $log -RedirectStandardError "$log.err"
+    Write-Info "No terminal found: $Title runs in the background, its messages in $log"
+}
+
 # Runs a command inside a folder and reports whether it succeeded
 function Invoke-In([string]$Path, [scriptblock]$Command) {
     Push-Location $Path
@@ -36,8 +71,10 @@ function Invoke-Composer([string]$Path, [string[]]$Arguments) {
         return Invoke-In $Path { composer @Arguments @extra }
     }
     if ($resolves) { $extra += '--ignore-platform-reqs' }
+    # Linux: the files of vendor/ belong to the user, not to root (Docker Desktop of Windows and macOS does it itself)
+    $user = if ($IsLinux) { @('--user', "$(id -u):$(id -g)", '-e', 'COMPOSER_HOME=/tmp/composer') } else { @() }
     return Invoke-In $Path {
-        docker run --rm -e COMPOSER_ALLOW_SUPERUSER=1 -v "${Path}:/app" -w /app composer:2 @Arguments @extra
+        docker run --rm -e COMPOSER_ALLOW_SUPERUSER=1 @user -v "${Path}:/app" -w /app composer:2 @Arguments @extra
     }
 }
 

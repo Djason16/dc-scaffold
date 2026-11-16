@@ -12,7 +12,7 @@ Référence courte : [`stacks/README.md`](../stacks/README.md) ([English](../sta
 | Dossier | Pour qui |
 | ------- | -------- |
 | `stacks/fronts/<id>/`, `stacks/backs/<id>/` | Dans le dépôt : testé par le robot, publié dans le catalogue, reçu par tous les DC Scaffold |
-| `%APPDATA%\DC Scaffold\stacks\fronts\<id>\` (ou `backs\`) | Sur ton ordinateur seulement ; même `id` qu'un stack de DC Scaffold = le remplace. Gardé par les mises à jour |
+| `%APPDATA%\DC Scaffold\stacks\fronts\<id>\` (ou `backs\`) | Sur ton ordinateur seulement ; même `id` qu'un stack de DC Scaffold = le remplace. Gardé par les mises à jour (macOS : `~/Library/Application Support/DC Scaffold/stacks/`, Linux : `~/.config/dc-scaffold/stacks/`) |
 
 Le plus simple : **copier le dossier le plus proche** (`fronts/vue` pour un front Vite, `backs/express` pour Node.js,
 `backs/php` pour PHP), le renommer et adapter son `stack.json`.

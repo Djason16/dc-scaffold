@@ -178,7 +178,8 @@ func (a *app) handleInfo(w http.ResponseWriter, r *http.Request) {
 		"mysql":       infraVersion(a.root, "mysql"),
 		"hasCode":     findCode() != "",
 		"canBrowse":   canPickFolder(),
-		"hasConsole":  runtime.GOOS == "windows",
+		"hasConsole":  canOpenTerminal(),
+		"system":      runtime.GOOS,
 	})
 }
 
@@ -195,7 +196,7 @@ func (a *app) handleSettings(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, map[string]any{"ok": true})
 }
 
-// Windows folder picker
+// Folder picker of the system (Windows, macOS, zenity / kdialog on Linux)
 func (a *app) handleBrowse(w http.ResponseWriter, r *http.Request) {
 	var body struct{ Start, Title string }
 	readJSON(r, &body)
@@ -402,11 +403,16 @@ func (a *app) handleUpdate(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]any{"error": "no update"})
 		return
 	}
-	if err := installUpdate(update); err != nil {
+	mode, err := installUpdate(update)
+	if err != nil {
 		writeJSON(w, map[string]any{"error": err.Error()})
 		return
 	}
-	writeJSON(w, map[string]any{"ok": true})
+	writeJSON(w, map[string]any{"ok": true, "mode": mode})
+	// macOS: the new version is shown in the Finder, the user replaces the app himself: the window stays open
+	if mode == "opened" {
+		return
+	}
 	// The installer replaces this exe: leave a moment for the answer, then quit
 	go func() {
 		time.Sleep(1500 * time.Millisecond)

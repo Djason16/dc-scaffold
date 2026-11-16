@@ -38,6 +38,12 @@ func powershell() (string, []string) {
 	return shell, []string{"-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass"}
 }
 
+// Nothing to prepare on Windows: PATH is complete, Windows PowerShell is always there
+func prepareEnvironment()    {}
+func runtimeProblem() string { return "" }
+func canOpenTerminal() bool  { return true }
+func consoleAvailable() bool { return true }
+
 // French when Windows is in French
 func systemIsFrench() bool {
 	language, _, _ := procGetUILanguage.Call()

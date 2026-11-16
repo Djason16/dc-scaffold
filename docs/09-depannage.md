@@ -7,6 +7,12 @@
 | Problème | Solution |
 | -------- | -------- |
 | « Windows a protégé votre ordinateur » | L'exe n'est pas encore signé : *Informations complémentaires* → *Exécuter quand même* |
+| macOS : « DC Scaffold ne peut pas être ouvert » / « développeur non identifié » | L'app n'est pas signée par Apple : *Réglages Système → Confidentialité et sécurité → Ouvrir quand même*, ou `xattr -dr com.apple.quarantine "/Applications/DC Scaffold.app"` |
+| macOS, Linux : « DC Scaffold a besoin de PowerShell 7 » | Installe-le (`brew install --cask powershell` ; Linux : `sudo snap install powershell --classic`), puis rouvre DC Scaffold |
+| macOS, Linux : la fenêtre s'ouvre dans un onglet du navigateur | Aucun Chrome, Edge, Brave ou Chromium trouvé : installe-en un pour avoir la fenêtre sans barre d'adresse (tout marche quand même dans l'onglet) |
+| Linux : pas de bouton « Parcourir » | Installe `zenity` (GNOME) ou `kdialog` (KDE), ou tape le chemin du dossier |
+| Linux : « Git / PHP n'est pas installé : tape sudo apt install ... » | DC Scaffold ne lance jamais `sudo` : tape la commande donnée, puis relance |
+| Linux : `node` installé dans `~/.local/bin` mais introuvable dans le terminal | Ajoute `export PATH="$HOME/.local/bin:$PATH"` à ton `~/.profile`, puis ouvre un nouveau terminal |
 | « Le dossier ... existe déjà et contient des fichiers » | Choisis un autre nom ou un autre dossier (en console : `-Force` pour l'utiliser quand même) |
 | « Le port ... est déjà pris » | Un autre programme utilise ce port : change-le dans les options (ports) ou arrête l'autre programme. Ce n'est qu'un avertissement |
 | « L'outil winget est introuvable » | Installe l'outil demandé depuis la page ouverte, puis relance DC Scaffold. winget vient avec « Programme d'installation d'application » du Microsoft Store |
@@ -26,7 +32,9 @@
 | -------- | -------- |
 | Le site ne joint pas l'API (`Unable to contact the server`) | L'API tourne-t-elle ? (`start.bat` puis `D`, fenêtre « API »). L'adresse de l'API dans `frontend/.env` est-elle la bonne ? Relance le site après avoir modifié `.env` |
 | Erreur CORS dans la console du navigateur | `APP_BASE_URL` du `.env` de l'API doit être exactement l'adresse du site (port compris, sans `/` final) |
-| « Docker is not running » au lancement | Démarre Docker Desktop, puis `start.bat` puis `D` |
+| « Docker is not running » au lancement | Démarre Docker Desktop (Linux, Docker Engine : `sudo systemctl start docker`), puis `start.bat` puis `D` |
+| Linux : `docker` demande `sudo` (« permission denied ») | Une seule fois : `sudo usermod -aG docker $USER`, puis reconnecte-toi |
+| macOS, Linux : les fenêtres API / Front ne s'ouvrent pas | `start.sh` les ouvre dans Terminal (macOS) ou le terminal du bureau (Linux). Sans terminal graphique (serveur), elles tournent en arrière-plan : leurs messages sont dans un fichier `.log` du dossier temporaire, dont le chemin s'affiche |
 | MySQL refuse la connexion juste après le lancement | MySQL met quelques secondes à démarrer au premier lancement ; réessaie |
 | Mes tables de `mysql/init/` ne sont pas créées | Elles ne s'exécutent que si `database/` est vide : `S`, supprime `database/`, `D` (attention : supprime les données) |
 | Le design reste après `design: false` | Relance `npm run dev` (le réglage est lu au démarrage) |

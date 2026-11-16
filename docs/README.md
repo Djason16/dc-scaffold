@@ -1,6 +1,6 @@
 # Documentation de DC Scaffold
 
-Version **1.3.0**. Cette documentation explique tout DC Scaffold, de l'installation à la mise en ligne d'un projet,
+Version **1.6.0** (Windows, macOS, Linux). Cette documentation explique tout DC Scaffold, de l'installation à la mise en ligne d'un projet,
 puis le fonctionnement interne pour ceux qui veulent le modifier.
 
 Pas besoin de tout lire : commence par la partie qui te concerne.
@@ -30,8 +30,8 @@ Pas besoin de tout lire : commence par la partie qui te concerne.
 
 ## En une minute
 
-1. Installe **`DCScaffold-Setup.exe`** et ouvre **DC Scaffold**.
+1. Installe DC Scaffold (Windows : **`DCScaffold-Setup.exe`** ; macOS : l'app du `.dmg` ; Linux : `install.sh` du `.tar.gz`) et ouvre **DC Scaffold**.
 2. Donne un nom au projet, choisis un **front** (le site), un **back end** (l'API qui garde les données) et les options.
 3. DC Scaffold installe ce qui manque, crée le projet et ouvre la page de fin.
-4. Dans le projet : double-clique sur **`start.bat`**, puis tape **`D`** pour lancer le site et l'API.
+4. Dans le projet : double-clique sur **`start.bat`** (macOS, Linux : **`./start.sh`** dans un terminal), puis tape **`D`** pour lancer le site et l'API.
 5. Pour mettre en ligne : la section **« Mettre en ligne »** du `README.md` du projet donne les étapes, dans l'ordre. Pour montrer le site au client avant : la section **« Qualif »** (`start.bat` puis `Q`).

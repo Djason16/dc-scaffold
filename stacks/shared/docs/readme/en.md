@@ -5,7 +5,7 @@
 
 ## Start
 
-1. Double-click `start.bat`, at the root of the project.
+1. Double-click `start.bat`, at the root of the project (macOS, Linux: `./start.sh` in a terminal, with PowerShell 7).
 2. Type `D` then Enter: everything starts (Docker when needed, the server, the site) and your browser opens.
 
 {{URL_TABLE}}
