@@ -18,6 +18,8 @@ import { userPreferencesActions } from './actions/userPreferencesActions'
  */
 type Categories = Record<string, { required: boolean, label?: string, description?: string }>
 type State = { hasUserMadeChoice: boolean, preferences: Record<string, boolean>, categories: Categories }
+// What an action works on ("this"): the state and the other actions
+type Draft = State & typeof userPreferencesActions
 type Actions = { [Name in keyof typeof userPreferencesActions]: (...args: Parameters<(typeof userPreferencesActions)[Name]>) => ReturnType<(typeof userPreferencesActions)[Name]> }
 
 const state: State = {
@@ -46,9 +48,10 @@ const state: State = {
 // Zustand store. The actions (stores/actions/) change "this" like in Pinia:
 // they work on a copy of the state, then set() saves the result and refreshes the components
 export const useUserPreferencesStore = create<State & Actions>()((set, get) => {
-    const run = (action: (this: any, ...args: any[]) => unknown) => (...args: any[]) => {
-        const draft = { ...get(), ...userPreferencesActions }
-        const result = action.apply(draft, args)
+    const run = (action: (this: Draft, ...args: never[]) => unknown) => (...args: unknown[]) => {
+        const draft: Draft = { ...get(), ...userPreferencesActions }
+        // never[]: each action has its own parameters, given back as they were received
+        const result = action.apply(draft, args as never[])
         set({ preferences: draft.preferences, hasUserMadeChoice: draft.hasUserMadeChoice })
         return result
     }

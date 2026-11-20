@@ -21,6 +21,36 @@
             "registry": "npm",
             "stable": "1",
             "token": "V_SOLID_ROUTER"
+        },
+        {
+            "package": "eslint",
+            "registry": "npm",
+            "stable": "10",
+            "token": "V_ESLINT"
+        },
+        {
+            "package": "@eslint/js",
+            "registry": "npm",
+            "stable": "10",
+            "token": "V_ESLINT_JS"
+        },
+        {
+            "package": "globals",
+            "registry": "npm",
+            "stable": "17",
+            "token": "V_GLOBALS"
+        },
+        {
+            "package": "eslint-plugin-solid",
+            "registry": "npm",
+            "stable": "0",
+            "token": "V_ESLINT_SOLID"
+        },
+        {
+            "package": "typescript-eslint",
+            "registry": "npm",
+            "stable": "8",
+            "token": "V_TS_ESLINT"
         }
     ],
     "publicDir": "public",
@@ -170,6 +200,34 @@
         {
             "copy": "files-api",
             "when": "api"
+        },
+        {
+            "copy": "lint/ts",
+            "when": "ts"
+        },
+        {
+            "copy": "lint/js",
+            "when": "js"
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.eslint": "^{{V_ESLINT}}",
+                    "devDependencies.@eslint/js": "^{{V_ESLINT_JS}}",
+                    "devDependencies.globals": "^{{V_GLOBALS}}",
+                    "devDependencies.eslint-plugin-solid": "^{{V_ESLINT_SOLID}}",
+                    "scripts.lint": "eslint ."
+                }
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.typescript-eslint": "^{{V_TS_ESLINT}}",
+                    "devDependencies.typescript": "~6.0.3"
+                }
+            },
+            "when": "ts"
         }
     ],
     "layout": {

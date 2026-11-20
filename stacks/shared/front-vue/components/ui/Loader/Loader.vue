@@ -9,5 +9,8 @@
 <script setup lang="ts">
 import { useLang } from '@/composables/useLang'
 
+// Multi-word name (style guide of Vue), also shown in the Vue devtools
+defineOptions({ name: 'PageLoader' })
+
 const { getTranslation: t } = useLang()
 </script>

@@ -35,6 +35,30 @@
             "registry": "npm",
             "stable": "26",
             "token": "V_TYPES_NODE"
+        },
+        {
+            "package": "eslint",
+            "registry": "npm",
+            "stable": "10",
+            "token": "V_ESLINT"
+        },
+        {
+            "package": "@eslint/js",
+            "registry": "npm",
+            "stable": "10",
+            "token": "V_ESLINT_JS"
+        },
+        {
+            "package": "globals",
+            "registry": "npm",
+            "stable": "17",
+            "token": "V_GLOBALS"
+        },
+        {
+            "package": "typescript-eslint",
+            "registry": "npm",
+            "stable": "8",
+            "token": "V_TS_ESLINT"
         }
     ],
     "steps": [
@@ -104,6 +128,32 @@
                 }
             },
             "when": "noDb"
+        },
+        {
+            "copy": "lint/ts",
+            "when": "ts"
+        },
+        {
+            "copy": "lint/js",
+            "when": "js"
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.eslint": "^{{V_ESLINT}}",
+                    "devDependencies.@eslint/js": "^{{V_ESLINT_JS}}",
+                    "devDependencies.globals": "^{{V_GLOBALS}}",
+                    "scripts.lint": "eslint ."
+                }
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.typescript-eslint": "^{{V_TS_ESLINT}}"
+                }
+            },
+            "when": "ts"
         }
     ],
     "controllers": "controllers",

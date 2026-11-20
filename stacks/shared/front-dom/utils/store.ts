@@ -6,7 +6,7 @@
 // The state, its actions (bound to the store) and subscribe()
 export type Store<State, Actions> = State & Actions & { subscribe: (listener: (store: Store<State, Actions>) => void) => () => boolean }
 
-export const createStore = <State extends object, Actions extends Record<string, (...args: any[]) => any>>(state: State, actions = {} as Actions) => {
+export const createStore = <State extends object, Actions extends Record<string, (...args: never[]) => unknown>>(state: State, actions = {} as Actions) => {
     const listeners = new Set<(store: Store<State, Actions>) => void>()
     let queued = false
 

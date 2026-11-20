@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useEffectEvent, useRef, useState, type ReactNode } from 'react'
 import Footer from '@/components/layout/Footer/Footer'
 import Header from '@/components/layout/Header/Header'
 import BackToTop from '@/components/ui/Button/BackToTop'
@@ -38,7 +38,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
     }, [])
     usePageChange(startLoader, endLoader)
 
-    useEffect(() => {
+    // Read the latest language helpers when the first-opening effect runs, without making them dependencies
+    const restoreVisit = useEffectEvent(() => {
         // Choice saved during a previous visit (cookie)
         useUserPreferencesStore.getState().loadPreferences()
 
@@ -46,13 +47,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
         // Language of a previous visit, only if the visitor accepted functional cookies
         if (useUserPreferencesStore.getState().preferences.functional) lang.restore()
         // @end-two-languages
+    })
+
+    useEffect(() => {
+        restoreVisit()
 
         // Fonts of utils/fonts.css loaded (the text will not change size), or 2 seconds at most: the loader goes
         Promise.race([document.fonts.ready, new Promise((resolve) => setTimeout(resolve, LOADER_FIRST_MAX_TIME))]).then(() => {
             ready.current = true
             setShowLoader(false)
         })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (

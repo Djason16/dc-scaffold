@@ -25,7 +25,7 @@ export default defineNuxtModule({
             filename: 'types/controllers.d.ts',
             getContents: () => [
                 "declare module '#controllers' {",
-                '    const controllers: { name: string, controller: any }[]',
+                "    const controllers: { name: string, controller: import('../../server/utils/RouteDiscovery').ControllerClass }[]",
                 '    export default controllers',
                 '}',
                 '',

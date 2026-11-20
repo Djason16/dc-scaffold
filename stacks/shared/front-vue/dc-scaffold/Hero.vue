@@ -21,6 +21,9 @@ import PageHero from '@/components/ui/PageHero/PageHero.vue'
 import { useLang } from '@/composables/useLang'
 import { useSite } from '@/composables/useSite'
 
+// Multi-word name (style guide of Vue), also shown in the Vue devtools
+defineOptions({ name: 'WelcomeHero' })
+
 const { getTranslation: t } = useLang()
 const site = useSite()
 </script>

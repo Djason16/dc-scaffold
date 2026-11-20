@@ -2,10 +2,11 @@
     import '#lib/assets/css/main.css'
     // DC Scaffold design, while it is on (dc-scaffold.config.js)
     import '#lib/assets/css/design.css'
+    import type { Snippet } from 'svelte'
     import AppShell from '#lib/components/layout/AppShell/AppShell.svelte'
 
     // Root of the site: every page inside the app shell (src/lib/components/layout/AppShell)
-    let { children } = $props()
+    let { children }: { children: Snippet } = $props()
 </script>
 
 <svelte:head>

@@ -5,12 +5,13 @@ import controllers from '#controllers'
 const routes = RouteDiscovery.scan(controllers)
 
 // Every error of the API in the shared JSON format (the pages of the site keep the error page of Nuxt)
-const sendError = (event: H3Event, error: any) => {
-    const statusCode = error?.statusCode || 500
+const sendError = (event: H3Event, error: unknown) => {
+    // An error of h3 (createError) has its status; any other one is an error of the server
+    const { statusCode = 500, statusMessage = '', message = '' } = (error ?? {}) as { statusCode?: number, statusMessage?: string, message?: string }
     if (statusCode >= 500) console.error('[API]', error)
     // Real message in development only, never leak internals in production
-    const message = statusCode >= 500 ? (import.meta.dev ? error?.message : 'Internal server error') : error?.statusMessage || error?.message
-    return ResponseHelper.error(event, message, statusCode, statusCode >= 500 ? 'SERVER_ERROR' : 'HTTP_ERROR')
+    const text = statusCode >= 500 ? (import.meta.dev ? message : 'Internal server error') : statusMessage || message
+    return ResponseHelper.error(event, text, statusCode, statusCode >= 500 ? 'SERVER_ERROR' : 'HTTP_ERROR')
 }
 
 // /api/products -> ProductsController

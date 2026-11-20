@@ -121,7 +121,7 @@ $Settings = Get-Settings
 # Language
 # ===========================================================================
 
-if (-not $Ui) { Clear-Host }
+if (-not $Ui -and -not [Console]::IsOutputRedirected) { Clear-Host }
 if (-not $Lang) {
     $previous = if ($Settings.lang) { $Settings.lang } else { 'fr' }
     Write-Host ''
@@ -335,7 +335,7 @@ function Get-InlineText([string]$Key) {
 # A call of the templates: t('key'), getTranslation('key'), lang.getTranslation('key', { name: site.name }), t(lang, 'key') of Qwik...
 $InlineCall = '(?:\$?lang\.getTranslation|\bgetTranslation|\bt)\(\s*(?:lang,\s*)?''(?<key>\w+)''\s*(?:,\s*\{\s*(?<var>\w+)\s*:\s*(?<expr>[^{}()]+?)\s*\}\s*)?\)'
 
-function Convert-InlineTexts([string]$Text) {
+function Convert-InlineTexts([string]$Text, [string]$RelativePath = '') {
     if (-not $Text) { return $Text }
     $code = $SiteLanguages[0]
 
@@ -372,9 +372,12 @@ function Convert-InlineTexts([string]$Text) {
         "$($m.Groups['attr'].Value)=""$(ConvertTo-HtmlAttribute $value)"""
     })
     # 5. JSX / Svelte / Astro text: {t('home')} -> Accueil, a value -> {site.name}
+    #    In JSX, a straight apostrophe in a text is reported by ESLint (react/no-unescaped-entities): the typographic one
+    $jsx = $RelativePath -match '\.[jt]sx$'
     $Text = [regex]::Replace($Text, "(?<!\$)\{\s*$InlineCall\s*\}", {
         param($m)
         $html = ConvertTo-HtmlText (Get-InlineText $m.Groups['key'].Value)
+        if ($jsx) { $html = $html.Replace("'", [string][char]0x2019) }
         if ($m.Groups['var'].Success) { $html = $html.Replace("{{$($m.Groups['var'].Value)}}", "{$($m.Groups['expr'].Value)}") }
         $html
     })
@@ -441,7 +444,7 @@ function Write-ProjectFile([string]$RelativePath, [string]$Content) {
     # Comments translated before the tokens are replaced: the keys of shared/i18n hold the {{TOKENS}} as written
     $text = Convert-Comments (Select-LanguageBlocks ($Content -replace "`r`n", "`n") $RelativePath) $RelativePath
     # One language: the texts straight into the components of the site (see Convert-InlineTexts)
-    if ($InlineTexts -and $RelativePath -match '^frontend[\\/].*\.(vue|jsx?|tsx?|svelte|astro|html|mjs)$') { $text = Convert-InlineTexts $text }
+    if ($InlineTexts -and $RelativePath -match '^frontend[\\/].*\.(vue|jsx?|tsx?|svelte|astro|html|mjs)$') { $text = Convert-InlineTexts $text $RelativePath }
     $text = Expand-Tokens $text
     $isPs1 = $RelativePath.EndsWith('.ps1')
     if ($isPs1 -or $RelativePath.EndsWith('.bat')) { $text = $text -replace "`n", "`r`n" }
@@ -1083,7 +1086,7 @@ function Test-Tools([string[]]$Needs, [string[]]$NpmPackages, [object[]]$NodeRan
 # Banner
 # ===========================================================================
 
-if (-not $Ui) { Clear-Host }
+if (-not $Ui -and -not [Console]::IsOutputRedirected) { Clear-Host }
 Write-Host ''
 $banner = Join-Path $EngineDir 'banner.txt'
 $width = try { $Host.UI.RawUI.WindowSize.Width } catch { 0 }

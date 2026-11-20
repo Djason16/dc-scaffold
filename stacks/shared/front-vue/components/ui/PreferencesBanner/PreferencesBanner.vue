@@ -1,7 +1,11 @@
 <template>
     <!-- Cookie banner, shown until the visitor chooses (texts in plugins/translations/common/preferences.ts) -->
-    <div v-if="mounted && !userPreferences.hasUserMadeChoice" class="preferences-banner" role="dialog"
-        :aria-label="t('prefsTitle')">
+    <div
+        v-if="mounted && !userPreferences.hasUserMadeChoice"
+        class="preferences-banner"
+        role="dialog"
+        :aria-label="t('prefsTitle')"
+    >
         <h2>{{ t('prefsTitle') }}</h2>
         <p>{{ t('prefsText') }}</p>
 

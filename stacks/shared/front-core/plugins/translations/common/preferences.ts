@@ -1,6 +1,6 @@
 // Texts of the cookie banner (components/ui/PreferencesBanner)
 // Each category of stores/userPreferences.ts has a "<name>Label" and a "<name>Description"
-export default {
+const texts = {
     fr: {
         prefsTitle: 'Cookies',
         prefsText: 'Ce site utilise des cookies pour fonctionner et, avec votre accord, pour mémoriser vos choix.',
@@ -38,3 +38,5 @@ export default {
         // @end-one-language
     },
 }
+
+export default texts

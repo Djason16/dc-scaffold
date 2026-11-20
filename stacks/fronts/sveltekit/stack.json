@@ -51,7 +51,8 @@
                 "minimal",
                 "--types",
                 "ts",
-                "--no-add-ons",
+                "--add",
+                "eslint",
                 "--no-install"
             ],
             "in": "root",
@@ -66,7 +67,8 @@
                 "{{DIR}}",
                 "--template",
                 "minimal",
-                "--no-add-ons",
+                "--add",
+                "eslint",
                 "--no-install",
                 "--no-types"
             ],
@@ -75,6 +77,14 @@
         },
         {
             "check": "package.json"
+        },
+        {
+            "replace": {
+                "file": "eslint.config.js",
+                "find": "\\n\\);\\s*$",
+                "with": ",\n\t// Files run by Node.js outside the TypeScript project (scripts/*.mjs, configuration, server of the site):\n\t// checked without the rules that need types; server.cjs is CommonJS, it loads its modules with require()\n\t{ files: ['scripts/**', '*.config.js', 'server.ts', '*.cjs'], extends: [ts.configs.disableTypeChecked] },\n\t{ files: ['*.cjs'], rules: { '@typescript-eslint/no-require-imports': 'off' } }\n);\n"
+            },
+            "when": "ts"
         },
         {
             "npm": {

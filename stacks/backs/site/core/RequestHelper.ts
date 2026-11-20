@@ -5,10 +5,10 @@ export const RequestHelper = {
     /**
      * Request body as an object, whether the client sent JSON or form fields.
      */
-    async body(request: Request): Promise<Record<string, any>> {
+    async body(request: Request): Promise<Record<string, unknown>> {
         try {
             const type = request.headers.get('content-type') ?? ''
-            if (type.includes('application/json')) return (await request.json()) ?? {}
+            if (type.includes('application/json')) return ((await request.json()) as Record<string, unknown> | null) ?? {}
             if (type.includes('form')) return Object.fromEntries(await request.formData())
         } catch {
             // Empty or invalid body

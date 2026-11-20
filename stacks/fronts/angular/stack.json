@@ -19,6 +19,36 @@
             "registry": "npm",
             "stable": "22",
             "token": "V_ANGULAR"
+        },
+        {
+            "package": "eslint",
+            "registry": "npm",
+            "stable": "10",
+            "token": "V_ESLINT"
+        },
+        {
+            "package": "@eslint/js",
+            "registry": "npm",
+            "stable": "10",
+            "token": "V_ESLINT_JS"
+        },
+        {
+            "package": "globals",
+            "registry": "npm",
+            "stable": "17",
+            "token": "V_GLOBALS"
+        },
+        {
+            "package": "typescript-eslint",
+            "registry": "npm",
+            "stable": "8",
+            "token": "V_TS_ESLINT"
+        },
+        {
+            "package": "angular-eslint",
+            "registry": "npm",
+            "stable": "22",
+            "token": "V_ANGULAR_ESLINT"
         }
     ],
     "publicDir": "public",
@@ -156,6 +186,21 @@
         {
             "copy": "files-api",
             "when": "api"
+        },
+        {
+            "copy": "lint"
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.eslint": "^{{V_ESLINT}}",
+                    "devDependencies.@eslint/js": "^{{V_ESLINT_JS}}",
+                    "devDependencies.globals": "^{{V_GLOBALS}}",
+                    "devDependencies.typescript-eslint": "^{{V_TS_ESLINT}}",
+                    "devDependencies.angular-eslint": "^{{V_ANGULAR_ESLINT}}",
+                    "scripts.lint": "eslint ."
+                }
+            }
         }
     ],
     "layout": {

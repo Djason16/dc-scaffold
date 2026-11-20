@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from 'svelte'
+    import { onMount, type Snippet } from 'svelte'
     import { afterNavigate, beforeNavigate } from '$app/navigation'
     import Footer from '#lib/components/layout/Footer/Footer.svelte'
     import Header from '#lib/components/layout/Header/Header.svelte'
@@ -20,7 +20,7 @@
     // Longest wait of the loader on the first opening, even if the fonts are not there yet (milliseconds)
     const LOADER_FIRST_MAX_TIME = 2000
 
-    let { children } = $props()
+    let { children }: { children: Snippet } = $props()
     let showLoader = $state(LOADER_ENABLED)
     let ready = false
     let shownAt = 0

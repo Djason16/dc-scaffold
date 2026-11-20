@@ -4,6 +4,66 @@ All notable changes to DC Scaffold. Format: [Keep a Changelog](https://keepachan
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-20
+
+Zero error and zero warning in every new project: ESLint in every front and Node.js back end, and a quality check of
+every stack before each version.
+
+### Added
+- ESLint in every front and Node.js back end, in TypeScript and in JavaScript (`npm run lint`), with the official or
+  most standard configuration of each framework: `angular-eslint`, `eslint-plugin-astro`, `@nuxt/eslint`,
+  `eslint-plugin-solid` (typescript-eslint, TypeScript kept at 6.0 for it), the `eslint` add-on of `sv` (Svelte,
+  SvelteKit), ESLint + oxlint of `create-vue`, typescript-eslint for Express and Nitro; React, Next.js, Qwik, NestJS
+  and AdonisJS keep theirs. A new project passes it with zero error and zero warning
+- `tools/check/check.mjs`: quality check of new projects. Every front in TypeScript and JavaScript, in one and two
+  languages, with the design on and off, and every back end are created, then lint, type check, build, start and the
+  browser console of the home page and of a 404 page (Chrome headless) must give zero error and zero warning; the
+  warnings of the frameworks themselves are listed apart (see « Contrôle qualité » in `docs/12-developper-dc-scaffold.md`)
+
+### Fixed
+- React and Next fronts: the cookie banner no longer calls `setState` inside an effect (ESLint `react-hooks/set-state-in-effect`,
+  « Calling setState synchronously within an effect »): `useSyncExternalStore` tells if the page runs in the browser, and the
+  reopening from « Cookie settings » adjusts the state during the render
+- React and Next fronts: `AppShell` reads the language through `useEffectEvent`, without the `eslint-disable` that ESLint
+  reported as unused (« Unused eslint-disable directive »)
+- React and Next fronts: zero lint warning in a new project: the language context lives in `composables/useLang.ts`
+  (oxlint `only-export-components`), the year of the footer is read once (`react/purity`), `Seo` depends on values only
+  (`exhaustive-deps`), the cookie store is typed without `any`
+- Next.js front: zero ESLint error or warning: translation files, texts of the design and `dc-scaffold.config.js` export a
+  named object (`import/no-anonymous-default-export`), the welcome page of the design uses `next/image`, `server.cjs` no
+  longer names a variable `module`, `require()` allowed in the CommonJS files only; one-language sites write a typographic
+  apostrophe in JSX texts (`react/no-unescaped-entities`)
+- Next.js front: `npm run build` no longer fails after `npm run dev` (« Duplicate identifier 'PagesPageConfig' »:
+  `.next/dev` left out of `tsconfig.json`); `turbopack.root` set to the project (no warning when a `package-lock.json`
+  sits in a parent folder); `next dev` no longer writes an `AGENTS.md`, and its « N » badge is off (with the Pages
+  Router it read the router too early: « [HMR] Invalid message ... reading 'components' » in the console)
+- Next.js with the API inside the site: `"type": "module"` (no `MODULE_TYPELESS_PACKAGE_JSON` warning), the security
+  headers skip the files of `next dev` (the browser refused its manifest because of `nosniff`)
+- API client (`utils/api.ts`) and API inside the site: typed without `any` (`api.get<{ products: Product[] }>(...)`,
+  rows of `DatabaseHelper` as `Record<string, unknown>`, controller classes and handlers typed); SQLite gets `true` /
+  `false` as 1 / 0 and a date as its ISO text instead of an error
+- AdonisJS: the new project builds again (`start/env.ts` declared `DB_DATABASE` twice, TS1117) and passes its own
+  ESLint and Prettier: the files of DC Scaffold are formatted with `eslint --fix` at the creation, no `await` member
+  access, file names of the shared core allowed in `eslint.config.js`
+- Nuxt: no « url should not be localhost » warning of the site config outside a build (`nuxt typecheck`, `nuxt prepare`),
+  and an unknown address is a 404 of Nuxt (`pages/[...path].vue`) without the « No match found » warning of Vue Router
+- Nuxt with its API inside the site: an unknown address shows the 404 page again; the error pages are no longer
+  compressed by `z-compression.ts` (Nitro sent them again, the browser could not decode them and showed its own error)
+- Nitro: `npm run typecheck` runs `nitro prepare` first (its `tsconfig.json` extends the generated types)
+- Astro and every front: `scripts/qualif.mjs` without an unused parameter (`astro check` hint ts(6133))
+- Engine: no `CursorPosition` error when its output is redirected (robot, logs)
+- Vue and Nuxt: components named with several words (`defineOptions`: `SiteHeader`, `HomePage`...), first attribute of
+  a multi-line tag on its own line, no comment at the root of the home page (Nuxt pages need one root)
+- Svelte and SvelteKit: props typed (`Snippet`, `HTMLButtonAttributes`), links of SvelteKit through `resolve()` of
+  `$app/paths`, the router of Svelte typed (`import.meta.glob<{ default: Page }>`, `SvelteURL`, plain lists for the
+  callbacks), the `{@html}` of the JSON-LD explained to ESLint, Node.js files checked without the typed rules
+- Angular and every front: shapes of objects as `interface` (`SeoPage`, `SeoOptions`, the cookie store), no inferable
+  type annotation; Astro and the HTML / CSS / JS front: `h()`, `createStore` and `SectionLayout` without `any`
+- Express: the error handler keeps its four parameters (`_next`), `RequestHelper.body` typed `Record<string, unknown>`;
+  Nitro: `#controllers` and `RequestHelper.body` typed; Nuxt + Nitro: errors of the API read without `any`
+- `DatabaseHelper`: arrow functions (a controller takes them as they are), SQLite answers as a promise without `async`
+- `tools/stacks/site_stack.py` writes exactly the current `backs/site/stack.json` again (`@types/node`, `{{SCRIPT_EXT}}`,
+  Node.js 22.18, `server.ts`)
 ## [1.6.0] - 2026-11-16
 
 DC Scaffold on macOS and Linux: the same window, the same engine and the same projects as on Windows.

@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/readme/badges/version.svg" alt="Version 1.6.0">
+  <img src="assets/readme/badges/version.svg" alt="Version 1.7.0">
   <img src="assets/readme/badges/systems.svg" alt="Windows | macOS | Linux">
   <img src="assets/readme/badges/license.svg" alt="License">
 </p>
@@ -76,6 +76,7 @@ Lequel choisir : [Choisir front et back end](docs/03-choisir-front-et-back.md).
 - **Un site prêt** : AppShell, bandeau cookies, page 404, SEO, `sitemap.xml`, une ou deux langues, design de DC Scaffold
   ou page blanche (et `start.bat` puis `P` pour basculer ou repartir de zéro)
 - **TypeScript ou JavaScript** au choix, pour tous les fronts et back ends Node.js : le même code, avec ou sans types
+- **Zéro erreur, zéro avertissement** : chaque projet tout juste créé passe son lint (ESLint, `npm run lint`), ses types, son build et la console du navigateur, vérifiés avant chaque version
 - **Tout s'installe selon tes choix** (winget sous Windows, Homebrew sous macOS, après accord), Docker seulement si le
   projet en a besoin
 - **Windows, macOS et Linux** : la même fenêtre, le même moteur, les mêmes projets (`start.bat` ou `./start.sh`)
@@ -153,6 +154,7 @@ Two ways to place the API, picked for the chosen pair:
 - **A ready site**: AppShell, cookie banner, 404 page, SEO, `sitemap.xml`, one or two languages, DC Scaffold design or blank page
   (and `start.bat` then `P` to switch or start from zero)
 - **TypeScript or JavaScript**, your choice, for every front and Node.js back end: the same code, with or without types
+- **Zero error, zero warning**: every new project passes its lint (ESLint, `npm run lint`), its types, its build and the browser console, checked before every version
 - **Everything installed for your choices** (winget on Windows, Homebrew on macOS, after asking), Docker only when the
   project needs it
 - **Windows, macOS and Linux**: the same window, the same engine, the same projects (`start.bat` or `./start.sh`)

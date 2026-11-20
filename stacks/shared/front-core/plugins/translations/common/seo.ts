@@ -1,6 +1,6 @@
 // Title and description of each page of utils/seo.ts: seo<Page>Title and seo<Page>Description
 // "{{name}}" is the site name (SITE_NAME in .env)
-export default {
+const texts = {
     fr: {
         seoIndexTitle: '{{name}}',
         seoIndexDescription: 'Bienvenue sur {{name}}.',
@@ -14,3 +14,5 @@ export default {
         seoNotFoundDescription: 'This page does not exist.',
     },
 }
+
+export default texts

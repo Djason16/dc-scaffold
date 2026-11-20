@@ -1,5 +1,5 @@
 // Texts of the "What next?" section of DC Scaffold (dc-scaffold/NextSteps)
-export default {
+const texts = {
     fr: {
         nextStepsTitle: 'Et maintenant ?',
         nextStepsText: 'Trois endroits pour commencer. Tout est expliqué dans README.md, à la racine du projet.',
@@ -31,3 +31,5 @@ export default {
         nextStepPagesText: 'One page = one file of {{FRONT_PAGES}}. Reusable pieces: {{FRONT_COMPONENTS}}.',
     },
 }
+
+export default texts

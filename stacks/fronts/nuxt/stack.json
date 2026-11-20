@@ -63,6 +63,18 @@
             "registry": "npm",
             "stable": "3",
             "token": "V_VUE_TSC"
+        },
+        {
+            "package": "eslint",
+            "registry": "npm",
+            "stable": "10",
+            "token": "V_ESLINT"
+        },
+        {
+            "package": "@nuxt/eslint",
+            "registry": "npm",
+            "stable": "1",
+            "token": "V_NUXT_ESLINT"
         }
     ],
     "publicDir": "public",
@@ -183,6 +195,18 @@
         {
             "copy": "files-api",
             "when": "separateApi"
+        },
+        {
+            "copy": "lint"
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.eslint": "^{{V_ESLINT}}",
+                    "devDependencies.@nuxt/eslint": "^{{V_NUXT_ESLINT}}",
+                    "scripts.lint": "eslint ."
+                }
+            }
         }
     ],
     "layout": {

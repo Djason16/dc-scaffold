@@ -1,5 +1,5 @@
 // Texts of the home page (components/views/Index)
-export default {
+const texts = {
     fr: {
         introTitle: '{{name}}',
     },
@@ -7,3 +7,5 @@ export default {
         introTitle: '{{name}}',
     },
 }
+
+export default texts

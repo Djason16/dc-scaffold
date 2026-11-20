@@ -5,7 +5,7 @@ import type { H3Event } from 'h3'
  */
 export const RequestHelper = {
     /** Request body as an object, whether the client sent JSON or form fields. */
-    async body(event: H3Event): Promise<Record<string, any>> {
+    async body(event: H3Event): Promise<Record<string, unknown>> {
         const body = await readBody(event).catch(() => null)
         return body && typeof body === 'object' ? body : {}
     },

@@ -61,7 +61,7 @@ router
 const folder = new URL('../app/controllers/', import.meta.url)
 const files = readdirSync(folder).filter((file) => /_controller\.(ts|js)$/.test(file))
 const routes = RouteDiscovery.scan(await Promise.all(files.map(async (file) => {
-    const controller = (await import(`#controllers/${file.replace(/\.(ts|js)$/, '')}`)).default
+    const { default: controller } = await import(`#controllers/${file.replace(/\.(ts|js)$/, '')}`)
     return { name: controller.name, controller }
 })))
 

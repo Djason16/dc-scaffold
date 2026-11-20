@@ -30,7 +30,10 @@ export class Controller {
     fetchAll = async (sql: string, params: unknown[] = []) => rows(await db.rawQuery(sql, params as any[]))
 
     /** First matching row, or null. */
-    fetchOne = async (sql: string, params: unknown[] = []) => (await this.fetchAll(sql, params))[0] ?? null
+    fetchOne = async (sql: string, params: unknown[] = []) => {
+        const [first] = await this.fetchAll(sql, params)
+        return first ?? null
+    }
 
     /** Runs an INSERT and returns the new id. */
     insert = async (sql: string, params: unknown[] = []) => {

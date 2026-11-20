@@ -8,7 +8,7 @@ export type UploadedFile = { filename: string, type: string, size: number, data:
  */
 export const RequestHelper = {
     /** Request body as an object, whether the client sent JSON or form fields. */
-    body: (req: Request): Record<string, any> => (req.body && typeof req.body === 'object' ? req.body : {}),
+    body: (req: Request): Record<string, unknown> => (req.body && typeof req.body === 'object' ? req.body : {}),
 
     /** Query string value: /products?page=2 -> query(req, 'page') === '2' */
     query: (req: Request, key: string, fallback: unknown = null) => req.query[key] ?? fallback,

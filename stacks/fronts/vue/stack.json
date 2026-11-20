@@ -46,7 +46,8 @@
                 "--",
                 "--bare",
                 "--router",
-                "--ts"
+                "--ts",
+                "--eslint"
             ],
             "in": "root",
             "when": "ts"
@@ -59,13 +60,22 @@
                 "{{DIR}}",
                 "--",
                 "--bare",
-                "--router"
+                "--router",
+                "--eslint"
             ],
             "in": "root",
             "when": "js"
         },
         {
             "check": "package.json"
+        },
+        {
+            "replace": {
+                "file": "eslint.config.js",
+                "find": "\\n  js\\.configs\\.recommended,",
+                "with": "\n  // Scripts of the project (scripts/*.mjs) and configuration files: run by Node.js\n  {\n    files: ['scripts/**', '*.config.*'],\n    languageOptions: { globals: { ...globals.node } },\n  },\n\n  js.configs.recommended,"
+            },
+            "when": "js"
         },
         {
             "copy": "@shared/front-core",

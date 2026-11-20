@@ -15,7 +15,8 @@ export default defineNuxtConfig({
   // Style of the site, then the DC Scaffold design while it is on (dc-scaffold.config.js)
   css: ['@/assets/css/main.css', '@/assets/css/design.css'],
 
-  modules: ['@pinia/nuxt', '@nuxt/image', '@nuxtjs/sitemap', '@nuxtjs/robots'],
+  // @nuxt/eslint: the ESLint configuration of the project (eslint.config.mjs, npm run lint)
+  modules: ['@pinia/nuxt', '@nuxt/image', '@nuxtjs/sitemap', '@nuxtjs/robots', '@nuxt/eslint'],
 
   // Site identity for SEO, sitemap.xml and robots.txt (NUXT_PUBLIC_SITE_* in .env / .env.production).
   // Outside production robots.txt blocks every crawler automatically.
@@ -23,6 +24,8 @@ export default defineNuxtConfig({
     url: process.env.NUXT_PUBLIC_SITE_URL,
     name: process.env.NUXT_PUBLIC_SITE_NAME,
     trailingSlash: TRAILING_SLASH_ENABLED,
+    // A localhost address is the one of development (.env): the site config is then in development (no warning)
+    ...(/^https?:\/\/(localhost|127\.0\.0\.1)\b/.test(process.env.NUXT_PUBLIC_SITE_URL ?? '') ? { env: 'development' } : {}),
   },
   // « /admin » without slash at the end: also closes /admin?... (with the slash, Google still crawled the pages with parameters)
   robots: { disallow: privateRoutes.map((route) => route.replace(/\/+$/, '')) },

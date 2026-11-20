@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { useLang } from '@/composables/useLang'
 import { useUserPreferencesStore } from '@/stores/userPreferences'
+
+// Nothing to subscribe to: only the server/client difference matters for useSyncExternalStore
+const subscribeNever = () => () => {}
 
 // Cookie banner, shown until the visitor chooses (texts in plugins/translations/common/preferences.js)
 export default function PreferencesBanner() {
@@ -9,21 +12,21 @@ export default function PreferencesBanner() {
     const [customizing, setCustomizing] = useState(false)
     const [choices, setChoices] = useState(userPreferences.preferences)
 
-    // Opened again from "Cookie settings": the boxes show the current choice
-    const wasHidden = useRef(false)
-    useEffect(() => {
-        if (userPreferences.hasUserMadeChoice) {
-            wasHidden.current = true
-        } else if (wasHidden.current) {
+    // Opened again from "Cookie settings": the boxes show the current choice.
+    // State adjusted during render (not in an effect) to avoid a second render pass:
+    // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes
+    const [hadChoice, setHadChoice] = useState(userPreferences.hasUserMadeChoice)
+    if (hadChoice !== userPreferences.hasUserMadeChoice) {
+        setHadChoice(userPreferences.hasUserMadeChoice)
+        if (!userPreferences.hasUserMadeChoice) {
             setChoices({ ...userPreferences.preferences })
             setCustomizing(true)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [userPreferences.hasUserMadeChoice])
+    }
 
     // Only shown in the browser: the cookie with the choice is not known while the page is built
-    const [mounted, setMounted] = useState(false)
-    useEffect(() => setMounted(true), [])
+    // (false on the server and during hydration, true afterwards, without a setState in an effect)
+    const mounted = useSyncExternalStore(subscribeNever, () => true, () => false)
 
     if (!mounted || userPreferences.hasUserMadeChoice) return null
 

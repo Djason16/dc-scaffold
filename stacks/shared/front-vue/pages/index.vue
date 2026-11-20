@@ -1,5 +1,5 @@
+<!-- Home page: sections rendered in order by SectionLayout -->
 <template>
-    <!-- Home page: sections rendered in order by SectionLayout -->
     <SectionLayout :sections="sections" />
 </template>
 
@@ -8,6 +8,9 @@ import SectionLayout from '@/components/ui/SectionLayout/SectionLayout.vue'
 import Intro from '@/components/views/Index/Intro.vue'
 import { useSeo } from '@/composables/useSeo'
 import { welcome } from '@/design'
+
+// Multi-word name (style guide of Vue), also shown in the Vue devtools
+defineOptions({ name: 'HomePage' })
 
 // Ordered list of the home page sections (components/views/Index).
 // While design is true in dc-scaffold.config.js, the welcome page of DC Scaffold is shown instead.

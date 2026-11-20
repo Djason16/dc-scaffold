@@ -54,7 +54,8 @@ async function answer(request: Request): Promise<Response> {
     }
 
     try {
-        return await route.handler(request, args)
+        // Every action of a controller answers with a Response (ResponseHelper)
+        return (await route.handler(request, args)) as Response
     } catch (error) {
         console.error('[API]', error)
         // Real message in development only, never leak internals in production

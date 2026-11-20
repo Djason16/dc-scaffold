@@ -13,7 +13,7 @@ import { joinUrl, withTrailingSlash } from './pathHelpers'
  *   keywords: optional    noIndex: true = hidden from search engines (admin, login...)
  */
 // A page: its address, its sharing image (in the public folder), its keywords; noIndex: true = hidden from search engines
-type SeoPage = {
+interface SeoPage {
     path?: string
     image?: string
     keywords?: string
@@ -43,7 +43,7 @@ const LOCALES: Record<string, string> = { fr: 'fr_FR', en: 'en_US', es: 'es_ES',
 const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1)
 // @end-two-languages
 
-type SeoOptions = {
+interface SeoOptions {
     // key of SEO_PAGES ('index', ...)
     pageKey: string
     // @two-languages

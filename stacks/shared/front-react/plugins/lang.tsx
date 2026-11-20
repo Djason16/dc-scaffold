@@ -1,4 +1,5 @@
-import { createContext, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
+import { LangContext, type Lang } from '@/composables/useLang'
 import { LANGUAGES, translate } from './translations/translations'
 
 /*
@@ -9,19 +10,6 @@ import { LANGUAGES, translate } from './translations/translations'
 // @two-languages
 const STORAGE_KEY = 'selectedLanguage'
 // @end-two-languages
-
-// What useLang() gives
-export type Lang = {
-    current: string
-    availableLanguages: string[]
-    getTranslation: (key: string, values?: Record<string, string>) => string
-    // @two-languages
-    setLang: (code: string | null, remember?: boolean) => void
-    restore: () => void
-    // @end-two-languages
-}
-
-export const LangContext = createContext<Lang | null>(null)
 
 export function LangProvider({ children }: { children: ReactNode }) {
     // Current language: the first one of LANGUAGES until the visitor changes it

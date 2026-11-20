@@ -5,6 +5,8 @@
  *                   nothing of the DC Scaffold design ({{DESIGN_FOLDER}}) goes into the site any more
  * After a change, start the site again (start.bat, then D).
  */
-export default {
+const config = {
     design: true,
 }
+
+export default config

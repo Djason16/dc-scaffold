@@ -10,4 +10,4 @@ export const withTrailingSlash = (path: string, enabled: boolean = TRAILING_SLAS
 /**
  * Joins a base URL and a path without doubling the slash: joinUrl('https://site.com/', '/about')
  */
-export const joinUrl = (base: string = '', path: string = '/'): string => `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`
+export const joinUrl = (base = '', path = '/'): string => `${base.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`

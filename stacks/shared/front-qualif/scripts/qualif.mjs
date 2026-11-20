@@ -103,7 +103,7 @@ if (base !== '/') {
     const clientDir = settings.server ? (settings.client ? join(target, settings.client) : null) : target
     for (const file of clientDir && existsSync(clientDir) ? walk(clientDir).filter((path) => TEXT_FILES.test(path)) : []) {
         const text = readFileSync(file, 'utf8')
-        let moved = publicPattern ? text.replace(publicPattern, (match, before, entry) => { changedPaths++; return `${before}${base}${entry}` }) : text
+        let moved = publicPattern ? text.replace(publicPattern, (_match, before, entry) => { changedPaths++; return `${before}${base}${entry}` }) : text
         if (/\.html$/.test(file)) {
             moved = moved.replace(attribute, (match, before, path) => {
                 if (path.startsWith(base)) return match

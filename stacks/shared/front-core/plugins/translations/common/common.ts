@@ -1,5 +1,5 @@
 // Texts used everywhere on the site
-export default {
+const texts = {
     fr: {
         // @two-languages
         fr: 'Français',
@@ -31,3 +31,5 @@ export default {
         notFoundText: 'The page you are looking for does not exist or has moved.',
     },
 }
+
+export default texts

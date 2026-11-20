@@ -1,3 +1,5 @@
+import type { Component } from 'svelte'
+import { SvelteURL } from 'svelte/reactivity'
 import guards from '#lib/middleware/index.js'
 
 /*
@@ -5,7 +7,9 @@ import guards from '#lib/middleware/index.js'
  *   index.svelte -> /, about.svelte -> /about/, blog/[id].svelte -> /blog/123/ (params.id), [...path].svelte -> any other address
  * Links <a href="/..."> of the site change the page without reloading.
  */
-const pages = import.meta.glob('../pages/**/*.svelte', { eager: true })
+// A page: a component that receives the values of its address (params)
+type Page = Component<{ params: Record<string, string> }>
+const pages = import.meta.glob<{ default: Page }>('../pages/**/*.svelte', { eager: true })
 
 type Place = { url: URL }
 type Navigation = { from: Place|null, to: Place, willUnload: boolean }
@@ -19,11 +23,11 @@ const routes = Object.entries(pages)
             return part.replace(/\[(\w+)\]/g, (match: string, name: string) => { names.push(name); return '([^/]+)' })
         }).join('/')
         const rank = path.includes('[...') ? 2 : path.includes('[') ? 1 : 0
-        return { component: (module as { default: any }).default, names, rank, regex: new RegExp(`^${pattern}/?$`) }
+        return { component: module.default, names, rank, regex: new RegExp(`^${pattern}/?$`) }
     })
     .sort((a, b) => a.rank - b.rank)
 
-const find = (pathname: string) => {
+const find = (pathname: string): { component: Page | null, params: Record<string, string> } => {
     for (const route of routes) {
         const match = route.regex.exec(pathname.replace(/\/+$/, '') || '/')
         if (match) return { component: route.component, params: Object.fromEntries(route.names.map((name, index) => [name, decodeURIComponent(match[index + 1])])) }
@@ -38,14 +42,19 @@ const withoutBase = (pathname: string) => (BASE !== '/' && pathname.startsWith(B
 
 let current = $state(find(withoutBase(location.pathname)))
 let currentUrl = new URL(location.href)
-const before: Set<(navigation: Navigation) => void> = new Set()
-const after: Set<(navigation: Navigation) => void> = new Set()
+// Callbacks of beforeNavigate / afterNavigate (plain lists: nothing to show on the page)
+const before: ((navigation: Navigation) => void)[] = []
+const after: ((navigation: Navigation) => void)[] = []
+const unsubscribe = (list: ((navigation: Navigation) => void)[], callback: (navigation: Navigation) => void) => () => {
+    if (list.includes(callback)) list.splice(list.indexOf(callback), 1)
+}
 
 /**
  * Opens an address of the site, after the guards of src/lib/middleware
  */
 export const goto = (target: string | URL, { replace = false }: { replace?: boolean } = {}): void => {
-    const url = new URL(target, location.href)
+    // SvelteURL: the URL of svelte/reactivity (the address changes as the visitor navigates)
+    const url = new SvelteURL(target, location.href)
     url.pathname = withBase(url.pathname)
     for (const guard of guards) {
         const redirect = guard(url)
@@ -64,8 +73,8 @@ export const goto = (target: string | URL, { replace = false }: { replace?: bool
 }
 
 // Same names as SvelteKit ($app/navigation): the callback runs before / after every page change, until the component goes
-export const beforeNavigate = (callback: (navigation: Navigation) => void) => { before.add(callback); return () => before.delete(callback) }
-export const afterNavigate = (callback: (navigation: Navigation) => void) => { after.add(callback); return () => after.delete(callback) }
+export const beforeNavigate = (callback: (navigation: Navigation) => void) => { before.push(callback); return unsubscribe(before, callback) }
+export const afterNavigate = (callback: (navigation: Navigation) => void) => { after.push(callback); return unsubscribe(after, callback) }
 
 // Current page: its component and the values of its address ([id] -> params.id)
 export const router = {

@@ -30,6 +30,36 @@
             "registry": "npm",
             "stable": "26",
             "token": "V_TYPES_NODE"
+        },
+        {
+            "package": "eslint",
+            "registry": "npm",
+            "stable": "10",
+            "token": "V_ESLINT"
+        },
+        {
+            "package": "@eslint/js",
+            "registry": "npm",
+            "stable": "10",
+            "token": "V_ESLINT_JS"
+        },
+        {
+            "package": "globals",
+            "registry": "npm",
+            "stable": "17",
+            "token": "V_GLOBALS"
+        },
+        {
+            "package": "eslint-plugin-astro",
+            "registry": "npm",
+            "stable": "3",
+            "token": "V_ESLINT_ASTRO"
+        },
+        {
+            "package": "typescript-eslint",
+            "registry": "npm",
+            "stable": "8",
+            "token": "V_TS_ESLINT"
         }
     ],
     "publicDir": "public",
@@ -105,6 +135,33 @@
                     "devDependencies.typescript": "~6.0.3",
                     "scripts.check": "astro check",
                     "devDependencies.@types/node": "^{{V_TYPES_NODE}}"
+                }
+            },
+            "when": "ts"
+        },
+        {
+            "copy": "lint/ts",
+            "when": "ts"
+        },
+        {
+            "copy": "lint/js",
+            "when": "js"
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.eslint": "^{{V_ESLINT}}",
+                    "devDependencies.@eslint/js": "^{{V_ESLINT_JS}}",
+                    "devDependencies.globals": "^{{V_GLOBALS}}",
+                    "devDependencies.eslint-plugin-astro": "^{{V_ESLINT_ASTRO}}",
+                    "scripts.lint": "eslint ."
+                }
+            }
+        },
+        {
+            "npm": {
+                "set": {
+                    "devDependencies.typescript-eslint": "^{{V_TS_ESLINT}}"
                 }
             },
             "when": "ts"

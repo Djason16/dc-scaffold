@@ -34,7 +34,7 @@ ou **Aucun** (site sans données à enregistrer).
 | **Base de données** | Fixée à MySQL pour les back ends PHP. Pour les back ends JavaScript : MySQL (dans Docker) ou SQLite (un simple fichier, rien à installer) |
 | **Accès à MySQL** | Slim et PHP : `mysqli` ou `PDO` |
 | **Langues du site** | Français, anglais, ou les deux (boutons de langue et textes traduits) |
-| **Langage du code** | TypeScript (les types sont vérifiés pendant que tu écris, `npm run typecheck` ou `check`) ou JavaScript (sans types). Proposé pour tous les fronts et back ends Node.js ; Angular, Qwik, NestJS et AdonisJS sont toujours en TypeScript, HTML / CSS / JS toujours en JavaScript |
+| **Langage du code** | TypeScript (les types sont vérifiés pendant que tu écris, `npm run typecheck` ou `check`) ou JavaScript (sans types). Proposé pour tous les fronts et back ends Node.js ; Angular, Qwik, NestJS et AdonisJS sont toujours en TypeScript, HTML / CSS / JS toujours en JavaScript. Dans les deux cas, `npm run lint` vérifie le code avec ESLint (la configuration officielle du framework, oxlint en plus pour React et Vue) : un projet tout juste créé n'a ni erreur ni avertissement |
 | **Git** | Crée le dépôt et le premier commit |
 | **VS Code + Copilot** | Vérifie VS Code, GitHub Copilot et les extensions des stacks choisis |
 | **Dernières versions majeures** | Utilise une nouvelle version majeure d'un framework même si elle n'est pas encore validée (déconseillé pour débuter) |

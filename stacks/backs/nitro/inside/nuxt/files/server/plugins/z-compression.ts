@@ -13,6 +13,8 @@ const MIN_BYTES = 1024
 export default defineNitroPlugin((nitroApp) => {
     nitroApp.hooks.hook('render:response', (response, { event }) => {
         if (typeof response.body !== 'string' || response.body.length < MIN_BYTES) return
+        // Error pages (404...) are sent again by the error handler of Nitro: compressed here, the browser could not read them
+        if (Math.max(response.statusCode ?? 200, getResponseStatus(event)) >= 400 || event.path.startsWith('/__nuxt_error')) return
         const accepted = String(getRequestHeader(event, 'accept-encoding') ?? '')
         const body = Buffer.from(response.body)
         // Quality 5 of brotli: almost as small as the best, fast enough for each visit

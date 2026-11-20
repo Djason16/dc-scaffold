@@ -16,7 +16,7 @@ import { userPreferencesActions } from './actions/userPreferencesActions.js'
  * @end-one-language
  * Then anywhere:  if (userPreferences.preferences()['maps']) { ...show the map... }
  */
-type Preferences = { essential: boolean, functional: boolean, [category: string]: boolean }
+interface Preferences { essential: boolean, functional: boolean, [category: string]: boolean }
 type ActionName = keyof typeof userPreferencesActions
 
 @Injectable({ providedIn: 'root' })

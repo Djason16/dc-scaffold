@@ -10,7 +10,7 @@ const STORAGE_KEY = 'selectedLanguage'
 // @end-two-languages
 
 // Current language: the first one of LANGUAGES until the visitor changes it
-let current = $state<string>(LANGUAGES[0]!)
+let current = $state<string>(LANGUAGES[0] ?? '{{DEFAULT_LANG}}')
 
 export const lang = {
     get current() {

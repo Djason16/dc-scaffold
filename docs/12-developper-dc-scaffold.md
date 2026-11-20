@@ -13,6 +13,7 @@
 ├── engine/                moteur PowerShell : dc-scaffold.ps1, unix.ps1 (macOS, Linux), lang/fr.json, lang/en.json, banner.txt
 ├── stacks/                modèles de tous les projets (voir 10. Ajouter un stack), version dans stacks/version.txt
 ├── tools/robot/           robot de compatibilité (voir 11. Robot et catalogue)
+├── tools/check/           contrôle qualité : zéro erreur et zéro avertissement dans un projet tout juste créé (voir plus bas)
 ├── tools/stacks/          scripts qui écrivent certains stack.json (site_stack.py : le back end « API dans le site »)
 ├── launcher/              code Go de DCScaffold.exe (et de l'app macOS / Linux) : la fenêtre (ui/), le serveur local, les mises à jour
 ├── installer/             installateur NSIS : dc-scaffold.nsi, images, build.sh, build.ps1, build-docker.ps1 ;
@@ -76,10 +77,47 @@ Options de `DCScaffold.exe` : `--console` (moteur dans une console), `--no-updat
 | ------------------ | -------------- |
 | Un stack, la doc d'un projet, `start.ps1` | `.\DCScaffold.bat -Lang fr -Name test -Front ... -Back ... -SkipToolCheck -NoGit -Force`, puis build et `start.bat` dans le projet |
 | Le moteur | Pareil, avec plusieurs couples (API séparée, API dans le site, sans API, sans front) |
+| Avant une version | `node tools/check/check.mjs` : zéro erreur et zéro avertissement partout (voir Contrôle qualité) |
 | La fenêtre | `go run .` dans `launcher/`, ou recompiler le setup ; `GOOS=darwin` / `GOOS=linux go vet ./...` pour les autres systèmes |
 | macOS, Linux | `pwsh engine/dc-scaffold.ps1 -Lang fr -Name test -Front ... -Back ... -SkipToolCheck -NoGit -Force` (le robot fait la même chose sous Linux), puis `./start.sh` dans le projet |
 | Le robot | `python3 tools/robot/robot.py plan`, et un `test` sous Linux / WSL |
 
+## Contrôle qualité (`tools/check/`)
+
+Un projet tout juste créé doit avoir **zéro erreur et zéro avertissement**, quel que soit le couple choisi.
+`tools/check/check.mjs` le vérifie : il crée des projets avec le moteur (dans `%TEMP%\dcs-check`, hors de `Coding`), puis,
+pour chacun :
+
+| Étape | Ce qui est lancé |
+| ----- | ---------------- |
+| `lint` | `npm run lint` du front et de l'API (ESLint, oxlint ; chaque front et back end Node.js en a un) ; `node --check` des scripts du front HTML / CSS / JS ; `php -l` de chaque fichier d'une API PHP |
+| `types` | `npm run typecheck`, `type-check` ou `check` (vue-tsc, svelte-check, astro check, nuxt typecheck) ; sinon `tsc --noEmit` après le build |
+| `build` | le build mis en ligne (`build:prod` / `generate:prod` de Nuxt, sinon `build`), plus `artisan about` (Laravel) et `lint:container` (Symfony) |
+| `start` | `npm run dev` (ou `php -S` pour une API PHP, un petit serveur pour HTML / CSS / JS), l'accueil doit répondre 200 ; ce que les serveurs écrivent pendant la visite compte aussi |
+| `console` | Chrome sans écran (protocole DevTools, sans paquet npm) ouvre l'accueil et une page inconnue (404 attendu) : aucun avertissement, aucune erreur, aucune exception |
+
+Chaque front est créé **en TypeScript et en JavaScript** (quand il propose les deux), en **deux langues** (vérifié design
+allumé puis éteint, `dc-scaffold.config.js`) et en **une langue avec une API** (dans le site quand le front en a une, sinon
+un back end séparé, chacun son tour) ; chaque back end non couvert par un front est aussi créé seul, et les API PHP avec PDO.
+
+```
+node tools/check/check.mjs --list                    la liste des cas
+node tools/check/check.mjs                           tout (une quarantaine de projets, environ 40 minutes)
+node tools/check/check.mjs --only react,none-slim    seulement les cas qui commencent par ces noms
+node tools/check/check.mjs --jobs 2 --keep           2 projets à la fois, projets gardés pour les regarder
+```
+
+Il faut Node.js, PowerShell 7 (`pwsh`), Chrome (ou `CHROME_PATH`) et PHP / Composer pour les back ends PHP (sans PHP,
+ces cas sont sautés et signalés). `--no-console` saute Chrome. Le résultat : un tableau dans la console,
+`report.md`, `results.json` et un journal par cas (`<cas>.log`) dans le dossier de travail (`--dir`). Le code de sortie
+vaut 1 dès qu'un problème reste.
+
+Les avertissements écrits par les frameworks eux-mêmes, quel que soit le projet (Nuxt et Rolldown, la CLI de Qwik...), ou dus à un ordinateur occupé par plusieurs projets à la fois (« Slow filesystem » de Next.js, `PLUGIN_TIMINGS` de Rolldown),
+sont listés à part (« upstream ») et ne comptent pas : la liste `UPSTREAM` de `tools/check/run.mjs` les décrit, à
+retirer quand une nouvelle version du framework les corrige.
+
+Si un catalogue téléchargé (`%LOCALAPPDATA%\DC Scaffold\catalog\current`) est plus récent que `stacks/version.txt`, le
+moteur l'utiliserait à la place des stacks du dépôt : le script le signale.
 ## Compiler le setup (`DCScaffold-Setup.exe`)
 
 La version vient de `VERSION`. Le build écrit aussi cette version dans `launcher/resources.rc`, `launcher/app.manifest`

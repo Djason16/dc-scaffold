@@ -1,5 +1,5 @@
-import { effect } from '@angular/core'
 // @two-languages
+import { effect } from '@angular/core'
 import { useLang } from '@/composables/useLang'
 // @end-two-languages
 import { useSite } from '@/composables/useSite'

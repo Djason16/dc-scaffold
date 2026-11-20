@@ -1,7 +1,9 @@
 <template>
     <!-- One button per language of plugins/translations/translations.ts (nothing when the site has one language) -->
     <div v-if="lang.availableLanguages.length > 1" class="language-switcher">
-        <FloatingButton v-for="code in lang.availableLanguages" :key="code"
+        <FloatingButton
+            v-for="code in lang.availableLanguages"
+            :key="code"
             :class="{ active: lang.current.value === code }"
             :aria-label="`${code.toUpperCase()}, ${lang.getTranslation('switchToLang', { lang: lang.getTranslation(code) })}`"
             @click="switchLanguage(code)">

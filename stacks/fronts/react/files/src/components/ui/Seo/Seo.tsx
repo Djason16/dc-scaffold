@@ -11,12 +11,20 @@ import { buildSeo } from '@/utils/seo'
 // <head> of a page from SEO_PAGES (utils/seo.ts)
 // @end-one-language
 export default function Seo({ pageKey }: { pageKey: string }) {
-    const lang = useLang()
-    const site = useSite()
+    const { name, url } = useSite()
+    // @two-languages
+    const { current, getTranslation } = useLang()
 
     useEffect(() => {
-        applyHead(buildSeo({ pageKey, t: lang.getTranslation, locale: lang.current, site }))
-    }, [pageKey, lang.current, site.name, site.url])
+        applyHead(buildSeo({ pageKey, t: getTranslation, locale: current, site: { name, url } }))
+    }, [pageKey, current, getTranslation, name, url])
+    // @end-two-languages
+    // @one-language
+
+    useEffect(() => {
+        applyHead(buildSeo({ pageKey, locale: lang.current, site: { name, url } }))
+    }, [pageKey, name, url])
+    // @end-one-language
 
     return null
 }

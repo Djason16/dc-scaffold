@@ -60,7 +60,7 @@ const run = async () => {
     log(`start: ${start} (node ${process.version}, settings ${envFiles.join(', ') || 'none'})`)
 
     const toUrl = (path) => pathToFileURL(isAbsolute(path) ? path : join(__dirname, path)).href
-    for (const module of imports) await import(toUrl(module))
+    for (const entry of imports) await import(toUrl(entry))
 
     // The host may give the address without the folder of the site ("/products" for "/my-site/products"):
     // the folder is put back. Set after the modules above, so it runs before them (the start module of a

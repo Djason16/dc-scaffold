@@ -489,12 +489,13 @@
                     "replace": {
                         "file": "next.config.mjs",
                         "find": "images: \\{ unoptimized: true \\},",
-                        "with": "images: { unoptimized: true },\n    // Security headers on every page and every answer of the API (server/SecurityHelper.ts)\n    async headers() {\n        return [{ source: '/:path*', headers: Object.entries(SecurityHelper.headers(true)).map(([key, value]) => ({ key, value })) }]\n    },\n    // www.my-site.com -> my-site.com (path kept): not every host does it, the site does it itself\n    async redirects() {\n        return [\n            { source: '/:path*', has: [{ type: 'host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n            { source: '/:path*', has: [{ type: 'header', key: 'x-forwarded-host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n        ]\n    },"
+                        "with": "images: { unoptimized: true },\n    // Security headers on every page and every answer of the API (server/SecurityHelper.ts)\n    async headers() {\n        // Not on the files of \"next dev\": its JSON manifest, read as a script, would be refused because of nosniff\n        return [{ source: '/:path((?!_next/static/development/).*)', headers: Object.entries(SecurityHelper.headers(true)).map(([key, value]) => ({ key, value })) }]\n    },\n    // www.my-site.com -> my-site.com (path kept): not every host does it, the site does it itself\n    async redirects() {\n        return [\n            { source: '/:path*', has: [{ type: 'host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n            { source: '/:path*', has: [{ type: 'header', key: 'x-forwarded-host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n        ]\n    },"
                     }
                 },
                 {
                     "npm": {
                         "set": {
+                            "type": "module",
                             "scripts.start": "next start",
                             "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --pages pages --to public"
                         }

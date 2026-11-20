@@ -9,7 +9,7 @@
     // @one-language
     // <head> of a page from SEO_PAGES (utils/seo.ts), prerendered
     // @end-one-language
-    let { pageKey } = $props()
+    let { pageKey }: { pageKey: string } = $props()
     const site = useSite()
     const seo = $derived(buildSeo({ pageKey, t: lang.getTranslation, locale: lang.current, site }))
 
@@ -31,5 +31,6 @@
     {#each seo.link as link (link.rel)}
         <link rel={link.rel} href={link.href} />
     {/each}
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -- the JSON-LD of utils/seo.ts, "<" escaped above: no outside HTML -->
     {@html jsonLd}
 </svelte:head>

@@ -1,5 +1,5 @@
 // Texts of the welcome of DC Scaffold (dc-scaffold/Hero)
-export default {
+const texts = {
     fr: {
         heroBadge: 'Créé avec DC Scaffold',
         heroTitle: '{{name}}',
@@ -13,3 +13,5 @@ export default {
         heroBy: 'by',
     },
 }
+
+export default texts

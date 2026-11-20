@@ -4,7 +4,7 @@
  */
 
 // The store the actions work on ("this")
-type UserPreferencesStore = {
+interface UserPreferencesStore {
     hasUserMadeChoice: boolean
     preferences: Record<string, boolean>
     categories: Record<string, { required: boolean }>
@@ -49,7 +49,7 @@ export const userPreferencesActions = {
         try {
             const saved = readCookie()
             if (!saved) return false
-            this.preferences = cleanPreferences(this.categories, JSON.parse(saved))
+            this.preferences = cleanPreferences(this.categories, JSON.parse(saved) as Record<string, boolean>)
             this.hasUserMadeChoice = true
             return true
         } catch {

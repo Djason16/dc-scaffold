@@ -130,6 +130,22 @@
             "copy": "files"
         },
         {
+            "replace": {
+                "file": "tsconfig.json",
+                "find": "\"exclude\": \\[\"node_modules\"\\]",
+                "with": "\"exclude\": [\"node_modules\", \".next/dev\"]"
+            },
+            "when": "ts"
+        },
+        {
+            "replace": {
+                "file": "eslint.config.mjs",
+                "find": "\\.\\.\\.nextTs,",
+                "with": "...nextTs,\n  // CommonJS files (server.cjs) load their modules with require()\n  { files: [\"**/*.cjs\"], rules: { \"@typescript-eslint/no-require-imports\": \"off\" } },"
+            },
+            "when": "ts"
+        },
+        {
             "copy": "@shared/front-qualif"
         },
         {

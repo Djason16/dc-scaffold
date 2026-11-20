@@ -10,7 +10,11 @@
  *
  * Any other method becomes a route through: static routes = { markShipped: ['POST', '/{id}/mark-shipped'] }
  */
-export type Route = { methods: string[], path: string, pattern: RegExp, handler: (...args: any[]) => any }
+// An action of a controller, bound to its instance: its arguments depend on the framework (request, response...)
+export type Handler = (...args: unknown[]) => unknown
+export type Route = { methods: string[], path: string, pattern: RegExp, handler: Handler }
+// A controller class: its optional prefix and custom routes (static), and its actions
+export type ControllerClass = (new () => object) & { prefix?: string, routes?: Record<string, [string, string]> }
 
 const REST_ACTIONS: Record<string, [string[], string]> = {
     getAll: [['GET'], ''],
@@ -28,7 +32,7 @@ const defaultPrefix = (name: string) =>
 const toPattern = (path: string) => new RegExp(`^${path.replace(/\{(\w+)\}/g, '(?<$1>[^/]+)')}$`)
 
 // [HTTP methods, path] for a controller method, or null when it is not a route
-const routeOf = (ControllerClass: any, action: string): [string[], string] | null => {
+const routeOf = (ControllerClass: ControllerClass, action: string): [string[], string] | null => {
     const custom: Record<string, [string, string]> = ControllerClass.routes ?? {}
     const own = custom[action]
     if (Object.hasOwn(custom, action) && own) return [[own[0].toUpperCase()], own[1]]
@@ -36,19 +40,20 @@ const routeOf = (ControllerClass: any, action: string): [string[], string] | nul
 }
 
 export const RouteDiscovery = {
-    scan(controllers: { name: string, controller: any }[]) {
+    scan(controllers: { name: string, controller: ControllerClass }[]) {
         const routes: Route[] = []
 
         for (const { name, controller: ControllerClass } of controllers) {
-            const instance = new ControllerClass()
+            const instance = new ControllerClass() as Record<string, Handler>
             const prefix = (ControllerClass.prefix ?? defaultPrefix(name)).replace(/\/$/, '')
 
             for (const action of Object.getOwnPropertyNames(ControllerClass.prototype)) {
                 const route = action === 'constructor' ? null : routeOf(ControllerClass, action)
-                if (!route) continue
+                const handler = instance[action]
+                if (!route || !handler) continue
 
                 const path = (prefix + route[1]) || '/'
-                routes.push({ methods: route[0], path, pattern: toPattern(path), handler: instance[action].bind(instance) })
+                routes.push({ methods: route[0], path, pattern: toPattern(path), handler: handler.bind(instance) })
             }
         }
 

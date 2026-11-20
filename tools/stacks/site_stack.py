@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 
 STACK = Path(__file__).resolve().parents[2] / "stacks" / "backs" / "site" / "stack.json"
+# @types/node of the TypeScript projects (the API uses process, Buffer, node:fs...)
+TYPES_NODE = {"package": "@types/node", "registry": "npm", "stable": "26", "token": "V_TYPES_NODE"}
 DB_SQLITE = {"DB_CONNECTION": "sqlite", "DB_HOST": "", "DB_NAME": "", "DB_USER": "", "DB_PASS": "", "DB_PORT": ""}
 
 # Address of the API for api.js: same site; on the server (first display of a page) the full local address
@@ -30,10 +32,11 @@ def inside(front, label, dir, entry, steps, online, versions=(), api=None):
             "fr": f"API dans le site : l'API est rangée dans frontend/{dir}/ et répond sous /api, avec le serveur de {label}. Un seul dossier, un seul serveur à lancer et à mettre en ligne (hébergement Node.js).",
             "en": f"API inside the site: the API goes into frontend/{dir}/ and answers under /api, with the server of {label}. One folder, one server to start and to put online (Node.js host).",
         },
-        "versions": list(versions),
+        "versions": [*versions, TYPES_NODE],
         "api": {"base": SERVER_BASE, "source": "same site, under /api",
                 "usage": "Same site: api.get('/products') calls /api/products.", **(api or {})},
-        "steps": common(dir) + [{"copy": f"inside/{front}/files"}, {"copy": "@shared/node-start"}] + steps,
+        "steps": common(dir) + [{"copy": f"inside/{front}/files"}, {"copy": "@shared/node-start"}] + steps
+                 + [{"npm": {"set": {"devDependencies.@types/node": "^{{V_TYPES_NODE}}"}}, "when": "ts"}],
         "guide": {"entry": entry},
         "online": online,
         "doc": f"inside/{front}/doc.md",
@@ -42,8 +45,8 @@ def inside(front, label, dir, entry, steps, online, versions=(), api=None):
 
 def online(fr_build, en_build):
     return {
-        "fr": f"Site + API : `start.bat` puis `B` ({fr_build}), envoie `frontend/` sur un hébergement Node.js 22.13+ et lance `npm start`",
-        "en": f"Site + API: `start.bat` then `B` ({en_build}), upload `frontend/` to a Node.js 22.13+ host and run `npm start`",
+        "fr": f"Site + API : `start.bat` puis `B` ({fr_build}), envoie `frontend/` sur un hébergement Node.js 22.18+ et lance `npm start`",
+        "en": f"Site + API: `start.bat` then `B` ({en_build}), upload `frontend/` to a Node.js 22.18+ host and run `npm start`",
     }
 
 
@@ -66,7 +69,7 @@ stack = {
     "controllerExt": "js",
     "guide": {
         "helpers": ".",
-        "middleware": "handler.js",
+        "middleware": "handler.ts",
         "envDev": ".env",
         "envProd": ".env.production",
         "custom": "static routes = { markShipped: ['POST', '/{id}/mark-shipped'] }",
@@ -86,10 +89,10 @@ stack = {
                 # server.js (inside/sveltekit/files): www. redirect and security headers in front of build/handler.js
                 {"npm": {"delete": ["devDependencies.@sveltejs/adapter-static", "scripts.postbuild"],
                          "set": {"devDependencies.@sveltejs/adapter-node": "^{{V_SVELTE_ADAPTER_NODE}}",
-                                 "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production server.js"}}},
+                                 "scripts.start": "node --disable-warning=ExperimentalWarning --env-file=.env.production ./server.ts"}}},
                 {"remove": ["scripts/sitemap.mjs"]},
-                {"replace": {"file": "vite.config.js", "find": "@sveltejs/adapter-static", "with": "@sveltejs/adapter-node"}},
-                {"replace": {"file": "vite.config.js", "find": r"adapter: adapter\(\{ fallback: '200.html' \}\)", "with": "adapter: adapter()"}},
+                {"replace": {"file": "vite.config.{{SCRIPT_EXT}}", "find": "@sveltejs/adapter-static", "with": "@sveltejs/adapter-node"}},
+                {"replace": {"file": "vite.config.{{SCRIPT_EXT}}", "find": r"adapter: adapter\(\{ fallback: '200.html' \}\)", "with": "adapter: adapter()"}},
             ],
             online=online("pages et API compilées dans `frontend/build`", "pages and API built into `frontend/build`"),
         ),
@@ -125,12 +128,13 @@ stack = {
                              "with": "trailingSlash: true,\n    // /api/products and /api/products/ both reach the API, without a redirect\n    skipTrailingSlashRedirect: true,"}},
                 # Security headers on every page and answer, www. -> address without www. (the server of Next.js does both)
                 {"replace": {"file": "next.config.mjs", "find": r"(?m)^/\*\* @type",
-                             "with": "import { SecurityHelper } from './server/SecurityHelper.js'\n\n/** @type"}},
+                             "with": "import { SecurityHelper } from './server/SecurityHelper.ts'\n\n/** @type"}},
                 {"replace": {"file": "next.config.mjs", "find": r"images: \{ unoptimized: true \},",
                              "with": "images: { unoptimized: true },\n"
-                                     "    // Security headers on every page and every answer of the API (server/SecurityHelper.js)\n"
+                                     "    // Security headers on every page and every answer of the API (server/SecurityHelper.ts)\n"
                                      "    async headers() {\n"
-                                     "        return [{ source: '/:path*', headers: Object.entries(SecurityHelper.headers(true)).map(([key, value]) => ({ key, value })) }]\n"
+                                     "        // Not on the files of \"next dev\": its JSON manifest, read as a script, would be refused because of nosniff\n"
+                                     "        return [{ source: '/:path((?!_next/static/development/).*)', headers: Object.entries(SecurityHelper.headers(true)).map(([key, value]) => ({ key, value })) }]\n"
                                      "    },\n"
                                      "    // www.my-site.com -> my-site.com (path kept): not every host does it, the site does it itself\n"
                                      "    async redirects() {\n"
@@ -139,7 +143,8 @@ stack = {
                                      "            { source: '/:path*', has: [{ type: 'header', key: 'x-forwarded-host', value: 'www[.](?<host>.+)' }], destination: 'https://:host/:path*', permanent: true },\n"
                                      "        ]\n"
                                      "    },"}},
-                {"npm": {"set": {"scripts.start": "next start",
+                # next.config.mjs imports server/SecurityHelper: an ES module, said so to Node.js (no MODULE_TYPELESS_PACKAGE_JSON warning)
+                {"npm": {"set": {"type": "module", "scripts.start": "next start",
                                  "scripts.postbuild": "node scripts/sitemap.mjs .next/server/pages --pages pages --to public"}}},
             ],
             online=online("pages et API compilées dans `frontend/.next`", "pages and API built into `frontend/.next`"),
@@ -159,5 +164,5 @@ stack = {
     },
 }
 
-STACK.write_text(json.dumps(stack, indent=4, ensure_ascii=False) + "\n", encoding="utf-8")
+STACK.write_text(json.dumps(stack, indent=4, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n")
 print(f"written: {STACK}")

@@ -14,6 +14,9 @@ import { useLang } from '@/composables/useLang'
 import { useSite } from '@/composables/useSite'
 import { useUserPreferencesStore } from '@/stores/userPreferences'
 
+// Multi-word name (style guide of Vue), also shown in the Vue devtools
+defineOptions({ name: 'SiteFooter' })
+
 const { getTranslation: t } = useLang()
 const site = useSite()
 const userPreferences = useUserPreferencesStore()
